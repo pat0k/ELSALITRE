@@ -1,0 +1,12744 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cotizador;
+
+import java.net.URL;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.view.JasperViewer;
+import net.sf.jasperreports.engine.JasperPrint;
+//import ConexionSQLSERVER.ConexionDB;
+import ConexionMYSQLSERVER.ConexionDB;
+import ReporteParam.JasperReportsParam;
+//import java.awt.Event;
+//import cotizador.Login;
+//import java.awt.ComponentOrientation;
+import java.awt.HeadlessException;
+import java.awt.event.*;
+import java.sql.*;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+//import java.util.ArrayList;
+//import java.util.*;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.DefaultListModel;
+//import javax.swing.JDialog;
+//import javax.swing.JList;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+//import javax.rmi.CORBA.Tie;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+//import sun.org.mozilla.javascript.internal.regexp.SubString;
+//import sun.java2d.pipe.hw.AccelDeviceEventNotifier;
+//import javax.swing.Timer;
+
+/**
+ *
+ * @author ADMPRO0209
+ */
+public class Cotizador extends javax.swing.JFrame {
+
+    ConexionDB ConexDB = null;
+    
+    //private Timer timer;
+    
+    String TXTTCOM;
+    String TXTTIMP;
+    String TXTNIMP;
+    
+    
+    // DECLARAR VALORES MONTAJE-TERMOLAMINADO
+    double CRV = 1.5;
+    
+    
+    
+    //
+    int count;
+    int Truncate = 4;
+    int ContAgre = 0;
+    int selectedRow;
+    int PosRow = -1;
+    // DECLARAR LAS VARIABLES PARA LOS JTXTFLIED
+    
+    String user;
+    String RCLI;
+    String BCLI;
+    String NCLI;
+    String NIMP;
+    String TCOMM;
+    int BLOCKTALON;
+    int CANT;
+    String TIMPm;
+    String CMOD;
+    int NJUE;
+    int NEJE;
+    String CMCC;
+    int CCOL;
+    String IOTI;
+    String IORE;
+    String ITTI;
+    String ITRE;
+    String CPCTP;
+    int MONT;
+    
+    int TAIM;
+    int TIMP;
+    int BOFF;
+    int TIND;
+    int PO1C;
+    int PO2C;
+    int PO4C;
+    int CUAT;
+    int EXTRA1;
+    int EXTRA2;
+    int CALC1;
+    double CALC2;
+    double CALC3;
+    double CALC4;
+    int TOTAL1;
+    int EXTRAMONO;
+    int EXTRABI;
+    int EXTRACUAT;
+    String DESCCOLOR;
+    String TINI;
+    String TFIN;
+    String TCON;
+    
+    String BCLIV;
+    
+    // DECLARAR LAS VARIABLES EXTRAS
+    double PAP = 0;
+    int ART = 0;
+    int PASADA;
+    int PASADA_PAGINABLE;
+    int PASADA_TIPOGRAFIA;
+    int SADICIONAL;
+    int T_TRABAJO;
+    int T_SOBRANTE;
+    String ID_PLIEGO;
+    int CSFAM;
+    String SFAM;
+    String POSXY;
+    String POSX;
+    float POSXF;
+    String POSY;
+    String POSZ1;
+    String POSZ2;
+    String POSZ3;
+    String POSZ4;
+    String COND;
+    String MDP;
+    String FAMI;
+    String codlp;
+    String nomlp;
+    int cantlp;
+    double vallp;
+    int valcorte;
+    int CFAM;
+    int OVCP;
+    String OVCPC;
+    int CPRO;
+    int IDP;
+    String NDP;
+    String SAVA;
+    int cantsobra;
+    String SOVA;
+    int SOVAi;
+    String STVA;
+    int STVAi;
+    String PORC;
+    String SOBR;
+    String toUpperCase;
+    char TipoDeTecla;
+    
+    String x1;
+    String x2;
+    String x3;
+    String x4;
+    int VTMO;
+    
+    int CANT_COMI_VENT = 0;
+    int CANT_COST_INDI = 0;
+    int TOTAL_COST_INDI = 0;
+    int SUB_TOTAL2 = 0;
+    int valrecimp = 0 ;
+    int valrectip = 0 ;
+    int valst1 = 0 ;
+    int valst2 = 0 ;
+    int valst3 = 0 ;
+    int valptc = 0 ;
+    int valub = 0;
+    double valpuc = 0 ;
+    int CANT_REEN = 0;
+    int TOTAL_REEN = 0;
+    double PRECIO_UNIT = 0;
+    int PRECIO_TOTAL = 0;
+    
+    int correlativo = 0;
+    int CORRELATIVO_SERIGRAFIA = 123456;
+    
+    ResultSetMetaData rsm;
+    
+    
+    /**
+     * Creates new form Cotizador
+     * @param usuario
+     */
+       public Cotizador(String usuario) {
+        initComponents();
+        setLocationRelativeTo(null); 
+        jPanel2.setVisible(false);
+        this.user = usuario;
+        
+    }
+    
+    public Cotizador() {
+        initComponents();
+        setLocationRelativeTo(null); 
+        jPanel2.setVisible(false);
+        
+    }
+    
+    public Cotizador(Connection conn){
+        JasperReportsParam.createReport(conn, "\\ReportePDF\\InformeDeCosto.jasper");
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     * @return 
+     */
+    public static String fechaActual(){
+            
+        Date fecha = new Date();
+        SimpleDateFormat formatofecha = new SimpleDateFormat("dd-MM-YYYY");
+        
+        return formatofecha.format(fecha);
+        }
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jDIAAPAP = new javax.swing.JDialog();
+        jLABICDI = new javax.swing.JLabel();
+        jTXTFICDI = new javax.swing.JTextField();
+        jLABFAMI = new javax.swing.JLabel();
+        jBCOST = new javax.swing.JButton();
+        jLABSUFA = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTABSUFA = new javax.swing.JTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jLISTFAMI = new javax.swing.JList();
+        jDIASTOC = new javax.swing.JDialog();
+        jLABICAN = new javax.swing.JLabel();
+        jTXTFICAN = new javax.swing.JTextField();
+        jLABCEPJ = new javax.swing.JLabel();
+        jLABCEPJV = new javax.swing.JLabel();
+        jLABHAGR = new javax.swing.JLabel();
+        jLABHAGRV = new javax.swing.JLabel();
+        jDIABCLI = new javax.swing.JDialog();
+        jLABNOCL = new javax.swing.JLabel();
+        jTXTFBCLI = new javax.swing.JTextField();
+        jBBCLI = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTABBCLI = new javax.swing.JTable();
+        jBCEBU = new javax.swing.JButton();
+        jDIATERM = new javax.swing.JDialog();
+        jLABTERM2 = new javax.swing.JLabel();
+        jSeparator9 = new javax.swing.JSeparator();
+        jLABANTC = new javax.swing.JLabel();
+        jLABNOLA = new javax.swing.JLabel();
+        jTXTFNOLA = new javax.swing.JTextField();
+        jLABCAIM = new javax.swing.JLabel();
+        jTXTFCAIM = new javax.swing.JTextField();
+        jLABTMON = new javax.swing.JLabel();
+        jTXTFTMON = new javax.swing.JTextField();
+        jLABCALA = new javax.swing.JLabel();
+        jLABVCAL = new javax.swing.JLabel();
+        jLABLATI = new javax.swing.JLabel();
+        jTXTFLATI = new javax.swing.JTextField();
+        jLABLARE = new javax.swing.JLabel();
+        jTXTFLARE = new javax.swing.JTextField();
+        jLABANCO = new javax.swing.JLabel();
+        jLABLLTT = new javax.swing.JLabel();
+        jTXTFLLTT = new javax.swing.JTextField();
+        jLABFLET = new javax.swing.JLabel();
+        jCBOXFLET = new javax.swing.JComboBox();
+        jLABLABM = new javax.swing.JLabel();
+        jLABPOLIM = new javax.swing.JLabel();
+        jLABT150 = new javax.swing.JLabel();
+        jCBOXPOLIM = new javax.swing.JComboBox();
+        jLABPOLIE = new javax.swing.JLabel();
+        jLABT300 = new javax.swing.JLabel();
+        jCBOXPOLIE = new javax.swing.JComboBox();
+        jBTSAV = new javax.swing.JButton();
+        jBTCLR = new javax.swing.JButton();
+        jLABREPO = new javax.swing.JLabel();
+        jCBOXRETE = new javax.swing.JComboBox();
+        jLABTEMA = new javax.swing.JLabel();
+        jLABMAAC = new javax.swing.JLabel();
+        jLABTCAN = new javax.swing.JLabel();
+        jLABTVAL = new javax.swing.JLabel();
+        jLABTTOT = new javax.swing.JLabel();
+        jLABLABR = new javax.swing.JLabel();
+        jLABCTLB = new javax.swing.JLabel();
+        jLABVTLB = new javax.swing.JLabel();
+        jLABTTLB = new javax.swing.JLabel();
+        jLABTEMO = new javax.swing.JLabel();
+        jLABCTMO = new javax.swing.JLabel();
+        jLABVTMO = new javax.swing.JLabel();
+        jLABTTMO = new javax.swing.JLabel();
+        jLABCORE = new javax.swing.JLabel();
+        jLABCTCR = new javax.swing.JLabel();
+        jLABVTCR = new javax.swing.JLabel();
+        jLABTTCR = new javax.swing.JLabel();
+        jLABTST1 = new javax.swing.JLabel();
+        jLABTTS1 = new javax.swing.JLabel();
+        jLABRELO = new javax.swing.JLabel();
+        jLABTTRE = new javax.swing.JLabel();
+        jLABFACO = new javax.swing.JLabel();
+        jLABTTFC = new javax.swing.JLabel();
+        jLABMEIN = new javax.swing.JLabel();
+        jLABVTMI = new javax.swing.JLabel();
+        jLABTTMI = new javax.swing.JLabel();
+        jLABCFIN = new javax.swing.JLabel();
+        jLABVTCF = new javax.swing.JLabel();
+        jLABTTCF = new javax.swing.JLabel();
+        jLABTST2 = new javax.swing.JLabel();
+        jLABTTS2 = new javax.swing.JLabel();
+        jLABCPVE = new javax.swing.JLabel();
+        jLABVTCV = new javax.swing.JLabel();
+        jLABTTCV = new javax.swing.JLabel();
+        jLABTST3 = new javax.swing.JLabel();
+        jLABTTS3 = new javax.swing.JLabel();
+        jLABUTBR = new javax.swing.JLabel();
+        jLABTTUB = new javax.swing.JLabel();
+        jLABPTCL = new javax.swing.JLabel();
+        jLABTTPT = new javax.swing.JLabel();
+        jLABPUCL = new javax.swing.JLabel();
+        jLABTTPU = new javax.swing.JLabel();
+        jDIACPXT = new javax.swing.JDialog();
+        jLabel1 = new javax.swing.JLabel();
+        jSeparator10 = new javax.swing.JSeparator();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        jTextField2 = new javax.swing.JTextField();
+        jTextField3 = new javax.swing.JTextField();
+        jTextField4 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jDIAIDUC = new javax.swing.JDialog();
+        jLABTDUC = new javax.swing.JLabel();
+        jLABPANF = new javax.swing.JLabel();
+        jLABIMDT = new javax.swing.JLabel();
+        jLABIMDR = new javax.swing.JLabel();
+        jLABIMDU = new javax.swing.JLabel();
+        jLABIMTI = new javax.swing.JLabel();
+        jLABCAMA = new javax.swing.JLabel();
+        jLABCAAP = new javax.swing.JLabel();
+        jLABAFUO = new javax.swing.JLabel();
+        jCBOXPANF = new javax.swing.JComboBox();
+        jTXTFIMDT = new javax.swing.JTextField();
+        jTXTFIMDR = new javax.swing.JTextField();
+        jTXTFIMDU = new javax.swing.JTextField();
+        jTXTFIMTI = new javax.swing.JTextField();
+        jTXTFCAMA = new javax.swing.JTextField();
+        jTXTFCAAP = new javax.swing.JTextField();
+        jTXTFAFUO = new javax.swing.JTextField();
+        jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        jSeparator12 = new javax.swing.JSeparator();
+        jDIATAAU = new javax.swing.JDialog();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jBCACO = new javax.swing.JButton();
+        jLABLOGO1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        Antecedentes = new javax.swing.JPanel();
+        jLABRCLI = new javax.swing.JLabel();
+        jTXTFRCLI = new javax.swing.JTextField();
+        jLABNCLI = new javax.swing.JLabel();
+        jLABNIMP = new javax.swing.JLabel();
+        jLABTCOM = new javax.swing.JLabel();
+        jLABCANT = new javax.swing.JLabel();
+        jLABTIMP = new javax.swing.JLabel();
+        jLABNJUE = new javax.swing.JLabel();
+        jLABNEJE = new javax.swing.JLabel();
+        jTXTFNIMP = new javax.swing.JTextField();
+        jCBOXTCOM = new javax.swing.JComboBox();
+        jTXTFCANT = new javax.swing.JTextField();
+        jCBOXTIMP = new javax.swing.JComboBox();
+        jTXTFNJUE = new javax.swing.JTextField();
+        jLABCMOD = new javax.swing.JLabel();
+        jTXTFCMOD = new javax.swing.JTextField();
+        jTXTFNEJE = new javax.swing.JTextField();
+        jBCEIC = new javax.swing.JButton();
+        jBBUCL = new javax.swing.JButton();
+        jBCLNU = new javax.swing.JButton();
+        jBLIPI = new javax.swing.JButton();
+        jLABEJEM = new javax.swing.JLabel();
+        jTXTFNCLI = new javax.swing.JTextField();
+        jCBOXRECO = new javax.swing.JComboBox();
+        PreprensaPrensa = new javax.swing.JPanel();
+        jLABCDS = new javax.swing.JLabel();
+        jCBOXCDS = new javax.swing.JComboBox();
+        jLABSIMP = new javax.swing.JLabel();
+        jTXTFSIMP = new javax.swing.JTextField();
+        jLABDVC = new javax.swing.JLabel();
+        jCBOXDVC = new javax.swing.JComboBox();
+        jLABESPC = new javax.swing.JLabel();
+        jTXTFESPE = new javax.swing.JTextField();
+        jLABDVPC = new javax.swing.JLabel();
+        jCBOXDVPC = new javax.swing.JComboBox();
+        jLABEXTR = new javax.swing.JLabel();
+        jTXTFEXTR = new javax.swing.JTextField();
+        jLABDPOC = new javax.swing.JLabel();
+        jCBOXDPOC = new javax.swing.JComboBox();
+        jLABCOMP = new javax.swing.JLabel();
+        jTXTFCOMP = new javax.swing.JTextField();
+        jLABCAUA = new javax.swing.JLabel();
+        jCBOXCAUA = new javax.swing.JComboBox();
+        jLABCAOA = new javax.swing.JLabel();
+        jCBOXCAOA = new javax.swing.JComboBox();
+        jLABCMCC = new javax.swing.JLabel();
+        jTXTFCMCC = new javax.swing.JTextField();
+        jLABCUAT = new javax.swing.JLabel();
+        jCBOXCUAT = new javax.swing.JComboBox();
+        jLABCCOL = new javax.swing.JLabel();
+        jTXTFCCOL = new javax.swing.JTextField();
+        jLABCTIN = new javax.swing.JLabel();
+        jCBOXCTIN = new javax.swing.JComboBox();
+        jLABPO1C = new javax.swing.JLabel();
+        jCBOXPO1C = new javax.swing.JComboBox();
+        jLABPO2C = new javax.swing.JLabel();
+        jCBOXPO2C = new javax.swing.JComboBox();
+        jCBOXGTSM = new javax.swing.JComboBox();
+        jLABPO4C = new javax.swing.JLabel();
+        jCBOXPO4C = new javax.swing.JComboBox();
+        jCBOXPMSM = new javax.swing.JComboBox();
+        jLABIDTC = new javax.swing.JLabel();
+        jCBOXIDTC = new javax.swing.JComboBox();
+        jCBOXUCTC = new javax.swing.JComboBox();
+        jLABIDUC = new javax.swing.JLabel();
+        jCBOXIDUC = new javax.swing.JComboBox();
+        jLABIOTI = new javax.swing.JLabel();
+        jTXTFIOTI = new javax.swing.JTextField();
+        jLABIORE = new javax.swing.JLabel();
+        jTXTFIORE = new javax.swing.JTextField();
+        jLABITTI = new javax.swing.JLabel();
+        jTXTFITTI = new javax.swing.JTextField();
+        jLABITRE = new javax.swing.JLabel();
+        jTXTFITRE = new javax.swing.JTextField();
+        jLABPMOL = new javax.swing.JLabel();
+        jCBOXPMOL = new javax.swing.JComboBox();
+        jLABTCMT = new javax.swing.JLabel();
+        jCBOXTCMT = new javax.swing.JComboBox();
+        jLABEUSA = new javax.swing.JLabel();
+        jCBOXEUSA = new javax.swing.JComboBox();
+        jLABTBCP = new javax.swing.JLabel();
+        jCBOXTBCP = new javax.swing.JComboBox();
+        jLABFTCA = new javax.swing.JLabel();
+        jCBOXFTCA = new javax.swing.JComboBox();
+        jLABFLLE = new javax.swing.JLabel();
+        jCBOXFLLE = new javax.swing.JComboBox();
+        jLABBOFF = new javax.swing.JLabel();
+        jCBOXBOFF = new javax.swing.JComboBox();
+        jLABTRAM = new javax.swing.JLabel();
+        jCBOXTRAM = new javax.swing.JComboBox();
+        jLABTIND = new javax.swing.JLabel();
+        jCBOXTIND = new javax.swing.JComboBox();
+        jLABCPCTP = new javax.swing.JLabel();
+        jTXTFCPCTP = new javax.swing.JTextField();
+        jLABPARC = new javax.swing.JLabel();
+        jCBOXPARC = new javax.swing.JComboBox();
+        jLABCAPP = new javax.swing.JLabel();
+        jCBOXCAPP = new javax.swing.JComboBox();
+        MontajePapelesCorte = new javax.swing.JPanel();
+        jLABMONT = new javax.swing.JLabel();
+        jTXTFMONT = new javax.swing.JTextField();
+        jLABTAIM = new javax.swing.JLabel();
+        jTXTFTAIM = new javax.swing.JTextField();
+        jLABMDTA = new javax.swing.JLabel();
+        jTXTFMTAMX = new javax.swing.JTextField();
+        jLABMDTX = new javax.swing.JLabel();
+        jTXTFMTAMY = new javax.swing.JTextField();
+        jLABMDPL = new javax.swing.JLabel();
+        jCBOXMDP = new javax.swing.JComboBox();
+        jLABSALE = new javax.swing.JLabel();
+        jLABSAVA = new javax.swing.JLabel();
+        jLABSOBR = new javax.swing.JLabel();
+        jLABSOVA = new javax.swing.JLabel();
+        jTXTFSOVA = new javax.swing.JTextField();
+        jLABSOOT = new javax.swing.JLabel();
+        jLABSTVA = new javax.swing.JLabel();
+        jTXTFSTVA = new javax.swing.JTextField();
+        jLABTSOB = new javax.swing.JLabel();
+        jLABTSVA = new javax.swing.JLabel();
+        jLABTDPA = new javax.swing.JLabel();
+        jCBOXTDPA = new javax.swing.JComboBox();
+        jLABCSN = new javax.swing.JLabel();
+        jCBOXCSN = new javax.swing.JComboBox();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jLISTEQUI = new javax.swing.JList();
+        jLABTERM = new javax.swing.JLabel();
+        jCBOXTERM = new javax.swing.JComboBox();
+        jLABSBUV = new javax.swing.JLabel();
+        jCBOXSBUV = new javax.swing.JComboBox();
+        jLABCPXT = new javax.swing.JLabel();
+        jCBOXCPXT = new javax.swing.JComboBox();
+        jLABCPML = new javax.swing.JLabel();
+        jCBOXCPML = new javax.swing.JComboBox();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTABMONT = new javax.swing.JTable();
+        jBAP = new javax.swing.JButton();
+        Encuadernacion = new javax.swing.JPanel();
+        jLABNFXF = new javax.swing.JLabel();
+        jTXTFNFXF = new javax.swing.JTextField();
+        jLABFAOC = new javax.swing.JLabel();
+        jLABFAOVA = new javax.swing.JLabel();
+        jLABCITR = new javax.swing.JLabel();
+        jCBOXCITR = new javax.swing.JComboBox();
+        jLABASN = new javax.swing.JLabel();
+        jCBOXASN = new javax.swing.JComboBox();
+        jLABMPEN = new javax.swing.JLabel();
+        jTXTFMPEN = new javax.swing.JTextField();
+        jLABCABO = new javax.swing.JLabel();
+        jCBOXCABO = new javax.swing.JComboBox();
+        jLABCOSN = new javax.swing.JLabel();
+        jCBOXCOSN = new javax.swing.JComboBox();
+        jLABCRDU = new javax.swing.JLabel();
+        jCBOXCRDU = new javax.swing.JComboBox();
+        jLABCAPR = new javax.swing.JLabel();
+        jCBOXCAPR = new javax.swing.JComboBox();
+        jLABCCDT = new javax.swing.JLabel();
+        jTXTFCCDT = new javax.swing.JTextField();
+        jLABCACO = new javax.swing.JLabel();
+        jCBOXCACO = new javax.swing.JComboBox();
+        jLABOTEN = new javax.swing.JLabel();
+        jCBOXOTEN = new javax.swing.JComboBox();
+        jLABFSIM = new javax.swing.JLabel();
+        jCBOXFSIM = new javax.swing.JComboBox();
+        jLABOTVA = new javax.swing.JLabel();
+        jCBOXOTVA = new javax.swing.JComboBox();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTABENCU = new javax.swing.JTable();
+        jBLITA = new javax.swing.JButton();
+        OtrosDescuentoPapel = new javax.swing.JPanel();
+        jLABOTRO = new javax.swing.JLabel();
+        jLABOTCF = new javax.swing.JLabel();
+        jCBOXOTCF = new javax.swing.JComboBox();
+        jLABENRT = new javax.swing.JLabel();
+        jCBOXENRT = new javax.swing.JComboBox();
+        jLABEXAR = new javax.swing.JLabel();
+        jTXTFEXAR = new javax.swing.JTextField();
+        jLABSECI = new javax.swing.JLabel();
+        jCBOXSECI = new javax.swing.JComboBox();
+        jLABOCAN = new javax.swing.JLabel();
+        jTXTFOCAN = new javax.swing.JTextField();
+        HojaDeCostos = new javax.swing.JPanel();
+        jBCALC = new javax.swing.JButton();
+        jBGUIN = new javax.swing.JButton();
+        jBMOIN = new javax.swing.JButton();
+        jBIMIN = new javax.swing.JButton();
+        jBEPEM = new javax.swing.JButton();
+        jLABINFO = new javax.swing.JLabel();
+        jLABNODI = new javax.swing.JLabel();
+        jLABTIDC = new javax.swing.JLabel();
+        jLABVTDC = new javax.swing.JLabel();
+        jLABCANI = new javax.swing.JLabel();
+        jLABVCAN = new javax.swing.JLabel();
+        jLABTIDI = new javax.swing.JLabel();
+        jLABVTDI = new javax.swing.JLabel();
+        jLABNUDJ = new javax.swing.JLabel();
+        jLABVNDJ = new javax.swing.JLabel();
+        jLABCADE = new javax.swing.JLabel();
+        jLABVCDE = new javax.swing.JLabel();
+        jLABVAUN = new javax.swing.JLabel();
+        jLABVVU = new javax.swing.JLabel();
+        jLABVATO = new javax.swing.JLabel();
+        jLABVVT = new javax.swing.JLabel();
+        jLABVNDI = new javax.swing.JLabel();
+        jLABTEMA1 = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jTXTFUSER1 = new javax.swing.JTextField();
+        jSeparator8 = new javax.swing.JSeparator();
+        jTXTFFECH = new javax.swing.JTextField();
+        jSeparator11 = new javax.swing.JSeparator();
+        jTXTFVERS = new javax.swing.JTextField();
+        jTXTFUSER = new javax.swing.JTextField();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem11 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenuItem12 = new javax.swing.JMenuItem();
+        jMenuItem13 = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem14 = new javax.swing.JMenuItem();
+        jSeparator7 = new javax.swing.JPopupMenu.Separator();
+
+        jDIAAPAP.setBackground(java.awt.Color.lightGray);
+        jDIAAPAP.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jDIAAPAP.setIconImage(null);
+        jDIAAPAP.setIconImages(null);
+        jDIAAPAP.setLocationByPlatform(true);
+        //jDialog1.setLocation(300, 300);
+        jDIAAPAP.setMinimumSize(new java.awt.Dimension(800, 480));
+        jDIAAPAP.setName("jdialog1"); // NOI18N
+        jDIAAPAP.setResizable(false);
+        jDIAAPAP.setType(java.awt.Window.Type.UTILITY);
+        jDIAAPAP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jDIAAPAPKeyPressed(evt);
+            }
+        });
+        jDIAAPAP.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABICDI.setText("INGRESAR CODIGO DE LOS INSUMOS");
+        jDIAAPAP.getContentPane().add(jLABICDI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jTXTFICDI.setText("0");
+        jTXTFICDI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFICDIFocusGained(evt);
+            }
+        });
+        jTXTFICDI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFICDIKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFICDIKeyTyped(evt);
+            }
+        });
+        jDIAAPAP.getContentPane().add(jTXTFICDI, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 6, 50, -1));
+
+        jLABFAMI.setText("FAMILIA");
+        jDIAAPAP.getContentPane().add(jLABFAMI, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 50, -1, -1));
+
+        jBCOST.setText("CONSULTAR STOCK");
+        jDIAAPAP.getContentPane().add(jBCOST, new org.netbeans.lib.awtextra.AbsoluteConstraints(636, 6, -1, -1));
+
+        jLABSUFA.setText("SUB-FAMILIA");
+        jDIAAPAP.getContentPane().add(jLABSUFA, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 50, -1, -1));
+
+        jLabel6.setText("jLabel6");
+        jDIAAPAP.getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 10, -1, -1));
+
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(510, 385));
+
+        jTABSUFA.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "CODIGO", "DESCRIPCION", "GRAMAJE", "MEDIDA", "VALOR"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTABSUFA.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTABSUFA.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        jTABSUFA.setMinimumSize(new java.awt.Dimension(510, 385));
+        jTABSUFA.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTABSUFA.getTableHeader().setReorderingAllowed(false);
+        jTABSUFA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTABSUFAMouseClicked(evt);
+            }
+        });
+        jTABSUFA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTABSUFAKeyPressed(evt);
+            }
+        });
+        jScrollPane5.setViewportView(jTABSUFA);
+        if (jTABSUFA.getColumnModel().getColumnCount() > 0) {
+            jTABSUFA.getColumnModel().getColumn(0).setMinWidth(60);
+            jTABSUFA.getColumnModel().getColumn(0).setMaxWidth(60);
+            jTABSUFA.getColumnModel().getColumn(2).setMinWidth(70);
+            jTABSUFA.getColumnModel().getColumn(2).setMaxWidth(70);
+            jTABSUFA.getColumnModel().getColumn(3).setMinWidth(70);
+            jTABSUFA.getColumnModel().getColumn(3).setMaxWidth(70);
+            jTABSUFA.getColumnModel().getColumn(4).setMinWidth(70);
+            jTABSUFA.getColumnModel().getColumn(4).setMaxWidth(70);
+        }
+
+        jDIAAPAP.getContentPane().add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 66, -1, -1));
+
+        jScrollPane6.setPreferredSize(new java.awt.Dimension(265, 385));
+
+        jLISTFAMI.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jLISTFAMI.setToolTipText("");
+        jLISTFAMI.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLISTFAMIMouseClicked(evt);
+            }
+        });
+        jLISTFAMI.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jLISTFAMIValueChanged(evt);
+            }
+        });
+        jLISTFAMI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jLISTFAMIFocusGained(evt);
+            }
+        });
+        jLISTFAMI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jLISTFAMIKeyPressed(evt);
+            }
+        });
+        jScrollPane6.setViewportView(jLISTFAMI);
+
+        jDIAAPAP.getContentPane().add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 66, -1, -1));
+
+        jDIASTOC.setAlwaysOnTop(true);
+        jDIASTOC.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jDIASTOC.setMinimumSize(new java.awt.Dimension(340, 130));
+        jDIASTOC.setResizable(false);
+        jDIASTOC.setType(java.awt.Window.Type.UTILITY);
+        jDIASTOC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jDIASTOCKeyPressed(evt);
+            }
+        });
+        jDIASTOC.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABICAN.setText("INGRESE CANTIDAD                                           :");
+        jDIASTOC.getContentPane().add(jLABICAN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jTXTFICAN.setText("0");
+        jTXTFICAN.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFICANFocusGained(evt);
+            }
+        });
+        jTXTFICAN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFICANKeyPressed(evt);
+            }
+        });
+        jDIASTOC.getContentPane().add(jTXTFICAN, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 10, 50, -1));
+
+        jLABCEPJ.setText("CANTIDAD DE EJEMPLARES POR JUEGOS :");
+        jDIASTOC.getContentPane().add(jLABCEPJ, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jLABCEPJV.setText("0");
+        jDIASTOC.getContentPane().add(jLABCEPJV, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 40, -1, -1));
+
+        jLABHAGR.setText("HAS AGREGADO                                                  :");
+        jDIASTOC.getContentPane().add(jLABHAGR, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
+
+        jLABHAGRV.setText("0");
+        jDIASTOC.getContentPane().add(jLABHAGRV, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 70, -1, -1));
+
+        jDIABCLI.setMinimumSize(new java.awt.Dimension(470, 350));
+        jDIABCLI.setResizable(false);
+        jDIABCLI.setType(java.awt.Window.Type.UTILITY);
+
+        jLABNOCL.setText("NOMBRE CLIENTE");
+
+        jTXTFBCLI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFBCLIKeyPressed(evt);
+            }
+        });
+
+        jBBCLI.setText("BUSCAR");
+        jBBCLI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBBCLIActionPerformed(evt);
+            }
+        });
+
+        jTABBCLI.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "RUT", "CLIENTE"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTABBCLI.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTABBCLI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTABBCLIKeyPressed(evt);
+            }
+        });
+        jScrollPane4.setViewportView(jTABBCLI);
+        if (jTABBCLI.getColumnModel().getColumnCount() > 0) {
+            jTABBCLI.getColumnModel().getColumn(0).setMinWidth(80);
+            jTABBCLI.getColumnModel().getColumn(0).setMaxWidth(80);
+        }
+
+        jBCEBU.setText("CERRAR");
+        jBCEBU.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBCEBUActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDIABCLILayout = new javax.swing.GroupLayout(jDIABCLI.getContentPane());
+        jDIABCLI.getContentPane().setLayout(jDIABCLILayout);
+        jDIABCLILayout.setHorizontalGroup(
+            jDIABCLILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDIABCLILayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDIABCLILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jDIABCLILayout.createSequentialGroup()
+                        .addGroup(jDIABCLILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jDIABCLILayout.createSequentialGroup()
+                                .addComponent(jLABNOCL)
+                                .addGap(18, 18, 18)
+                                .addComponent(jTXTFBCLI, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jBBCLI))
+                            .addComponent(jBCEBU))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jDIABCLILayout.setVerticalGroup(
+            jDIABCLILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDIABCLILayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDIABCLILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLABNOCL)
+                    .addComponent(jTXTFBCLI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBBCLI))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jBCEBU)
+                .addContainerGap(41, Short.MAX_VALUE))
+        );
+
+        jDIATERM.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        jDIATERM.setAlwaysOnTop(true);
+        jDIATERM.setMinimumSize(new java.awt.Dimension(860, 450));
+        jDIATERM.setResizable(false);
+        jDIATERM.setType(java.awt.Window.Type.UTILITY);
+        jDIATERM.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABTERM2.setText("TERMOLAMINADO");
+        jLABTERM2.setToolTipText("");
+        jDIATERM.getContentPane().add(jLABTERM2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, -1, -1));
+        jDIATERM.getContentPane().add(jSeparator9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 630, 10));
+
+        jLABANTC.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABANTC.setText("ANTECEDENTES DEL TRABAJO Y CLIENTE");
+        jDIATERM.getContentPane().add(jLABANTC, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
+
+        jLABNOLA.setText("NOMBRE LAMINADO");
+        jDIATERM.getContentPane().add(jLABNOLA, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jDIATERM.getContentPane().add(jTXTFNOLA, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 76, 100, -1));
+
+        jLABCAIM.setText("CANTIDAD IMPRESOS");
+        jDIATERM.getContentPane().add(jLABCAIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 105, -1, -1));
+
+        jTXTFCAIM.setText("0");
+        jTXTFCAIM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFCAIMActionPerformed(evt);
+            }
+        });
+        jTXTFCAIM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCAIMKeyTyped(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jTXTFCAIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 101, 80, -1));
+
+        jLABTMON.setText("MONTAJE");
+        jDIATERM.getContentPane().add(jLABTMON, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, -1));
+
+        jTXTFTMON.setText("0");
+        jTXTFTMON.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFTMONActionPerformed(evt);
+            }
+        });
+        jTXTFTMON.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFTMONKeyTyped(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jTXTFTMON, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 126, 80, -1));
+
+        jLABCALA.setText("CANTIDAD A LAMINAR");
+        jDIATERM.getContentPane().add(jLABCALA, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 155, -1, -1));
+
+        jLABVCAL.setText("0");
+        jDIATERM.getContentPane().add(jLABVCAL, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 155, -1, -1));
+
+        jLABLATI.setText("LAMINADO TIRO");
+        jDIATERM.getContentPane().add(jLABLATI, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, -1, -1));
+
+        jTXTFLATI.setText("0");
+        jTXTFLATI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFLATIActionPerformed(evt);
+            }
+        });
+        jTXTFLATI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFLATIKeyTyped(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jTXTFLATI, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 176, 80, -1));
+
+        jLABLARE.setText("LAMINADO RETIRO");
+        jDIATERM.getContentPane().add(jLABLARE, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 205, -1, -1));
+
+        jTXTFLARE.setText("0");
+        jTXTFLARE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFLAREActionPerformed(evt);
+            }
+        });
+        jTXTFLARE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFLAREKeyTyped(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jTXTFLARE, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 201, 80, -1));
+
+        jLABANCO.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABANCO.setText("ANTECEDENTES DEL COSTEO");
+        jDIATERM.getContentPane().add(jLABANCO, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, -1, -1));
+
+        jLABLLTT.setText("LARGO A LAMINAR EN TAMAÑO CMS. DEL TAMAÑO");
+        jDIATERM.getContentPane().add(jLABLLTT, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 255, -1, -1));
+
+        jTXTFLLTT.setText("0");
+        jTXTFLLTT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFLLTTActionPerformed(evt);
+            }
+        });
+        jTXTFLLTT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFLLTTKeyTyped(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jTXTFLLTT, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 251, 80, -1));
+
+        jLABFLET.setText("FLETE");
+        jDIATERM.getContentPane().add(jLABFLET, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 280, -1, -1));
+
+        jCBOXFLET.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXFLET.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXFLETActionPerformed(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jCBOXFLET, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 276, -1, -1));
+
+        jLABLABM.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABLABM.setText("LAMINA BRILLANTE O MATE");
+        jDIATERM.getContentPane().add(jLABLABM, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 305, -1, -1));
+
+        jLABPOLIM.setText("POLIMERO");
+        jDIATERM.getContentPane().add(jLABPOLIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, -1, -1));
+
+        jLABT150.setText("150");
+        jDIATERM.getContentPane().add(jLABT150, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 330, -1, -1));
+
+        jCBOXPOLIM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPOLIM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXPOLIMActionPerformed(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jCBOXPOLIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 326, -1, -1));
+
+        jLABPOLIE.setText("POLIESTER");
+        jDIATERM.getContentPane().add(jLABPOLIE, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 355, -1, -1));
+
+        jLABT300.setText("300");
+        jDIATERM.getContentPane().add(jLABT300, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 355, -1, -1));
+
+        jCBOXPOLIE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPOLIE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXPOLIEActionPerformed(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jCBOXPOLIE, new org.netbeans.lib.awtextra.AbsoluteConstraints(326, 351, -1, -1));
+
+        jBTSAV.setText("GUARDAR");
+        jDIATERM.getContentPane().add(jBTSAV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 380, -1, -1));
+
+        jBTCLR.setText("CANCELAR");
+        jBTCLR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBTCLRActionPerformed(evt);
+            }
+        });
+        jDIATERM.getContentPane().add(jBTCLR, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 380, -1, -1));
+
+        jLABREPO.setText("REPOSICIÓN");
+        jDIATERM.getContentPane().add(jLABREPO, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, -1, -1));
+
+        jCBOXRETE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jDIATERM.getContentPane().add(jCBOXRETE, new org.netbeans.lib.awtextra.AbsoluteConstraints(536, 76, -1, -1));
+        jDIATERM.getContentPane().add(jLABTEMA, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 110, 420, 300));
+
+        jLABMAAC.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABMAAC.setForeground(new java.awt.Color(51, 51, 255));
+        jLABMAAC.setText("MATERIALES/ACTIVIDAD");
+        jDIATERM.getContentPane().add(jLABMAAC, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 115, -1, -1));
+
+        jLABTCAN.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTCAN.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTCAN.setText("CANTIDAD");
+        jDIATERM.getContentPane().add(jLABTCAN, new org.netbeans.lib.awtextra.AbsoluteConstraints(645, 115, -1, -1));
+
+        jLABTVAL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTVAL.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTVAL.setText("VALOR");
+        jDIATERM.getContentPane().add(jLABTVAL, new org.netbeans.lib.awtextra.AbsoluteConstraints(735, 115, -1, -1));
+
+        jLABTTOT.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTTOT.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTTOT.setText("TOTAL");
+        jDIATERM.getContentPane().add(jLABTTOT, new org.netbeans.lib.awtextra.AbsoluteConstraints(805, 115, -1, -1));
+
+        jLABLABR.setText("LAMINA BRILLANTE");
+        jDIATERM.getContentPane().add(jLABLABR, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 135, -1, -1));
+
+        jLABCTLB.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABCTLB.setText("0");
+        jDIATERM.getContentPane().add(jLABCTLB, new org.netbeans.lib.awtextra.AbsoluteConstraints(645, 135, 60, -1));
+
+        jLABVTLB.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTLB.setText("0");
+        jDIATERM.getContentPane().add(jLABVTLB, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 135, 60, -1));
+
+        jLABTTLB.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTLB.setText("0");
+        jDIATERM.getContentPane().add(jLABTTLB, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 135, 60, -1));
+
+        jLABTEMO.setText("TERMOLAMINADO (M.O.)");
+        jDIATERM.getContentPane().add(jLABTEMO, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 155, -1, -1));
+
+        jLABCTMO.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABCTMO.setText("0");
+        jDIATERM.getContentPane().add(jLABCTMO, new org.netbeans.lib.awtextra.AbsoluteConstraints(645, 155, 60, -1));
+
+        jLABVTMO.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTMO.setText("0");
+        jDIATERM.getContentPane().add(jLABVTMO, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 155, 60, -1));
+
+        jLABTTMO.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTMO.setText("0");
+        jDIATERM.getContentPane().add(jLABTTMO, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 155, 60, -1));
+
+        jLABCORE.setText("CORTE Y REFILADO");
+        jDIATERM.getContentPane().add(jLABCORE, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 175, -1, -1));
+
+        jLABCTCR.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABCTCR.setText("0");
+        jDIATERM.getContentPane().add(jLABCTCR, new org.netbeans.lib.awtextra.AbsoluteConstraints(645, 175, 60, -1));
+
+        jLABVTCR.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTCR.setText("1.5");
+        jDIATERM.getContentPane().add(jLABVTCR, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 175, 60, -1));
+
+        jLABTTCR.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTCR.setText("0");
+        jDIATERM.getContentPane().add(jLABTTCR, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 175, 60, -1));
+
+        jLABTST1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTST1.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTST1.setText("SUB-TOTAL 1");
+        jDIATERM.getContentPane().add(jLABTST1, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 195, -1, -1));
+
+        jLABTTS1.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTTS1.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTTS1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTS1.setText("0");
+        jDIATERM.getContentPane().add(jLABTTS1, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 195, 80, -1));
+
+        jLABRELO.setText("RETIRO Y ENTREGA LOCAL");
+        jDIATERM.getContentPane().add(jLABRELO, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 215, -1, -1));
+
+        jLABTTRE.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTRE.setText("1000");
+        jDIATERM.getContentPane().add(jLABTTRE, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 215, 60, -1));
+
+        jLABFACO.setText("FACTURACIÓN Y COBRANZAS");
+        jDIATERM.getContentPane().add(jLABFACO, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 235, -1, -1));
+
+        jLABTTFC.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTFC.setText("0");
+        jDIATERM.getContentPane().add(jLABTTFC, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 235, 60, -1));
+
+        jLABMEIN.setText("MERMAS E INCOBRABILIDAD");
+        jDIATERM.getContentPane().add(jLABMEIN, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 255, -1, -1));
+
+        jLABVTMI.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTMI.setText("4");
+        jDIATERM.getContentPane().add(jLABVTMI, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 255, 60, -1));
+
+        jLABTTMI.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTMI.setText("0");
+        jDIATERM.getContentPane().add(jLABTTMI, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 255, 60, -1));
+
+        jLABCFIN.setText("COSTOS FIJOS INDIRECTOS");
+        jDIATERM.getContentPane().add(jLABCFIN, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 275, -1, -1));
+
+        jLABVTCF.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTCF.setText("25");
+        jDIATERM.getContentPane().add(jLABVTCF, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 275, 60, -1));
+
+        jLABTTCF.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTCF.setText("0");
+        jDIATERM.getContentPane().add(jLABTTCF, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 275, 60, -1));
+
+        jLABTST2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTST2.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTST2.setText("SUB-TOTAL 2");
+        jDIATERM.getContentPane().add(jLABTST2, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 295, -1, -1));
+
+        jLABTTS2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTTS2.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTTS2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTS2.setText("0");
+        jDIATERM.getContentPane().add(jLABTTS2, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 295, 80, -1));
+
+        jLABCPVE.setText("COMISIONES POR VENTAS");
+        jDIATERM.getContentPane().add(jLABCPVE, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 315, -1, -1));
+
+        jLABVTCV.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABVTCV.setText("17");
+        jDIATERM.getContentPane().add(jLABVTCV, new org.netbeans.lib.awtextra.AbsoluteConstraints(715, 315, 60, -1));
+
+        jLABTTCV.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTCV.setText("0");
+        jDIATERM.getContentPane().add(jLABTTCV, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 315, 60, -1));
+
+        jLABTST3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTST3.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTST3.setText("SUB-TOTAL 3");
+        jDIATERM.getContentPane().add(jLABTST3, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 335, -1, -1));
+
+        jLABTTS3.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTTS3.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTTS3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTS3.setText("0");
+        jDIATERM.getContentPane().add(jLABTTS3, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 335, 80, -1));
+
+        jLABUTBR.setText("UTILIDAD BRUTA");
+        jDIATERM.getContentPane().add(jLABUTBR, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 355, -1, -1));
+
+        jLABTTUB.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTUB.setText("20");
+        jDIATERM.getContentPane().add(jLABTTUB, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 355, 60, -1));
+
+        jLABPTCL.setText("PRECIO TOTAL CLIENTE");
+        jDIATERM.getContentPane().add(jLABPTCL, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 375, -1, -1));
+
+        jLABTTPT.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTPT.setText("0");
+        jDIATERM.getContentPane().add(jLABTTPT, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 375, 60, -1));
+
+        jLABPUCL.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABPUCL.setForeground(new java.awt.Color(51, 51, 255));
+        jLABPUCL.setText("PRECIO UNITARIO CLIENTE ");
+        jDIATERM.getContentPane().add(jLABPUCL, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 395, -1, -1));
+
+        jLABTTPU.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABTTPU.setForeground(new java.awt.Color(51, 51, 255));
+        jLABTTPU.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLABTTPU.setText("0");
+        jDIATERM.getContentPane().add(jLABTTPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 395, 80, -1));
+
+        jDIACPXT.setMinimumSize(new java.awt.Dimension(450, 270));
+        jDIACPXT.setResizable(false);
+        jDIACPXT.getContentPane().setLayout(null);
+
+        jLabel1.setText("CORTE PLOTTER X TAMAÑO");
+        jDIACPXT.getContentPane().add(jLabel1);
+        jLabel1.setBounds(10, 20, 170, 14);
+        jDIACPXT.getContentPane().add(jSeparator10);
+        jSeparator10.setBounds(10, 40, 420, 10);
+
+        jLabel2.setText("CANTIDAD");
+        jDIACPXT.getContentPane().add(jLabel2);
+        jLabel2.setBounds(30, 50, 80, 14);
+
+        jLabel3.setText("MONTAJE");
+        jDIACPXT.getContentPane().add(jLabel3);
+        jLabel3.setBounds(30, 80, 80, 14);
+
+        jLabel4.setText("HOJAS");
+        jDIACPXT.getContentPane().add(jLabel4);
+        jLabel4.setBounds(30, 110, 80, 14);
+
+        jLabel5.setText("AREA TAMAÑO HOJA A PLOTEAR");
+        jDIACPXT.getContentPane().add(jLabel5);
+        jLabel5.setBounds(30, 140, 200, 14);
+
+        jTextField1.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField1.setText("0");
+        jTextField1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jDIACPXT.getContentPane().add(jTextField1);
+        jTextField1.setBounds(221, 46, 60, 20);
+
+        jTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField2.setText("0");
+        jDIACPXT.getContentPane().add(jTextField2);
+        jTextField2.setBounds(221, 76, 60, 20);
+
+        jTextField3.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField3.setText("0");
+        jDIACPXT.getContentPane().add(jTextField3);
+        jTextField3.setBounds(221, 106, 60, 20);
+
+        jTextField4.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField4.setText("0");
+        jDIACPXT.getContentPane().add(jTextField4);
+        jTextField4.setBounds(221, 136, 60, 20);
+
+        jTextField5.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField5.setText("0");
+        jDIACPXT.getContentPane().add(jTextField5);
+        jTextField5.setBounds(301, 136, 60, 20);
+
+        jLabel7.setText("X");
+        jDIACPXT.getContentPane().add(jLabel7);
+        jLabel7.setBounds(290, 140, 10, 14);
+
+        jLabel8.setText("MAXIMO TAMAÑO DE PAPEL 60 X 73 cms.");
+        jDIACPXT.getContentPane().add(jLabel8);
+        jLabel8.setBounds(220, 170, 230, 14);
+
+        jButton1.setText("ACEPTAR");
+        jDIACPXT.getContentPane().add(jButton1);
+        jButton1.setBounds(221, 196, 100, 23);
+
+        jButton2.setText("CANCELAR");
+        jDIACPXT.getContentPane().add(jButton2);
+        jButton2.setBounds(321, 196, 100, 23);
+
+        jDIAIDUC.setMinimumSize(new java.awt.Dimension(320, 400));
+        jDIAIDUC.setResizable(false);
+        jDIAIDUC.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABTDUC.setText("DIGITAL UN COLOR");
+        jDIAIDUC.getContentPane().add(jLABTDUC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, -1, -1));
+
+        jLABPANF.setText("PAGINABLE (NO FORMULARIO)");
+        jDIAIDUC.getContentPane().add(jLABPANF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jLABIMDT.setText("IMPRESIONES DIGITAL TIRO");
+        jDIAIDUC.getContentPane().add(jLABIMDT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
+
+        jLABIMDR.setText("IMPRESIONES DIGITAL RETIRO");
+        jDIAIDUC.getContentPane().add(jLABIMDR, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        jLABIMDU.setText("IMPRESION DUPLO");
+        jDIAIDUC.getContentPane().add(jLABIMDU, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
+
+        jLABIMTI.setText("IMPRESION TIPOGRAFICA");
+        jDIAIDUC.getContentPane().add(jLABIMTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, -1));
+
+        jLABCAMA.setText("CANTIDAD MATRICES");
+        jDIAIDUC.getContentPane().add(jLABCAMA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
+
+        jLABCAAP.setText("CANTIDAD ARTES PAGINABLES");
+        jDIAIDUC.getContentPane().add(jLABCAAP, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, -1, -1));
+
+        jLABAFUO.setText("ARTES FORMULARIOS U OTROS");
+        jDIAIDUC.getContentPane().add(jLABAFUO, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, -1, -1));
+
+        jCBOXPANF.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jDIAIDUC.getContentPane().add(jCBOXPANF, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 40, -1, -1));
+
+        jTXTFIMDT.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFIMDT, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 70, 50, -1));
+
+        jTXTFIMDR.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFIMDR, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 100, 50, -1));
+
+        jTXTFIMDU.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFIMDU, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 50, -1));
+
+        jTXTFIMTI.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFIMTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 160, 50, -1));
+
+        jTXTFCAMA.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFCAMA, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 190, 50, -1));
+
+        jTXTFCAAP.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFCAAP, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, 50, -1));
+
+        jTXTFAFUO.setText("0");
+        jDIAIDUC.getContentPane().add(jTXTFAFUO, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 250, 50, -1));
+
+        jButton7.setText("ACEPTAR");
+        jDIAIDUC.getContentPane().add(jButton7, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, -1, -1));
+
+        jButton8.setText("CANCELAR");
+        jDIAIDUC.getContentPane().add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 290, -1, -1));
+        jDIAIDUC.getContentPane().add(jSeparator12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 25, 310, 10));
+
+        jDIATAAU.setMinimumSize(new java.awt.Dimension(600, 300));
+        jDIATAAU.setResizable(false);
+        jDIATAAU.getContentPane().setLayout(null);
+
+        jScrollPane8.setMaximumSize(new java.awt.Dimension(570, 250));
+        jScrollPane8.setMinimumSize(new java.awt.Dimension(570, 250));
+        jScrollPane8.setPreferredSize(new java.awt.Dimension(570, 250));
+
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "CODIGO", "DESCRIPCION", "VALOR"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable2.setMaximumSize(new java.awt.Dimension(540, 220));
+        jTable2.setMinimumSize(new java.awt.Dimension(540, 220));
+        jTable2.setPreferredSize(new java.awt.Dimension(540, 220));
+        jTable2.getTableHeader().setReorderingAllowed(false);
+        jScrollPane8.setViewportView(jTable2);
+
+        jDIATAAU.getContentPane().add(jScrollPane8);
+        jScrollPane8.setBounds(10, 11, 570, 250);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cotizador");
+        setBackground(new java.awt.Color(255, 255, 255));
+        setMaximumSize(new java.awt.Dimension(1920, 1080));
+        setMinimumSize(new java.awt.Dimension(960, 600));
+        setPreferredSize(new java.awt.Dimension(960, 600));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+
+        jPanel1.setBackground(new java.awt.Color(241, 138, 0));
+        jPanel1.setMaximumSize(new java.awt.Dimension(1920, 1080));
+        jPanel1.setMinimumSize(new java.awt.Dimension(600, 400));
+        jPanel1.setRequestFocusEnabled(false);
+        jPanel1.setLayout(null);
+
+        jBCACO.setText("Cambiar Contraseña");
+        jBCACO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBCACOActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jBCACO);
+        jBCACO.setBounds(770, 20, 160, 23);
+
+        jLABLOGO1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Logo_Principal.png"))); // NOI18N
+        jPanel1.add(jLABLOGO1);
+        jLABLOGO1.setBounds(560, 0, 390, 400);
+
+        jPanel2.setBackground(new java.awt.Color(0, 51, 255));
+        jPanel2.setMinimumSize(new java.awt.Dimension(600, 400));
+
+        jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTabbedPane1MouseClicked(evt);
+            }
+        });
+        jTabbedPane1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTabbedPane1KeyPressed(evt);
+            }
+        });
+
+        Antecedentes.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABRCLI.setText("RUT CLIENTE");
+        Antecedentes.add(jLABRCLI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 86, -1));
+
+        jTXTFRCLI.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTXTFRCLI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFRCLIActionPerformed(evt);
+            }
+        });
+        jTXTFRCLI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFRCLIFocusGained(evt);
+            }
+        });
+        jTXTFRCLI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFRCLIKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFRCLIKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFRCLI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 31, 100, -1));
+
+        jLABNCLI.setText("NOMBRE CLIENTE");
+        Antecedentes.add(jLABNCLI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+
+        jLABNIMP.setText("NOMBRE DEL IMPRESO");
+        Antecedentes.add(jLABNIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 135, -1, -1));
+
+        jLABTCOM.setText("TIPO DE COMISIÓN");
+        Antecedentes.add(jLABTCOM, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 165, -1, -1));
+
+        jLABCANT.setText("CANTIDAD");
+        Antecedentes.add(jLABCANT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 195, -1, -1));
+
+        jLABTIMP.setText("TIPO DE IMPRESION");
+        Antecedentes.add(jLABTIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 225, -1, -1));
+
+        jLABNJUE.setText("NUMERO DE JUEGOS");
+        Antecedentes.add(jLABNJUE, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 255, -1, -1));
+
+        jLABNEJE.setText("NUMERO DE EJEMPLARES");
+        Antecedentes.add(jLABNEJE, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 285, -1, -1));
+
+        jTXTFNIMP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFNIMPActionPerformed(evt);
+            }
+        });
+        jTXTFNIMP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFNIMPFocusGained(evt);
+            }
+        });
+        jTXTFNIMP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFNIMPKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFNIMPKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFNIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 131, 645, -1));
+
+        jCBOXTCOM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NORMAL", "1%", "2%" }));
+        jCBOXTCOM.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jCBOXTCOM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXTCOMActionPerformed(evt);
+            }
+        });
+        jCBOXTCOM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTCOMKeyPressed(evt);
+            }
+        });
+        Antecedentes.add(jCBOXTCOM, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 161, 100, -1));
+
+        jTXTFCANT.setText("0");
+        jTXTFCANT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFCANTActionPerformed(evt);
+            }
+        });
+        jTXTFCANT.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCANTFocusGained(evt);
+            }
+        });
+        jTXTFCANT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCANTKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCANTKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFCANT, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 191, 100, -1));
+
+        jCBOXTIMP.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "BLOCK NORMAL", "BLOCK TRIBUTARIO", "CALENDARIOS MURAL CON HOJAS", "CARPETAS CON FUELLE", "CORTE PAPEL", "LIBRETA - BLOCK APUNTES", "PLEGABLES, VOLANTES Y AFICHES", "SOBRE Y ADHESIVOS", "TACOS", "TALONARIO NORMAL", "TALONARIO TRIBUTARIO", "TARJETAS DE PRESENTACION", "UNIDADES - DIGITALES" }));
+        jCBOXTIMP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXTIMPActionPerformed(evt);
+            }
+        });
+        jCBOXTIMP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTIMPKeyPressed(evt);
+            }
+        });
+        Antecedentes.add(jCBOXTIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 221, 345, -1));
+
+        jTXTFNJUE.setText("0");
+        jTXTFNJUE.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFNJUEFocusGained(evt);
+            }
+        });
+        jTXTFNJUE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFNJUEKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFNJUEKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFNJUE, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 251, 100, -1));
+
+        jLABCMOD.setText("CANTIDAD DE MODELOS");
+        Antecedentes.add(jLABCMOD, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 225, -1, -1));
+
+        jTXTFCMOD.setText("1");
+        jTXTFCMOD.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCMODFocusGained(evt);
+            }
+        });
+        jTXTFCMOD.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCMODKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCMODKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFCMOD, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 221, 100, -1));
+
+        jTXTFNEJE.setText("0");
+        jTXTFNEJE.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFNEJEFocusGained(evt);
+            }
+        });
+        jTXTFNEJE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFNEJEKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFNEJEKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFNEJE, new org.netbeans.lib.awtextra.AbsoluteConstraints(167, 281, 100, -1));
+
+        jBCEIC.setText("CERRAR INFORME DE COSTO");
+        jBCEIC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBCEICActionPerformed(evt);
+            }
+        });
+        Antecedentes.add(jBCEIC, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 325, -1, -1));
+
+        jBBUCL.setText("BUSQUEDA CLIENTE");
+        jBBUCL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBBUCLActionPerformed(evt);
+            }
+        });
+        Antecedentes.add(jBBUCL, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 31, -1, -1));
+
+        jBCLNU.setText("CLIENTE NUEVO");
+        Antecedentes.add(jBCLNU, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 31, -1, -1));
+
+        jBLIPI.setText("LISTA DE PRECIOS INTERMEDIOS");
+        jBLIPI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBLIPIActionPerformed(evt);
+            }
+        });
+        Antecedentes.add(jBLIPI, new org.netbeans.lib.awtextra.AbsoluteConstraints(585, 31, -1, -1));
+
+        jLABEJEM.setText("EJEMPLO 79638870-6 (*)");
+        Antecedentes.add(jLABEJEM, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 35, -1, -1));
+
+        jTXTFNCLI.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFNCLIActionPerformed(evt);
+            }
+        });
+        jTXTFNCLI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFNCLIFocusGained(evt);
+            }
+        });
+        jTXTFNCLI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFNCLIKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFNCLIKeyTyped(evt);
+            }
+        });
+        Antecedentes.add(jTXTFNCLI, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 81, 800, -1));
+
+        jCBOXRECO.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SI", "NO" }));
+        jCBOXRECO.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jCBOXRECO.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXRECOActionPerformed(evt);
+            }
+        });
+        jCBOXRECO.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXRECOKeyPressed(evt);
+            }
+        });
+        Antecedentes.add(jCBOXRECO, new org.netbeans.lib.awtextra.AbsoluteConstraints(287, 161, 100, -1));
+
+        jTabbedPane1.addTab("Antecedentes", Antecedentes);
+
+        PreprensaPrensa.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABCDS.setText("CANTIDAD DE DISEÑOS SIMPLES");
+        PreprensaPrensa.add(jLABCDS, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jCBOXCDS.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCDS.setSelectedIndex(1);
+        jCBOXCDS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXCDSActionPerformed(evt);
+            }
+        });
+        jCBOXCDS.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCDSKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCDS, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 6, -1, -1));
+
+        jLABSIMP.setText("SIMPLE");
+        PreprensaPrensa.add(jLABSIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 10, -1, -1));
+
+        jTXTFSIMP.setText("0");
+        jTXTFSIMP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFSIMPFocusGained(evt);
+            }
+        });
+        jTXTFSIMP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFSIMPKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFSIMPKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFSIMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 6, 50, -1));
+
+        jLABDVC.setText("DISEÑOS VOLANTES CARPETAS");
+        PreprensaPrensa.add(jLABDVC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 35, -1, -1));
+
+        jCBOXDVC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXDVC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXDVCActionPerformed(evt);
+            }
+        });
+        jCBOXDVC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXDVCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXDVC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 31, -1, -1));
+
+        jLABESPC.setText("ESPECIAL");
+        PreprensaPrensa.add(jLABESPC, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 35, -1, -1));
+
+        jTXTFESPE.setText("0");
+        jTXTFESPE.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFESPEFocusGained(evt);
+            }
+        });
+        jTXTFESPE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFESPEKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFESPE, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 31, 50, -1));
+
+        jLABDVPC.setText("DISEÑOS VOLANTES PLEGABLES CARPETA TIRO/RETIRO");
+        PreprensaPrensa.add(jLABDVPC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, -1, -1));
+
+        jCBOXDVPC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXDVPC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXDVPCActionPerformed(evt);
+            }
+        });
+        jCBOXDVPC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXDVPCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXDVPC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 56, -1, -1));
+
+        jLABEXTR.setText("EXTRA");
+        PreprensaPrensa.add(jLABEXTR, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 60, -1, -1));
+
+        jTXTFEXTR.setText("0");
+        jTXTFEXTR.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFEXTRFocusGained(evt);
+            }
+        });
+        jTXTFEXTR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFEXTRKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFEXTR, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 56, 50, -1));
+
+        jLABDPOC.setText("DISEÑO PENDONES U OTROS COMPLEJOS");
+        PreprensaPrensa.add(jLABDPOC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 85, -1, -1));
+
+        jCBOXDPOC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXDPOC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXDPOCActionPerformed(evt);
+            }
+        });
+        jCBOXDPOC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXDPOCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXDPOC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 81, -1, -1));
+
+        jLABCOMP.setText("COMPLEJA");
+        PreprensaPrensa.add(jLABCOMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 85, -1, -1));
+
+        jTXTFCOMP.setText("0");
+        jTXTFCOMP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCOMPFocusGained(evt);
+            }
+        });
+        jTXTFCOMP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCOMPKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFCOMP, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 81, 50, -1));
+
+        jLABCAUA.setText("CLIENTE APRUEBA ARTE");
+        PreprensaPrensa.add(jLABCAUA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, -1, -1));
+
+        jCBOXCAUA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCAUA.setSelectedIndex(1);
+        jCBOXCAUA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCAUAKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCAUA, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 106, -1, -1));
+
+        jLABCAOA.setText("CLIENTE APORTA ARTE");
+        PreprensaPrensa.add(jLABCAOA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 135, -1, -1));
+
+        jCBOXCAOA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCAOA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCAOAKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCAOA, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 131, -1, -1));
+
+        jLABCMCC.setText("CANT. MUESTRAS COLOR CALIBRADAS");
+        PreprensaPrensa.add(jLABCMCC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, -1));
+
+        jTXTFCMCC.setText("0");
+        jTXTFCMCC.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCMCCFocusGained(evt);
+            }
+        });
+        jTXTFCMCC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCMCCKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCMCCKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFCMCC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 156, 50, -1));
+
+        jLABCUAT.setText("CUATRICOMIA");
+        PreprensaPrensa.add(jLABCUAT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 185, -1, -1));
+
+        jCBOXCUAT.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCUAT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXCUATActionPerformed(evt);
+            }
+        });
+        jCBOXCUAT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCUATKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCUAT, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 181, -1, -1));
+
+        jLABCCOL.setText("CANTIDAD DE COLORES");
+        PreprensaPrensa.add(jLABCCOL, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, -1, -1));
+
+        jTXTFCCOL.setText("0");
+        jTXTFCCOL.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCCOLFocusGained(evt);
+            }
+        });
+        jTXTFCCOL.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCCOLKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCCOLKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFCCOL, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 206, 50, -1));
+
+        jLABCTIN.setText("COLOR DE TINTA");
+        PreprensaPrensa.add(jLABCTIN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 235, -1, -1));
+
+        jCBOXCTIN.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PANTONE", "NORMAL" }));
+        jCBOXCTIN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCTINKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCTIN, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 231, -1, -1));
+
+        jLABPO1C.setText("PRENSA OFFSET 1 COLOR");
+        PreprensaPrensa.add(jLABPO1C, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 260, -1, -1));
+
+        jCBOXPO1C.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPO1C.setSelectedIndex(1);
+        jCBOXPO1C.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXPO1CActionPerformed(evt);
+            }
+        });
+        jCBOXPO1C.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPO1CKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPO1C, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 256, -1, -1));
+
+        jLABPO2C.setText("PRENSA OFFSET 2 COLOR");
+        PreprensaPrensa.add(jLABPO2C, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 285, -1, -1));
+
+        jCBOXPO2C.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPO2C.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXPO2CActionPerformed(evt);
+            }
+        });
+        jCBOXPO2C.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPO2CKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPO2C, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 281, -1, -1));
+
+        jCBOXGTSM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "GTO - Z", "S.M. 74" }));
+        jCBOXGTSM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXGTSMKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXGTSM, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 281, -1, -1));
+
+        jLABPO4C.setText("PRENSA OFFSET 4 COLOR");
+        PreprensaPrensa.add(jLABPO4C, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, -1, -1));
+
+        jCBOXPO4C.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPO4C.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXPO4CActionPerformed(evt);
+            }
+        });
+        jCBOXPO4C.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPO4CKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPO4C, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 306, -1, -1));
+
+        jCBOXPMSM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "P.M. 52", "S.M. 74" }));
+        jCBOXPMSM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPMSMKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPMSM, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 306, -1, -1));
+
+        jLABIDTC.setText("IMPRESORA DIGITAL A TODO COLOR");
+        PreprensaPrensa.add(jLABIDTC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 335, -1, -1));
+
+        jCBOXIDTC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXIDTC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXIDTCActionPerformed(evt);
+            }
+        });
+        jCBOXIDTC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXIDTCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXIDTC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 331, -1, -1));
+
+        jCBOXUCTC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UN COLOR", "TODO COLOR" }));
+        jCBOXUCTC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXUCTCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXUCTC, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 331, -1, -1));
+
+        jLABIDUC.setText("IMPRESORA DIGITAL A UN COLOR(RISSO)");
+        PreprensaPrensa.add(jLABIDUC, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 360, -1, -1));
+
+        jCBOXIDUC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXIDUC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXIDUCActionPerformed(evt);
+            }
+        });
+        jCBOXIDUC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXIDUCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXIDUC, new org.netbeans.lib.awtextra.AbsoluteConstraints(345, 356, -1, -1));
+
+        jLABIOTI.setText("IMPRESIONES OFFSET TIRO");
+        PreprensaPrensa.add(jLABIOTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 10, -1, -1));
+
+        jTXTFIOTI.setText("0");
+        jTXTFIOTI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFIOTIFocusGained(evt);
+            }
+        });
+        jTXTFIOTI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFIOTIKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFIOTIKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFIOTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 6, 50, -1));
+
+        jLABIORE.setText("IMPRESIONES OFFSET RETIRO");
+        PreprensaPrensa.add(jLABIORE, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 35, -1, -1));
+
+        jTXTFIORE.setText("0");
+        jTXTFIORE.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFIOREFocusGained(evt);
+            }
+        });
+        jTXTFIORE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFIOREKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFIOREKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFIORE, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 31, 50, -1));
+
+        jLABITTI.setText("IMPRESIONES TIPOGRAFIA TIRO");
+        PreprensaPrensa.add(jLABITTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 60, -1, -1));
+
+        jTXTFITTI.setText("0");
+        jTXTFITTI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFITTIFocusGained(evt);
+            }
+        });
+        jTXTFITTI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFITTIKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFITTIKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFITTI, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 56, 50, -1));
+
+        jLABITRE.setText("IMPRESIONES TIPOGRAFIA RETIRO");
+        PreprensaPrensa.add(jLABITRE, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 85, -1, -1));
+
+        jTXTFITRE.setText("0");
+        jTXTFITRE.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFITREFocusGained(evt);
+            }
+        });
+        jTXTFITRE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFITREKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFITREKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFITRE, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 81, 50, -1));
+
+        jLABPMOL.setText("POLIMERO, MOLDE");
+        PreprensaPrensa.add(jLABPMOL, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 110, -1, -1));
+
+        jCBOXPMOL.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPMOL.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPMOLKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPMOL, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 106, -1, -1));
+
+        jLABTCMT.setText("TROQUEL, CUÑO, MOLDE, PARA MAQ. TIPOGRAFICA");
+        PreprensaPrensa.add(jLABTCMT, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 135, -1, -1));
+
+        jCBOXTCMT.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXTCMT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXTCMTActionPerformed(evt);
+            }
+        });
+        jCBOXTCMT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTCMTKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXTCMT, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 131, -1, -1));
+
+        jLABEUSA.setText("¿ES USADO?");
+        PreprensaPrensa.add(jLABEUSA, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 160, -1, -1));
+
+        jCBOXEUSA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXEUSA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXEUSAKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXEUSA, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 156, -1, -1));
+
+        jLABTBCP.setText("TROQUELADORA (BOLSAS, CARPETAS, PLEGABLES, OTROS)");
+        PreprensaPrensa.add(jLABTBCP, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 185, -1, -1));
+
+        jCBOXTBCP.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXTBCP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTBCPKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXTBCP, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 181, -1, -1));
+
+        jLABFTCA.setText("FONDO TRIBUTARIO SII O COPIAS ADICIONALES");
+        PreprensaPrensa.add(jLABFTCA, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 210, -1, -1));
+
+        jCBOXFTCA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXFTCA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXFTCAKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXFTCA, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 206, -1, -1));
+
+        jLABFLLE.setText("FONDO LLENO");
+        PreprensaPrensa.add(jLABFLLE, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 235, -1, -1));
+
+        jCBOXFLLE.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXFLLE.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXFLLEKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXFLLE, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 231, -1, -1));
+
+        jLABBOFF.setText("BARNIZ OFFSET");
+        PreprensaPrensa.add(jLABBOFF, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 260, -1, -1));
+
+        jCBOXBOFF.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXBOFF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXBOFFActionPerformed(evt);
+            }
+        });
+        jCBOXBOFF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXBOFFKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXBOFF, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 256, -1, -1));
+
+        jLABTRAM.setText("TIRO, RETIRO, AMBAS");
+        PreprensaPrensa.add(jLABTRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 285, -1, -1));
+
+        jCBOXTRAM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TIRO (ANVERSO)", "RETIRO (REVERSO)", "AMBOS" }));
+        jCBOXTRAM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTRAMKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXTRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(785, 281, -1, -1));
+
+        jLABTIND.setText("TINTA INDELEBLE");
+        PreprensaPrensa.add(jLABTIND, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 310, -1, -1));
+
+        jCBOXTIND.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXTIND.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTINDKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXTIND, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 306, -1, -1));
+
+        jLABCPCTP.setText("CANTIDAD PLANCHAS CTP");
+        PreprensaPrensa.add(jLABCPCTP, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 335, -1, -1));
+
+        jTXTFCPCTP.setText("0");
+        jTXTFCPCTP.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCPCTPFocusGained(evt);
+            }
+        });
+        jTXTFCPCTP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCPCTPKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFCPCTPKeyTyped(evt);
+            }
+        });
+        PreprensaPrensa.add(jTXTFCPCTP, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 331, 50, -1));
+
+        jLABPARC.setText("PLANCHA ARCHIVO");
+        PreprensaPrensa.add(jLABPARC, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 360, -1, -1));
+
+        jCBOXPARC.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXPARC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXPARCKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXPARC, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 356, -1, -1));
+
+        jLABCAPP.setText("CLIENTE APORTA PAPEL O PRE-IMPRESO");
+        PreprensaPrensa.add(jLABCAPP, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 385, -1, -1));
+
+        jCBOXCAPP.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCAPP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCAPPKeyPressed(evt);
+            }
+        });
+        PreprensaPrensa.add(jCBOXCAPP, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 381, -1, -1));
+
+        jTabbedPane1.addTab("Preprensa - Prensa", PreprensaPrensa);
+
+        MontajePapelesCorte.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABMONT.setText("MONTAJE");
+        MontajePapelesCorte.add(jLABMONT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jTXTFMONT.setText("0");
+        jTXTFMONT.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFMONTFocusGained(evt);
+            }
+        });
+        jTXTFMONT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFMONTKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFMONTKeyTyped(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFMONT, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 6, 100, -1));
+
+        jLABTAIM.setText("TAMAÑO A IMPRIMIR");
+        MontajePapelesCorte.add(jLABTAIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jTXTFTAIM.setText("0");
+        jTXTFTAIM.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        jTXTFTAIM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFTAIMActionPerformed(evt);
+            }
+        });
+        jTXTFTAIM.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFTAIMFocusGained(evt);
+            }
+        });
+        jTXTFTAIM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFTAIMKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFTAIMKeyTyped(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFTAIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 36, 100, -1));
+
+        jLABMDTA.setText("MEDIDA DEL TAMAÑO");
+        MontajePapelesCorte.add(jLABMDTA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
+
+        jTXTFMTAMX.setText("0.0");
+        jTXTFMTAMX.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFMTAMXFocusGained(evt);
+            }
+        });
+        jTXTFMTAMX.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFMTAMXKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFMTAMXKeyTyped(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFMTAMX, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 66, 100, -1));
+
+        jLABMDTX.setText("X");
+        MontajePapelesCorte.add(jLABMDTX, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 70, -1, -1));
+
+        jTXTFMTAMY.setText("0.0");
+        jTXTFMTAMY.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFMTAMYFocusGained(evt);
+            }
+        });
+        jTXTFMTAMY.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFMTAMYKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTXTFMTAMYKeyTyped(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFMTAMY, new org.netbeans.lib.awtextra.AbsoluteConstraints(266, 66, 100, -1));
+
+        jLABMDPL.setText("MEDIDA DEL PLIEGO");
+        MontajePapelesCorte.add(jLABMDPL, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        jCBOXMDP.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jCBOXMDPMouseClicked(evt);
+            }
+        });
+        jCBOXMDP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXMDPActionPerformed(evt);
+            }
+        });
+        jCBOXMDP.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXMDPKeyPressed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jCBOXMDP, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 96, 100, -1));
+
+        jLABSALE.setText("SALEN");
+        MontajePapelesCorte.add(jLABSALE, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
+
+        jLABSAVA.setText("0");
+        MontajePapelesCorte.add(jLABSAVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 130, -1, -1));
+
+        jLABSOBR.setText("SOBRANTES");
+        MontajePapelesCorte.add(jLABSOBR, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, -1));
+
+        jLABSOVA.setText("0");
+        jLABSOVA.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                jLABSOVAInputMethodTextChanged(evt);
+            }
+        });
+        jLABSOVA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jLABSOVAKeyTyped(evt);
+            }
+        });
+        MontajePapelesCorte.add(jLABSOVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 160, -1, -1));
+
+        jTXTFSOVA.setText("0");
+        jTXTFSOVA.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFSOVAFocusGained(evt);
+            }
+        });
+        jTXTFSOVA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFSOVAKeyPressed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFSOVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(176, 156, 50, -1));
+
+        jLABSOOT.setText("SOBRANTES OT");
+        MontajePapelesCorte.add(jLABSOOT, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, -1, -1));
+
+        jLABSTVA.setText("0");
+        MontajePapelesCorte.add(jLABSTVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 160, -1, -1));
+
+        jTXTFSTVA.setText("0");
+        jTXTFSTVA.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFSTVAFocusGained(evt);
+            }
+        });
+        jTXTFSTVA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFSTVAKeyPressed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jTXTFSTVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(386, 156, 50, -1));
+
+        jLABTSOB.setText("TIPO SOBRANTE");
+        MontajePapelesCorte.add(jLABTSOB, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 190, -1, -1));
+        MontajePapelesCorte.add(jLABTSVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 190, -1, -1));
+
+        jLABTDPA.setText("TIPO DE PAPEL");
+        MontajePapelesCorte.add(jLABTDPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 220, -1, -1));
+
+        jCBOXTDPA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TABLA AUTOCOPIADO", "LISTA DE PRECIOS" }));
+        jCBOXTDPA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXTDPAActionPerformed(evt);
+            }
+        });
+        jCBOXTDPA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXTDPAKeyPressed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jCBOXTDPA, new org.netbeans.lib.awtextra.AbsoluteConstraints(136, 216, -1, -1));
+
+        jLABCSN.setText("CORTE S/N");
+        MontajePapelesCorte.add(jLABCSN, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 220, -1, -1));
+
+        jCBOXCSN.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCSN.setSelectedIndex(1);
+        jCBOXCSN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCSNKeyPressed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jCBOXCSN, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 216, -1, -1));
+
+        jLISTEQUI.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jLISTEQUI.setToolTipText("");
+        jLISTEQUI.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                jLISTEQUIValueChanged(evt);
+            }
+        });
+        jLISTEQUI.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jLISTEQUIFocusGained(evt);
+            }
+        });
+        jLISTEQUI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jLISTEQUIKeyPressed(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jLISTEQUI);
+
+        MontajePapelesCorte.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(376, 6, 250, 116));
+
+        jLABTERM.setText("TERMOLAMINADO");
+        MontajePapelesCorte.add(jLABTERM, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 10, -1, -1));
+
+        jCBOXTERM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXTERM.setEnabled(false);
+        jCBOXTERM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXTERMActionPerformed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jCBOXTERM, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 6, -1, -1));
+
+        jLABSBUV.setText("SERIGRAFIA - BARNIZ UV");
+        MontajePapelesCorte.add(jLABSBUV, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 40, -1, -1));
+
+        jCBOXSBUV.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXSBUV.setEnabled(false);
+        MontajePapelesCorte.add(jCBOXSBUV, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 36, -1, -1));
+
+        jLABCPXT.setText("CORTE PLOTTER X TAMAÑO");
+        MontajePapelesCorte.add(jLABCPXT, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 70, -1, -1));
+
+        jCBOXCPXT.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCPXT.setEnabled(false);
+        jCBOXCPXT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXCPXTActionPerformed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jCBOXCPXT, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 66, -1, -1));
+
+        jLABCPML.setText("CORTE PLOTTER METRO LINEAL");
+        MontajePapelesCorte.add(jLABCPML, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 100, -1, -1));
+
+        jCBOXCPML.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCPML.setEnabled(false);
+        MontajePapelesCorte.add(jCBOXCPML, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 96, -1, -1));
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(910, 160));
+
+        jTABMONT.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "CODIGO", "DESCRIPCION", "VALOR", "CANT.", "NUEVA CANT."
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTABMONT.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTABMONT.getTableHeader().setReorderingAllowed(false);
+        jTABMONT.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTABMONTMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTABMONT);
+        if (jTABMONT.getColumnModel().getColumnCount() > 0) {
+            jTABMONT.getColumnModel().getColumn(0).setMinWidth(60);
+            jTABMONT.getColumnModel().getColumn(0).setMaxWidth(60);
+            jTABMONT.getColumnModel().getColumn(2).setMinWidth(80);
+            jTABMONT.getColumnModel().getColumn(2).setMaxWidth(80);
+            jTABMONT.getColumnModel().getColumn(3).setMinWidth(60);
+            jTABMONT.getColumnModel().getColumn(3).setMaxWidth(60);
+            jTABMONT.getColumnModel().getColumn(4).setMinWidth(80);
+            jTABMONT.getColumnModel().getColumn(4).setMaxWidth(80);
+        }
+        jTABMONT.getAccessibleContext().setAccessibleDescription("");
+
+        MontajePapelesCorte.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 250, -1, -1));
+
+        jBAP.setText("AGREGAR PAPEL");
+        jBAP.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBAPActionPerformed(evt);
+            }
+        });
+        MontajePapelesCorte.add(jBAP, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 416, -1, -1));
+
+        jTabbedPane1.addTab("Montaje - Papeles - Corte", MontajePapelesCorte);
+
+        Encuadernacion.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABNFXF.setText("N° FOLIOS X FORMULARIO");
+        Encuadernacion.add(jLABNFXF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jTXTFNFXF.setText("0");
+        jTXTFNFXF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFNFXFActionPerformed(evt);
+            }
+        });
+        jTXTFNFXF.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFNFXFFocusGained(evt);
+            }
+        });
+        jTXTFNFXF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFNFXFKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jTXTFNFXF, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 6, 50, -1));
+
+        jLABFAOC.setText("FOLIADORA A OCUPAR");
+        Encuadernacion.add(jLABFAOC, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, -1, -1));
+
+        jLABFAOVA.setText("0");
+        Encuadernacion.add(jLABFAOVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, -1, -1));
+
+        jLABCITR.setText("CINTA TRANSFERIBLE");
+        Encuadernacion.add(jLABCITR, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 10, -1, -1));
+
+        jCBOXCITR.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCITR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCITRKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCITR, new org.netbeans.lib.awtextra.AbsoluteConstraints(746, 6, -1, -1));
+
+        jLABASN.setText("ALZADO S/N");
+        Encuadernacion.add(jLABASN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jCBOXASN.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXASN.setSelectedIndex(1);
+        jCBOXASN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXASNKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXASN, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 36, -1, -1));
+
+        jLABMPEN.setText("MONTAJE PARA ENCUADERNACION");
+        Encuadernacion.add(jLABMPEN, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 40, -1, -1));
+
+        jTXTFMPEN.setText("0");
+        jTXTFMPEN.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFMPENFocusGained(evt);
+            }
+        });
+        jTXTFMPEN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFMPENKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jTXTFMPEN, new org.netbeans.lib.awtextra.AbsoluteConstraints(466, 36, 50, -1));
+
+        jLABCABO.setText("CALCULO ANILLO BOBINA");
+        Encuadernacion.add(jLABCABO, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 40, -1, -1));
+
+        jCBOXCABO.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCABO.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCABOKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCABO, new org.netbeans.lib.awtextra.AbsoluteConstraints(746, 36, -1, -1));
+
+        jLABCOSN.setText("CORCHETEADO S/N");
+        Encuadernacion.add(jLABCOSN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
+
+        jCBOXCOSN.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCOSN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCOSNKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCOSN, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 66, -1, -1));
+
+        jLABCRDU.setText("CALCULO REFUERZOS DUPLEX");
+        Encuadernacion.add(jLABCRDU, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 70, -1, -1));
+
+        jCBOXCRDU.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCRDU.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCRDUKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCRDU, new org.netbeans.lib.awtextra.AbsoluteConstraints(746, 66, -1, -1));
+
+        jLABCAPR.setText("CAJAS PRESENTACION");
+        Encuadernacion.add(jLABCAPR, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        jCBOXCAPR.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCAPR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXCAPRActionPerformed(evt);
+            }
+        });
+        jCBOXCAPR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCAPRKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCAPR, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 96, -1, -1));
+
+        jLABCCDT.setText("CANT. CAJAS DE TARJETAS");
+        Encuadernacion.add(jLABCCDT, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, -1, -1));
+
+        jTXTFCCDT.setText("0");
+        jTXTFCCDT.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFCCDTFocusGained(evt);
+            }
+        });
+        jTXTFCCDT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFCCDTKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jTXTFCCDT, new org.netbeans.lib.awtextra.AbsoluteConstraints(466, 96, 50, -1));
+
+        jLABCACO.setText("CALCULO CORDON");
+        Encuadernacion.add(jLABCACO, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 100, -1, -1));
+
+        jCBOXCACO.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXCACO.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXCACOKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXCACO, new org.netbeans.lib.awtextra.AbsoluteConstraints(746, 96, -1, -1));
+
+        jLABOTEN.setText("OTROS ENCUADERNACION");
+        Encuadernacion.add(jLABOTEN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, -1));
+
+        jCBOXOTEN.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXOTEN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXOTENKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXOTEN, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 126, -1, -1));
+
+        jLABFSIM.setText("FUELLE SIN IMPRESION");
+        Encuadernacion.add(jLABFSIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 130, -1, -1));
+
+        jCBOXFSIM.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXFSIM.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXFSIMKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXFSIM, new org.netbeans.lib.awtextra.AbsoluteConstraints(746, 126, -1, -1));
+
+        jLABOTVA.setText("OTROS VALORES");
+        Encuadernacion.add(jLABOTVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, -1));
+
+        jCBOXOTVA.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXOTVA.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXOTVAKeyPressed(evt);
+            }
+        });
+        Encuadernacion.add(jCBOXOTVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(186, 156, -1, -1));
+
+        jScrollPane3.setPreferredSize(new java.awt.Dimension(910, 160));
+
+        jTABENCU.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "DESCRIPCION", "CANT.", "VALOR", "TOTAL"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTABENCU.getTableHeader().setReorderingAllowed(false);
+        jScrollPane3.setViewportView(jTABENCU);
+        if (jTABENCU.getColumnModel().getColumnCount() > 0) {
+            jTABENCU.getColumnModel().getColumn(0).setMinWidth(30);
+            jTABENCU.getColumnModel().getColumn(0).setMaxWidth(30);
+            jTABENCU.getColumnModel().getColumn(2).setMinWidth(80);
+            jTABENCU.getColumnModel().getColumn(2).setMaxWidth(80);
+            jTABENCU.getColumnModel().getColumn(3).setMinWidth(80);
+            jTABENCU.getColumnModel().getColumn(3).setMaxWidth(80);
+            jTABENCU.getColumnModel().getColumn(4).setMinWidth(80);
+            jTABENCU.getColumnModel().getColumn(4).setMaxWidth(80);
+        }
+
+        Encuadernacion.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 196, -1, -1));
+
+        jBLITA.setText("LIMPIAR TABLA");
+        Encuadernacion.add(jBLITA, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 366, -1, -1));
+
+        jTabbedPane1.addTab("Encuadernacion", Encuadernacion);
+
+        OtrosDescuentoPapel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLABOTRO.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABOTRO.setText("OTROS");
+        OtrosDescuentoPapel.add(jLABOTRO, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+
+        jLABOTCF.setText("OTRA CIUDAD FLETE");
+        OtrosDescuentoPapel.add(jLABOTCF, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, -1, -1));
+
+        jCBOXOTCF.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXOTCF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXOTCFActionPerformed(evt);
+            }
+        });
+        jCBOXOTCF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXOTCFKeyPressed(evt);
+            }
+        });
+        OtrosDescuentoPapel.add(jCBOXOTCF, new org.netbeans.lib.awtextra.AbsoluteConstraints(146, 36, -1, -1));
+
+        jLABENRT.setText("ENTREGA RADIO TAXI");
+        OtrosDescuentoPapel.add(jLABENRT, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, -1, -1));
+
+        jCBOXENRT.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "NO", "SI" }));
+        jCBOXENRT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBOXENRTActionPerformed(evt);
+            }
+        });
+        jCBOXENRT.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXENRTKeyPressed(evt);
+            }
+        });
+        OtrosDescuentoPapel.add(jCBOXENRT, new org.netbeans.lib.awtextra.AbsoluteConstraints(146, 66, -1, -1));
+
+        jLABEXAR.setText("% EXCEPCIÓN ARICA");
+        OtrosDescuentoPapel.add(jLABEXAR, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, -1, -1));
+
+        jTXTFEXAR.setText("0");
+        jTXTFEXAR.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFEXARFocusGained(evt);
+            }
+        });
+        jTXTFEXAR.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFEXARKeyPressed(evt);
+            }
+        });
+        OtrosDescuentoPapel.add(jTXTFEXAR, new org.netbeans.lib.awtextra.AbsoluteConstraints(146, 96, 50, -1));
+
+        jLABSECI.setText("SELECCIONAR CIUDAD");
+        OtrosDescuentoPapel.add(jLABSECI, new org.netbeans.lib.awtextra.AbsoluteConstraints(216, 40, -1, -1));
+
+        jCBOXSECI.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ANTOFAGASTA", "ARICA", "CALAMA", "COPIAPO", "LA SERENA", "TOCOPILLA" }));
+        jCBOXSECI.setSelectedIndex(-1);
+        jCBOXSECI.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jCBOXSECIKeyPressed(evt);
+            }
+        });
+        OtrosDescuentoPapel.add(jCBOXSECI, new org.netbeans.lib.awtextra.AbsoluteConstraints(366, 36, -1, -1));
+
+        jLABOCAN.setText("CANT.");
+        OtrosDescuentoPapel.add(jLABOCAN, new org.netbeans.lib.awtextra.AbsoluteConstraints(216, 70, -1, -1));
+
+        jTXTFOCAN.setText("0");
+        jTXTFOCAN.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTXTFOCANFocusGained(evt);
+            }
+        });
+        jTXTFOCAN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTXTFOCANKeyPressed(evt);
+            }
+        });
+        OtrosDescuentoPapel.add(jTXTFOCAN, new org.netbeans.lib.awtextra.AbsoluteConstraints(366, 66, 50, -1));
+
+        jTabbedPane1.addTab("Otros - Descuento Papel", OtrosDescuentoPapel);
+
+        HojaDeCostos.setLayout(null);
+
+        jBCALC.setText("CALCULOS");
+        jBCALC.setMaximumSize(new java.awt.Dimension(160, 23));
+        jBCALC.setMinimumSize(new java.awt.Dimension(160, 23));
+        jBCALC.setPreferredSize(new java.awt.Dimension(160, 23));
+        jBCALC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBCALCActionPerformed(evt);
+            }
+        });
+        jBCALC.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jBCALCKeyPressed(evt);
+            }
+        });
+        HojaDeCostos.add(jBCALC);
+        jBCALC.setBounds(750, 10, 160, 23);
+
+        jBGUIN.setText("GUARDAR INFORME");
+        jBGUIN.setMaximumSize(new java.awt.Dimension(160, 23));
+        jBGUIN.setMinimumSize(new java.awt.Dimension(160, 23));
+        jBGUIN.setPreferredSize(new java.awt.Dimension(160, 23));
+        jBGUIN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBGUINActionPerformed(evt);
+            }
+        });
+        jBGUIN.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jBGUINKeyPressed(evt);
+            }
+        });
+        HojaDeCostos.add(jBGUIN);
+        jBGUIN.setBounds(750, 55, 160, 23);
+
+        jBMOIN.setText("MODIFICAR INFORME");
+        jBMOIN.setMaximumSize(new java.awt.Dimension(160, 23));
+        jBMOIN.setMinimumSize(new java.awt.Dimension(160, 23));
+        jBMOIN.setPreferredSize(new java.awt.Dimension(160, 23));
+        jBMOIN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBMOINActionPerformed(evt);
+            }
+        });
+        HojaDeCostos.add(jBMOIN);
+        jBMOIN.setBounds(750, 90, 160, 23);
+
+        jBIMIN.setText("IMPRIMIR INFORME");
+        jBIMIN.setMaximumSize(new java.awt.Dimension(160, 23));
+        jBIMIN.setMinimumSize(new java.awt.Dimension(160, 23));
+        jBIMIN.setPreferredSize(new java.awt.Dimension(160, 23));
+        jBIMIN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBIMINActionPerformed(evt);
+            }
+        });
+        HojaDeCostos.add(jBIMIN);
+        jBIMIN.setBounds(750, 120, 160, 23);
+
+        jBEPEM.setText("ENVIAR POR E-MAIL");
+        jBEPEM.setMaximumSize(new java.awt.Dimension(160, 23));
+        jBEPEM.setMinimumSize(new java.awt.Dimension(160, 23));
+        jBEPEM.setPreferredSize(new java.awt.Dimension(160, 23));
+        HojaDeCostos.add(jBEPEM);
+        jBEPEM.setBounds(750, 150, 160, 23);
+
+        jLABINFO.setText("INFORMACIÓN");
+        HojaDeCostos.add(jLABINFO);
+        jLABINFO.setBounds(695, 200, 150, 14);
+
+        jLABNODI.setText("NOMBRE DEL IMPRESO");
+        HojaDeCostos.add(jLABNODI);
+        jLABNODI.setBounds(695, 230, 150, 14);
+
+        jLABTIDC.setText("TIPO DE COMISIÓN");
+        HojaDeCostos.add(jLABTIDC);
+        jLABTIDC.setBounds(695, 270, 150, 14);
+
+        jLABVTDC.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVTDC.setText("-");
+        jLABVTDC.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVTDC.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVTDC.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVTDC);
+        jLABVTDC.setBounds(850, 270, 84, 14);
+
+        jLABCANI.setText("CANTIDAD");
+        HojaDeCostos.add(jLABCANI);
+        jLABCANI.setBounds(695, 290, 150, 14);
+
+        jLABVCAN.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVCAN.setText("0");
+        jLABVCAN.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVCAN.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVCAN.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVCAN);
+        jLABVCAN.setBounds(850, 290, 84, 14);
+
+        jLABTIDI.setText("TIPO DE IMPRESIÓN");
+        HojaDeCostos.add(jLABTIDI);
+        jLABTIDI.setBounds(695, 310, 150, 14);
+
+        jLABVTDI.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVTDI.setText("-");
+        jLABVTDI.setMaximumSize(new java.awt.Dimension(183, 14));
+        jLABVTDI.setMinimumSize(new java.awt.Dimension(183, 14));
+        jLABVTDI.setPreferredSize(new java.awt.Dimension(183, 14));
+        HojaDeCostos.add(jLABVTDI);
+        jLABVTDI.setBounds(695, 330, 240, 14);
+
+        jLABNUDJ.setText("NUMERO DE JUEGOS");
+        HojaDeCostos.add(jLABNUDJ);
+        jLABNUDJ.setBounds(695, 350, 150, 14);
+
+        jLABVNDJ.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVNDJ.setText("0");
+        jLABVNDJ.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVNDJ.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVNDJ.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVNDJ);
+        jLABVNDJ.setBounds(850, 350, 84, 14);
+
+        jLABCADE.setText("CANT. DE EJEMPLARES");
+        HojaDeCostos.add(jLABCADE);
+        jLABCADE.setBounds(695, 370, 150, 14);
+
+        jLABVCDE.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVCDE.setText("0");
+        jLABVCDE.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVCDE.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVCDE.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVCDE);
+        jLABVCDE.setBounds(850, 370, 40, 14);
+
+        jLABVAUN.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVAUN.setText("VALOR UNITARIO");
+        HojaDeCostos.add(jLABVAUN);
+        jLABVAUN.setBounds(695, 390, 150, 14);
+
+        jLABVVU.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVVU.setText("0");
+        jLABVVU.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVVU.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVVU.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVVU);
+        jLABVVU.setBounds(850, 390, 84, 14);
+
+        jLABVATO.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVATO.setText("VALOR TOTAL");
+        HojaDeCostos.add(jLABVATO);
+        jLABVATO.setBounds(695, 410, 150, 14);
+
+        jLABVVT.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVVT.setText("0");
+        jLABVVT.setMaximumSize(new java.awt.Dimension(84, 14));
+        jLABVVT.setMinimumSize(new java.awt.Dimension(84, 14));
+        jLABVVT.setPreferredSize(new java.awt.Dimension(84, 14));
+        HojaDeCostos.add(jLABVVT);
+        jLABVVT.setBounds(850, 410, 84, 14);
+
+        jLABVNDI.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLABVNDI.setText("-");
+        jLABVNDI.setMaximumSize(new java.awt.Dimension(183, 14));
+        jLABVNDI.setMinimumSize(new java.awt.Dimension(183, 14));
+        jLABVNDI.setPreferredSize(new java.awt.Dimension(183, 14));
+        HojaDeCostos.add(jLABVNDI);
+        jLABVNDI.setBounds(695, 250, 183, 14);
+
+        jLABTEMA1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jLABTEMA1.setMaximumSize(new java.awt.Dimension(250, 190));
+        jLABTEMA1.setMinimumSize(new java.awt.Dimension(250, 190));
+        jLABTEMA1.setPreferredSize(new java.awt.Dimension(250, 190));
+        HojaDeCostos.add(jLABTEMA1);
+        jLABTEMA1.setBounds(690, 220, 250, 210);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "MATERIALES", "", "CANTIDAD", "VALOR", "TOTAL"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setRowSelectionAllowed(false);
+        jTable1.getTableHeader().setReorderingAllowed(false);
+        jScrollPane7.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(1).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(1).setMaxWidth(80);
+            jTable1.getColumnModel().getColumn(2).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(2).setMaxWidth(80);
+            jTable1.getColumnModel().getColumn(3).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(3).setMaxWidth(80);
+            jTable1.getColumnModel().getColumn(4).setMinWidth(80);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(80);
+            jTable1.getColumnModel().getColumn(4).setMaxWidth(80);
+        }
+
+        HojaDeCostos.add(jScrollPane7);
+        jScrollPane7.setBounds(10, 10, 670, 420);
+
+        jTabbedPane1.addTab("Hoja de Costos", HojaDeCostos);
+
+        jTabbedPane1.setSelectedComponent(Antecedentes);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jTabbedPane1))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 467, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jTabbedPane1))
+        );
+
+        jTXTFUSER1.setBackground(new java.awt.Color(240, 240, 240));
+        jTXTFUSER1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTXTFUSER1.setDisabledTextColor(new java.awt.Color(51, 51, 255));
+        jTXTFUSER1.setDoubleBuffered(true);
+        jTXTFUSER1.setEnabled(false);
+        jTXTFUSER1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFUSER1ActionPerformed(evt);
+            }
+        });
+
+        jSeparator8.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jTXTFFECH.setText(fechaActual());
+        jTXTFFECH.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTXTFFECH.setEnabled(false);
+        jTXTFFECH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFFECHActionPerformed(evt);
+            }
+        });
+
+        jSeparator11.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        jTXTFVERS.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTXTFVERS.setText("V 1.0");
+        jTXTFVERS.setEnabled(false);
+
+        jTXTFUSER.setBackground(new java.awt.Color(240, 240, 240));
+        jTXTFUSER.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jTXTFUSER.setDisabledTextColor(new java.awt.Color(51, 51, 255));
+        jTXTFUSER.setDoubleBuffered(true);
+        jTXTFUSER.setEnabled(false);
+        jTXTFUSER.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTXTFUSERActionPerformed(evt);
+            }
+        });
+
+        jMenu1.setText("Ingreso Informe de Costo");
+
+        jMenuItem1.setText("Crear Informe de Costo - Plano");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("Buscar Informe de Costo - Plano");
+        jMenu1.add(jMenuItem2);
+        jMenu1.add(jSeparator1);
+
+        jMenuItem3.setText("Crear Informe de Costo - Continuo");
+        jMenu1.add(jMenuItem3);
+
+        jMenuItem4.setText("Buscar Informe de Costo - Continuo");
+        jMenu1.add(jMenuItem4);
+        jMenu1.add(jSeparator2);
+
+        jMenuItem5.setText("Crear Informe de Costo - Paginables Y/O Revistas");
+        jMenu1.add(jMenuItem5);
+
+        jMenuItem6.setText("Buscar Informe de Costo - Paginables Y/O Revistas");
+        jMenu1.add(jMenuItem6);
+        jMenu1.add(jSeparator3);
+
+        jMenuItem7.setText("Crear Informe de Costo - Serigrafia");
+        jMenu1.add(jMenuItem7);
+
+        jMenuItem8.setText("Buscar Informe de Costo - Serigrafia");
+        jMenu1.add(jMenuItem8);
+        jMenu1.add(jSeparator4);
+
+        jMenuItem9.setText("Crear Informe de Costo - Plotter Impresor");
+        jMenu1.add(jMenuItem9);
+
+        jMenuItem10.setText("Buscar Informe de Costo - Plotter Impresor");
+        jMenu1.add(jMenuItem10);
+        jMenu1.add(jSeparator5);
+
+        jMenuItem11.setText("Salir del Sistema");
+        jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem11ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem11);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Lista de Precio");
+
+        jMenuItem12.setText("Consultar e Imprimir Informe de Costo");
+        jMenu2.add(jMenuItem12);
+
+        jMenuItem13.setText("Imprimir Listado - Lista de Precio");
+        jMenu2.add(jMenuItem13);
+        jMenu2.add(jSeparator6);
+
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Consulta");
+
+        jMenuItem14.setText("Consultar Por Codigo");
+        jMenu3.add(jMenuItem14);
+        jMenu3.add(jSeparator7);
+
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTXTFUSER1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTXTFUSER, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator8, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTXTFFECH, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTXTFVERS, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jTXTFFECH, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jTXTFUSER1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTXTFUSER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jSeparator11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTXTFVERS, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jBCACOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCACOActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jBCACOActionPerformed
+
+    private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
+        // TODO add your handling code here:
+        //System.exit(0);
+        
+        Login log = new  Login();
+        log.setVisible(true);
+        hide();
+    }//GEN-LAST:event_jMenuItem11ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        jPanel1.setVisible(false);
+        jPanel2.setVisible(true);
+        
+        jCBOXRECO.setVisible(false);
+        
+        jTXTFSIMP.setVisible(true);
+        jTXTFESPE.setVisible(false);
+        jTXTFEXTR.setVisible(false);
+        jTXTFCOMP.setVisible(false);
+        jCBOXGTSM.setVisible(false);
+        jCBOXPMSM.setVisible(false);
+        jCBOXUCTC.setVisible(false);
+        jLABEUSA.setVisible(false);
+        jCBOXEUSA.setVisible(false);
+        jLABTRAM.setVisible(false);
+        jCBOXTRAM.setVisible(false);
+        
+        jLABCCDT.setVisible(false);
+        jTXTFCCDT.setVisible(false);
+        
+        jLABSECI.setVisible(false);
+        jCBOXSECI.setVisible(false);
+        jLABOCAN.setVisible(false);
+        jTXTFOCAN.setVisible(false);
+        
+        jBMOIN.setEnabled(false);
+        jBIMIN.setEnabled(false);
+        
+        jTXTFRCLI.grabFocus();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jTXTFFECHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFFECHActionPerformed
+        // TODO add your handling code here:
+                
+                
+    }//GEN-LAST:event_jTXTFFECHActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        jTXTFUSER1.setText("Usuario : ");
+        jTXTFUSER.setText(user);
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        jCBOXMDP.removeAllItems();
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM OT_TAMANO_PLIEGO");
+                
+            while(rs.next()){
+                MDP = rs.getString("pliego");
+                jCBOXMDP.addItem(MDP);
+                    //jTXTFNIMP.grabFocus();
+            }
+        }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    private void jCBOXCDSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXCDSActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXCDS.getSelectedIndex()== 1){
+            jTXTFSIMP.setVisible(true);
+        }else{
+            jTXTFSIMP.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXCDSActionPerformed
+
+    private void jBCEICActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCEICActionPerformed
+        // TODO add your handling code here:
+        jPanel2.setVisible(false);
+        jPanel1.setVisible(true);
+        
+        // Limpiar Antecedentes
+        
+        jTXTFRCLI.setText("");
+        jTXTFNCLI.setText("");
+        jTXTFNIMP.setText("");
+        jCBOXTCOM.setSelectedIndex(0);
+        jTXTFCANT.setText("0");
+        jCBOXTIMP.setSelectedIndex(0);
+        jTXTFCMOD.setText("1");
+        jTXTFNJUE.setText("0");
+        jTXTFNEJE.setText("0");
+                
+        // Limpiar Preprensa
+        
+        jCBOXCDS.setSelectedIndex(0);
+        jTXTFSIMP.setText("0");
+        jCBOXDVC.setSelectedIndex(0);
+        jTXTFESPE.setText("0");
+        jCBOXDVPC.setSelectedIndex(0);
+        jTXTFEXTR.setText("0");
+        jCBOXDPOC.setSelectedIndex(0);
+        jTXTFCOMP.setText("0");
+        jCBOXCAUA.setSelectedIndex(0);
+        jCBOXCAOA.setSelectedIndex(0);
+        jTXTFCMCC.setText("0");
+        jCBOXCUAT.setSelectedIndex(0);
+        jTXTFCCOL.setText("0");
+        jCBOXCTIN.setSelectedIndex(0);
+        jCBOXPO1C.setSelectedIndex(0);
+        jCBOXPO2C.setSelectedIndex(0);
+        jCBOXGTSM.setSelectedIndex(0);
+        jCBOXPO4C.setSelectedIndex(0);
+        jCBOXPMSM.setSelectedIndex(0);
+        jCBOXIDTC.setSelectedIndex(0);
+        jCBOXUCTC.setSelectedIndex(0);
+        jCBOXIDUC.setSelectedIndex(0);
+        jTXTFIOTI.setText("0");
+        jTXTFIORE.setText("0");
+        jTXTFITTI.setText("0");
+        jTXTFITRE.setText("0");
+        jCBOXPMOL.setSelectedIndex(0);
+        jCBOXTCMT.setSelectedIndex(0);
+        jCBOXEUSA.setSelectedIndex(0);
+        jCBOXTBCP.setSelectedIndex(0);
+        jCBOXFTCA.setSelectedIndex(0);
+        jCBOXFLLE.setSelectedIndex(0);
+        jCBOXBOFF.setSelectedIndex(0);
+        jCBOXTRAM.setSelectedIndex(0);
+        jCBOXTIND.setSelectedIndex(0);
+        jTXTFCPCTP.setText("0");
+        jCBOXPARC.setSelectedIndex(0);
+        jCBOXCAPP.setSelectedIndex(0);
+        
+        // Limpiar Montaje
+        
+        jTXTFMONT.setText("0");
+        jTXTFTAIM.setText("0");
+        jTXTFMTAMX.setText("0.0");
+        jTXTFMTAMY.setText("0.0");
+        jCBOXMDP.removeAllItems();
+        DefaultListModel DLMEQUI = new DefaultListModel();
+        jLISTEQUI.setModel(DLMEQUI);
+        jLISTEQUI.repaint();
+        jLABSAVA.setText("0");
+        jLABSOVA.setText("0");
+        jTXTFSOVA.setText("0");
+        jLABSTVA.setText("0");
+        jTXTFSTVA.setText("0");
+        jLABTSVA.setText("");
+        jCBOXTDPA.setSelectedIndex(0);
+        jCBOXCSN.setSelectedIndex(1);
+        jCBOXTERM.setSelectedIndex(0);
+        jCBOXSBUV.setSelectedIndex(0);
+        jCBOXCPXT.setSelectedIndex(0);
+        jCBOXCPML.setSelectedIndex(0);
+        DefaultTableModel DTM_MONT;
+        DTM_MONT =  (DefaultTableModel) jTABMONT.getModel();
+        DTM_MONT.setRowCount(0);
+        
+        ContAgre = 0;
+        
+        //Limpiar Encuadernación
+        
+        jTXTFNFXF.setText("0");
+        jLABFAOVA.setText("0");
+        jCBOXASN.setSelectedIndex(0);
+        jTXTFMPEN.setText("0");
+        jCBOXCOSN.setSelectedIndex(0);
+        jCBOXCAPR.setSelectedIndex(0);
+        jTXTFCCDT.setText("0");
+        jCBOXOTEN.setSelectedIndex(0);
+        jCBOXOTVA.setSelectedIndex(0);
+        jCBOXCITR.setSelectedIndex(0);
+        jCBOXCABO.setSelectedIndex(0);
+        jCBOXCRDU.setSelectedIndex(0);
+        jCBOXCACO.setSelectedIndex(0);
+        jCBOXFSIM.setSelectedIndex(0);
+        DefaultTableModel DTMENCU;
+        DTMENCU =  (DefaultTableModel) jTABENCU.getModel();
+        DTMENCU.setRowCount(0);
+        
+        //Limpiar Otros-Descuentos
+        
+        jCBOXOTCF.setSelectedIndex(0);
+        jCBOXSECI.setSelectedIndex(0);
+        jCBOXENRT.setSelectedIndex(0);
+        jTXTFOCAN.setText("0");
+        jTXTFEXAR.setText("0");
+        
+        //Limpiar Hoja de Costos
+        
+        //jTabbedPane1.setEnabled(false);
+    }//GEN-LAST:event_jBCEICActionPerformed
+
+    private void jTXTFRCLIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFRCLIKeyPressed
+        // TODO add your handling code here:
+        
+        RCLI = jTXTFRCLI.getText();
+                
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM TCLIENTE WHERE rut_cliente ='"+RCLI+"'");
+                rs.next();
+                int encontrado = rs.getRow();
+                if (encontrado == 1){
+                    NCLI = rs.getString("cliente");
+                    jTXTFNCLI.setText(NCLI);
+                    jTXTFNIMP.grabFocus();
+                }else{
+                    jTXTFRCLI.setText("");
+                    JOptionPane.showMessageDialog(null, "Ha Ingresado un RUT incorrecto o no registrado","RUT CLIENTE INCORRECTO",JOptionPane.INFORMATION_MESSAGE);
+                }
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        }else jTXTFRCLI.grabFocus();
+
+    }//GEN-LAST:event_jTXTFRCLIKeyPressed
+
+    private void jTXTFRCLIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFRCLIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTXTFRCLIActionPerformed
+
+    private void jTXTFUSER1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFUSER1ActionPerformed
+        
+    }//GEN-LAST:event_jTXTFUSER1ActionPerformed
+
+    private void jTXTFRCLIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFRCLIKeyTyped
+        // TODO add your handling code here:
+        toUpperCase = jTXTFRCLI.getText().toUpperCase();
+        jTXTFRCLI.setText(toUpperCase);
+        
+        if (jTXTFRCLI.getText().length()>=12){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTXTFRCLIKeyTyped
+
+    private void jTXTFCANTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCANTKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFCANT.getText().length()>=8)
+            evt.consume();
+        
+    }//GEN-LAST:event_jTXTFCANTKeyTyped
+
+    private void jTXTFNJUEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNJUEKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFNJUE.getText().length()>=5)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFNJUEKeyTyped
+
+    private void jTXTFNEJEKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNEJEKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFNEJE.getText().length()>=3)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFNEJEKeyTyped
+
+    private void jTXTFCMODKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCMODKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFCMOD.getText().length()>=3)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFCMODKeyTyped
+
+    private void jCBOXTCOMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXTCOMActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXTCOM.getSelectedIndex()== 1){
+            //jLABEUSA.setVisible(true);
+            jCBOXRECO.setVisible(true);
+        }else{
+            //jLABEUSA.setVisible(false);
+            jCBOXRECO.setVisible(false);
+        }
+        TXTTCOM = jCBOXTCOM.getSelectedItem().toString();
+        jLABVTDC.setText(TXTTCOM);
+    }//GEN-LAST:event_jCBOXTCOMActionPerformed
+
+    private void jTXTFNIMPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNIMPKeyTyped
+        // TODO add your handling code here:
+        toUpperCase = jTXTFNIMP.getText().toUpperCase();
+        jTXTFNIMP.setText(toUpperCase);
+    }//GEN-LAST:event_jTXTFNIMPKeyTyped
+
+    private void jTXTFNIMPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNIMPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXTCOM.grabFocus();
+    }//GEN-LAST:event_jTXTFNIMPKeyPressed
+
+    private void jCBOXTCOMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTCOMKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXTCOM.getSelectedIndex() == 1){
+                TXTTCOM = jCBOXTCOM.getSelectedItem().toString();
+                jLABVTDC.setText(TXTTCOM);
+                jCBOXRECO.grabFocus();
+            }else{
+                TXTTCOM = jCBOXTCOM.getSelectedItem().toString();
+                jLABVTDC.setText(TXTTCOM);
+                jTXTFCANT.grabFocus();
+            }
+        }
+    }//GEN-LAST:event_jCBOXTCOMKeyPressed
+
+    private void jTXTFCANTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCANTKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXTIMP.grabFocus();
+            jCBOXMDP.actionPerformed(null);
+        }
+    }//GEN-LAST:event_jTXTFCANTKeyPressed
+
+    private void jCBOXTIMPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTIMPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            TXTTIMP = jCBOXTIMP.getSelectedItem().toString();
+            jLABVTDI.setText(TXTTIMP);
+            jTXTFCMOD.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXTIMPKeyPressed
+
+    private void jTXTFCMODKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCMODKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFNJUE.grabFocus();
+    }//GEN-LAST:event_jTXTFCMODKeyPressed
+
+    private void jTXTFNJUEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNJUEKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFNEJE.grabFocus();
+            jCBOXMDP.actionPerformed(null);
+        }
+    }//GEN-LAST:event_jTXTFNJUEKeyPressed
+
+    private void jTXTFNEJEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNEJEKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXCDS.isEnabled()){
+                jTabbedPane1.setSelectedComponent(PreprensaPrensa);
+                jCBOXCDS.grabFocus();
+                jCBOXMDP.actionPerformed(null);
+            } else {
+                jTabbedPane1.setSelectedComponent(MontajePapelesCorte);
+                jTXTFMONT.grabFocus();
+            }
+        }              
+    }//GEN-LAST:event_jTXTFNEJEKeyPressed
+
+    private void jTXTFNCLIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFNCLIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTXTFNCLIActionPerformed
+
+    private void jTXTFNCLIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNCLIKeyTyped
+        // TODO add your handling code here:
+        toUpperCase = jTXTFNCLI.getText().toUpperCase();
+        jTXTFNCLI.setText(toUpperCase);
+    }//GEN-LAST:event_jTXTFNCLIKeyTyped
+
+    private void jTXTFNCLIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNCLIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFNIMP.grabFocus();
+    }//GEN-LAST:event_jTXTFNCLIKeyPressed
+
+    private void jCBOXCDSKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCDSKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXCDS.getSelectedIndex()==1){
+                jTXTFSIMP.grabFocus();
+            }else{
+                jCBOXDVC.grabFocus();
+            }
+        }
+    }//GEN-LAST:event_jCBOXCDSKeyPressed
+
+    private void jCBOXDVCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXDVCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXDVC.getSelectedIndex()==1){
+                jTXTFESPE.grabFocus();
+            }
+            else{
+                jCBOXDVPC.grabFocus();
+            }
+        }
+    }//GEN-LAST:event_jCBOXDVCKeyPressed
+
+    private void jCBOXDVPCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXDVPCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXDVPC.getSelectedIndex()==1){
+                jTXTFEXTR.grabFocus();
+            }else{
+                if(jCBOXDPOC.isEnabled()){
+                    jCBOXDPOC.grabFocus();
+                } else {
+                    jCBOXCAUA.grabFocus();
+                }
+            }
+    }//GEN-LAST:event_jCBOXDVPCKeyPressed
+
+    private void jCBOXDPOCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXDPOCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXDPOC.getSelectedIndex()==1){
+                jTXTFCOMP.grabFocus();
+            }else{
+                jCBOXCAUA.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXDPOCKeyPressed
+
+    private void jCBOXCAUAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCAUAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXCAOA.grabFocus();
+    }//GEN-LAST:event_jCBOXCAUAKeyPressed
+
+    private void jCBOXCAOAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCAOAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFCMCC.grabFocus();
+    }//GEN-LAST:event_jCBOXCAOAKeyPressed
+
+    private void jTXTFCMCCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCMCCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXCUAT.grabFocus();
+    }//GEN-LAST:event_jTXTFCMCCKeyPressed
+
+    private void jCBOXCUATKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCUATKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFCCOL.grabFocus();
+    }//GEN-LAST:event_jCBOXCUATKeyPressed
+
+    private void jTXTFCCOLKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCCOLKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXCTIN.grabFocus();
+    }//GEN-LAST:event_jTXTFCCOLKeyPressed
+
+    private void jCBOXCTINKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCTINKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXPO1C.grabFocus();
+    }//GEN-LAST:event_jCBOXCTINKeyPressed
+
+    private void jCBOXPO1CKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPO1CKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXPO2C.grabFocus();
+    }//GEN-LAST:event_jCBOXPO1CKeyPressed
+
+    private void jCBOXPO2CKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPO2CKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXPO2C.getSelectedIndex()==1){
+                jCBOXGTSM.grabFocus();
+            }else{
+                jCBOXPO4C.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXPO2CKeyPressed
+
+    private void jCBOXPO4CKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPO4CKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXPO4C.getSelectedIndex()==1){
+                jCBOXPMSM.grabFocus();
+            }else{
+                jCBOXIDTC.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXPO4CKeyPressed
+
+    private void jCBOXIDTCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXIDTCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXIDTC.getSelectedIndex()==1){
+                jCBOXUCTC.grabFocus();
+            }else{
+                jCBOXIDUC.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXIDTCKeyPressed
+
+    private void jCBOXIDUCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXIDUCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFIOTI.grabFocus();
+    }//GEN-LAST:event_jCBOXIDUCKeyPressed
+
+    private void jTXTFIOTIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFIOTIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFIORE.grabFocus();
+            jCBOXMDP.actionPerformed(null);
+        }
+            
+    }//GEN-LAST:event_jTXTFIOTIKeyPressed
+
+    private void jTXTFIOREKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFIOREKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFITTI.grabFocus();
+            jCBOXMDP.actionPerformed(null);
+        }
+            
+    }//GEN-LAST:event_jTXTFIOREKeyPressed
+
+    private void jTXTFITTIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFITTIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFITRE.grabFocus();
+    }//GEN-LAST:event_jTXTFITTIKeyPressed
+
+    private void jTXTFITREKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFITREKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXPMOL.isEnabled()){
+                jCBOXPMOL.grabFocus();
+            } else {
+                jCBOXTCMT.grabFocus();
+            }
+        }
+    }//GEN-LAST:event_jTXTFITREKeyPressed
+
+    private void jCBOXPMOLKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPMOLKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXTCMT.grabFocus();
+    }//GEN-LAST:event_jCBOXPMOLKeyPressed
+
+    private void jCBOXTCMTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTCMTKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXTCMT.getSelectedIndex()==1){
+                jCBOXEUSA.grabFocus();
+            }else{
+                jCBOXTBCP.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXTCMTKeyPressed
+
+    private void jCBOXTBCPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTBCPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXFTCA.isEnabled()){
+                    jCBOXFTCA.grabFocus();
+                } else {
+                    jCBOXFLLE.grabFocus();
+                }
+        }
+    }//GEN-LAST:event_jCBOXTBCPKeyPressed
+
+    private void jCBOXFTCAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXFTCAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXFLLE.grabFocus();
+    }//GEN-LAST:event_jCBOXFTCAKeyPressed
+
+    private void jCBOXFLLEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXFLLEKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXBOFF.grabFocus();
+    }//GEN-LAST:event_jCBOXFLLEKeyPressed
+
+    private void jCBOXBOFFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXBOFFKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jCBOXBOFF.getSelectedIndex()==1){
+                jCBOXTRAM.grabFocus();
+            }else{
+                jCBOXTIND.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXBOFFKeyPressed
+
+    private void jCBOXTINDKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTINDKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            if(jTXTFCPCTP.isEnabled()){
+                jTXTFCPCTP.grabFocus();
+            } else {
+                jCBOXPARC.grabFocus();
+            }
+    }//GEN-LAST:event_jCBOXTINDKeyPressed
+
+    private void jTXTFCPCTPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCPCTPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXPARC.grabFocus();
+    }//GEN-LAST:event_jTXTFCPCTPKeyPressed
+
+    private void jCBOXPARCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPARCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXCAPP.grabFocus();
+    }//GEN-LAST:event_jCBOXPARCKeyPressed
+
+    private void jCBOXCAPPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCAPPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTabbedPane1.setSelectedComponent(MontajePapelesCorte);
+            jTXTFMONT.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCAPPKeyPressed
+
+    private void jTXTFCMCCKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCMCCKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFCMCCKeyTyped
+
+    private void jTXTFCCOLKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCCOLKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFCCOLKeyTyped
+
+    private void jTXTFIOTIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFIOTIKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFIOTIKeyTyped
+
+    private void jTXTFIOREKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFIOREKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFIOREKeyTyped
+
+    private void jTXTFITTIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFITTIKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFITTIKeyTyped
+
+    private void jTXTFITREKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFITREKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFITREKeyTyped
+
+    private void jTXTFCPCTPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCPCTPKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFCPCTPKeyTyped
+
+    private void jBGUINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGUINActionPerformed
+        // TODO add your handling code here:
+        
+        
+        // ASIGNAR A LAS VARIABLES
+        RCLI = jTXTFRCLI.getText();
+        NCLI = jTXTFNCLI.getText();
+        NIMP = jTXTFNIMP.getText();
+        TCOMM = String.valueOf(jCBOXTCOM.getSelectedItem());
+        CANT = Integer.parseInt(jTXTFCANT.getText());
+        TIMPm = String.valueOf(jCBOXTIMP.getSelectedItem());
+        CMOD = jTXTFCMOD.getText();
+        NJUE = Integer.parseInt(jTXTFNJUE.getText());
+        MONT = Integer.parseInt(jTXTFMONT.getText());
+        NEJE = Integer.parseInt(jTXTFNEJE.getText());
+        TAIM = Integer.parseInt(jTXTFTAIM.getText());
+        jCBOXCDS.getSelectedIndex();
+        jCBOXDVC.getSelectedIndex();
+        jCBOXDVPC.getSelectedIndex();
+        jCBOXDPOC.getSelectedIndex();
+        jCBOXCAUA.getSelectedIndex();
+        jCBOXCAOA.getSelectedIndex();
+        CMCC = jTXTFCMCC.getText();
+        jCBOXCUAT.getSelectedIndex();
+        CCOL = Integer.parseInt(jTXTFCCOL.getText());
+        jCBOXCTIN.getSelectedIndex();
+        PO1C = jCBOXPO1C.getSelectedIndex();
+        jCBOXPO2C.getSelectedIndex();
+        jCBOXPO4C.getSelectedIndex();
+        jCBOXIDTC.getSelectedIndex();
+        jCBOXIDUC.getSelectedIndex();
+        IOTI = jTXTFIOTI.getText();
+        IORE = jTXTFIORE.getText();
+        ITTI = jTXTFITTI.getText();
+        ITRE = jTXTFITRE.getText();
+        jCBOXPMOL.getSelectedIndex();
+        jCBOXTCMT.getSelectedIndex();
+        jCBOXTBCP.getSelectedIndex();
+        jCBOXFTCA.getSelectedIndex();
+        jCBOXFLLE.getSelectedIndex();
+        jCBOXBOFF.getSelectedIndex();
+        jCBOXTIND.getSelectedIndex();
+        CPCTP = jTXTFCPCTP.getText();
+        jCBOXPARC.getSelectedIndex();
+        jCBOXCAPP.getSelectedIndex();
+        
+        SOVA = jLABSOVA.getText();
+        
+        
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        
+            String updateStr = "";
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM tcorrelativo WHERE nombre = 'INFORME DE COSTO' AND rut_empresa = '79638870-6' ");
+            while (rs.next()){
+                correlativo = rs.getInt("correlativo");
+            }
+            correlativo = correlativo + 1 ;
+            updateStr = "UPDATE tcorrelativo SET correlativo = '"+correlativo+"' "
+                    + "WHERE nombre = 'INFORME DE COSTO' AND rut_empresa = '79638870-6'";
+            int done = st.executeUpdate(updateStr);
+            
+        }catch(SQLException | HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }
+        
+            String insertStr = "";
+        try{
+            insertStr = "INSERT INTO THCOTIZADOR_PLANO (correlativo,"
+                    + " rut_cliente, nom_cliente, nom_impreso, cantidad,tipo_impresion,"
+                    + " juegos, ejemplares, offset1, offset2, offset4, imp_digital, tiro,"  
+                    + " retiro, tipotiro, tiporetiro, polimero, troquelado, cuatricomia,"
+                    + " cant_colores, color_tinta, sii, tres_colores, fondo, barniz,"
+                    + " tipo_barniz, tinta_indeleble, montaje, tamano, ini_medida,"
+                    + " ter_medida, id_pliego, medida_pliego, salen, sobrantes,"
+                    + " sobrantes_modificados, tipo_papel, corte, alzado, corcheteado,"
+                    + " caja_presentacion, cant_caja_presentacion, otros_encuadernacion,"
+                    + " otros_valores, diseno_simple, diseno_especial, diseno_extra,"
+                    + " plancha_ctp, plancha_diamante, aprueba_arte, aporta_arte,"
+                    + " muestras_calibradas, flete, urgente,usuario, rut_empresa, subtotal1,"
+                    + " cant_entrega_local, val_entrega_local, val_facturacion, cant_mermas,"
+                    + " mermas, cant_costos_indirecto, val_costos_indirecto, subtotal2,"
+                    + " cant_comision, val_comision, subtotal3, val_utilidadbruta, val_total,"
+                    + " val_unitario, tipo, sobrantesOT, sobrantesOT_modificados, tipo_salen,"
+                    + " plancha_archivo, cant_simple, cant_especial, cant_extra, cant_taxi,"
+                    + " modelos, tipo_sobrante, ciudad_flete, porc_flete, troquelado_usado,"
+                    + " reposicion, trasferible, bobina, duplex, cantAlzado, diseno_bonus,"
+                    + " cant_bonus, folio, id_maquina, nom_maquina, cordon, descuento,"
+                    + " excepcion, troqueladora, valor_troqueladora, fuelle, lista_precio,"
+                    + " cod_familia_listaprecio, cod_sub_familia,x_total, termolaminado,"
+                    + " serigrafia, barnizuv,correlativo_serigrafia, aporta_papel,"
+                    + " digital_un_color, formulario, digital_tiro, digital_retiro, duplo,"
+                    + " digital_tipografica, cant_matrices, artes_paginables, artes_formulario,"
+                    + " ploter, ploter_lineal, tipoNomDigital"
+                    + ")"
+                    
+                    + "VALUES ('"+correlativo+"',"
+                    + " '" + RCLI + "', '" + NCLI + "', '" + NIMP + "', " + CANT + ", "
+                    + " '" + TIMPm + "', " + NJUE + ", " + NEJE + ", "
+                    + " " + jCBOXPO1C.getSelectedIndex() + ", " + jCBOXPO2C.getSelectedIndex() + ", "
+                    + " " + jCBOXPO4C.getSelectedIndex() + ", " + jCBOXIDTC.getSelectedIndex() + ", "
+                    + " " + IOTI + ", " + IORE + ", " + ITTI + ", " + ITRE + ", "
+                    + " " + jCBOXPMOL.getSelectedIndex() + ", " + jCBOXTCMT.getSelectedIndex() + ", "
+                    + " " + jCBOXCUAT.getSelectedIndex() + ", " + CCOL + ", '" + jCBOXCTIN.getSelectedItem() + "', "
+                    + " " + jCBOXFTCA.getSelectedIndex() + ", 0 , " // 0 = TRES COLORES (AUN NO EXISTE EN EL SISTEMA ESTE TIPO DE IMPRESIÓN)
+                    + " " + jCBOXFLLE.getSelectedIndex() + ", " + jCBOXBOFF.getSelectedIndex() + ", "
+                    + " '" + jCBOXTRAM.getSelectedItem() + "' , " + jCBOXTIND.getSelectedIndex() + ", "
+                    + " " + MONT + ", " + TAIM + ", " + jTXTFMTAMX.getText() + ", " + jTXTFMTAMY.getText() + ", "
+                    + " " + IDP + ", '" + NDP + "' , " + jLABSAVA.getText() + ", " // IDP = idPliego - NDP = Nombre del Pliego
+                    + " " +jLABSOVA.getText() + ", " + jTXTFSOVA.getText() + ", '" + jCBOXTDPA.getSelectedItem() + "' ,"
+                    + " " + jCBOXCSN.getSelectedIndex() + ", " + jCBOXASN.getSelectedIndex() + ", "
+                    + " " + jCBOXCOSN.getSelectedIndex() + ", " + jCBOXCAPR.getSelectedIndex() + ", " 
+                    + " " + jTXTFCCDT.getText() + ", " + jCBOXOTEN.getSelectedIndex() + ", " + jCBOXOTVA.getSelectedIndex() + ", "
+                    + " " + jCBOXCDS.getSelectedIndex() + ", " + jCBOXDVC.getSelectedIndex() + ", "
+                    + " " + jCBOXDVPC.getSelectedIndex() + ", " + jTXTFCPCTP.getText() + ",  0 , " // 0 (Plancha Diamante ya no existe)
+                    + " " + jCBOXCAUA.getSelectedIndex() + ", " + jCBOXCAOA.getSelectedIndex() + ", "
+                    + " " + jTXTFCMCC.getText() + ", " + jCBOXOTCF.getSelectedIndex() + ", " + jCBOXENRT.getSelectedIndex() + ","
+                    + " '" + jTXTFUSER.getText() + "', '79638870-6' ,'"  + jLABTTS1.getText() + "'," // RUT_EMPRESA ES FIJO AHORA SOLO CUENTA CON UNA SOLA RAZON SOCIAL (79.638.870-6)
+                    + "  " + CANT_REEN + " , " + TOTAL_REEN + " ,  '" + jLABTTFC.getText() + "' ,"
+                    + " '" + jLABVTMI.getText() + "' ,'"  + jLABTTMI.getText() + "', '" + CANT_COST_INDI + "' , "
+                    + " '" + TOTAL_COST_INDI + "' , '"  + SUB_TOTAL2 + "', '" + CANT_COMI_VENT + "' , "
+                    + " '" + jLABTTCV.getText() + "' , '"  + jLABTTS3.getText() + "' , " + valub + " ,"
+                    + " '" + jLABTTPT.getText() + "' , '" + jLABTTPU.getText() + "' , '" + TCOMM + "' , "
+                    + " " + jLABSTVA.getText() + ", " + jTXTFSTVA.getText() + ", 'NORMAL' , " // NORMAL = TIPO_SALEN, MODIFICAR
+                    + " " + jCBOXPARC.getSelectedIndex() + ", " + jTXTFSIMP.getText() + ", " + jTXTFESPE.getText() + ", "
+                    + " " + jTXTFEXTR.getText() + ", " + jTXTFOCAN.getText() + ", " + jTXTFCMOD.getText() + ", '" + jLABTSVA.getText() + "' , "
+                    + " '" + jCBOXSECI.getSelectedItem() + "' , " + jTXTFEXAR.getText() + ", " + jCBOXEUSA.getSelectedIndex() + ", "
+                    + " " + jCBOXRECO.getSelectedIndex() + " , " + jCBOXCITR.getSelectedIndex() + ", "
+                    + " " + jCBOXCABO.getSelectedIndex() + ", " + jCBOXCRDU.getSelectedIndex() + ", " + jTXTFMPEN.getText() + ", "
+                    + " " + jCBOXDPOC.getSelectedIndex() + ", " + jTXTFCOMP.getText()  + ", " + jTXTFNFXF.getText() + ", 99 , " // COMPLEJO YA NO SE USA - 99 ID MAQUINARIA AUN NO SE ASIGNAN
+                    + "  'NOM_MAQUINA' , " + jCBOXCACO.getSelectedIndex() + ", 0 , " // NOMBRE_MAQUINA = AUN NO SE INGRESA UN NOMBRE POR CADA MAQUINA - 0 = DESCUENTO, AUN NO SE GENERA UN TIPO DE DESCUENTO
+                    + "  0 , " + jCBOXTBCP.getSelectedIndex() + ", 25000 , " // 0 = EXCEPCION, AUN NO SE IDENTIFICA - 25000 = (VALOR FIJO MIENTRAS SE CORRIJE)
+                    + " " + jCBOXFSIM.getSelectedIndex() + ", 0 , 0 , 0 , " // 0 (Lista_Precio, COD_FAMILIA, COD_SUB_FAMILIA No Existe)
+                    + " " + PRECIO_TOTAL + ", " + jCBOXTERM.getSelectedIndex() + ", 0 , " // 0 = SERIGRAFIA, AUN NO SE DEFINE
+                    + " " + jCBOXSBUV.getSelectedIndex() + ", " + CORRELATIVO_SERIGRAFIA + " , " + jCBOXCAPP.getSelectedIndex() + ", "
+                    + " " + jCBOXIDUC.getSelectedIndex() + ", " + jCBOXPANF.getSelectedIndex() + ", "
+                    + " " + jTXTFIMDT.getText() + ", " + jTXTFIMDR.getText() + ", " + jTXTFIMDU.getText() + ", "
+                    + " " + jTXTFIMTI.getText() + ", " + jTXTFCAMA.getText() + ", " + jTXTFCAAP.getText() + ", "
+                    + " " + jTXTFAFUO.getText() + ", " + jCBOXCPXT.getSelectedIndex() + ", " + jCBOXCPML.getSelectedIndex() + ","
+                    + " 'X' " // VACIO = TIPO NOMBRE DIGITAL
+                    + ")";
+                    
+            int done = st.executeUpdate(insertStr);
+            
+        }catch(SQLException | HeadlessException ex){
+            //JOptionPane.showMessageDialog(null, "Usuario o contrasena Incorrecta","Usuario o contrasena Incorrecta",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex);
+        }
+        
+        jBGUIN.setEnabled(false);
+        jBMOIN.setEnabled(true);
+        jBIMIN.setEnabled(true);
+        
+        //POLIMERO, MOLDE
+            if(jCBOXPMOL.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "POLIMERO, MOLDE";
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+dato[0]+"'");
+                    while (rs.next()){
+                        OVCP = rs.getInt("x1");
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[1]= "-";
+                dato[2]= 1;
+                dato[3]= OVCP;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+        //FOTOMECANICA CON CTP
+            if(Integer.parseInt(jTXTFCPCTP.getText()) > 0 && Integer.parseInt(jTXTFTAIM.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "FOTOMECANICA CON CTP";
+                dato[1]= "-";
+                if(jCBOXIDTC.getSelectedIndex() == 1){
+                    dato[2]= 0;
+                }else{
+                    dato[2]= jTXTFCPCTP.getText();
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "FOTOMECANICA CON CTP";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 2
+                            OVCPC = "FOTOMECANICA CON CTP 2";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 3
+                                    OVCPC = "FOTOMECANICA CON CTP 3";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 7
+                                    OVCPC = "FOTOMECANICA CON CTP 7";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 5
+                                    OVCPC = "FOTOMECANICA CON CTP 5";
+                                }
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 1
+                            OVCPC = "FOTOMECANICA CON CTP 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 8
+                                    OVCPC = "FOTOMECANICA CON CTP 8";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 6
+                                    OVCPC = "FOTOMECANICA CON CTP 6";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 4
+                                    OVCPC = "FOTOMECANICA CON CTP 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = '"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFTAIM.getText()) < 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(jTXTFTAIM.getText()) < 8){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(jTXTFCPCTP.getText()) <= 2){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO SIMPLE
+            if(jCBOXCDS.getSelectedIndex() == 1 && Integer.parseInt(jTXTFSIMP.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO SIMPLE";
+                dato[1]= "-";
+                if(jCBOXCAUA.getSelectedIndex() == 1){
+                    dato[2]= Double.parseDouble(jTXTFSIMP.getText())+0.5;
+                }else{
+                    dato[2]= Integer.parseInt(jTXTFSIMP.getText());
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "DISEÑO SIMPLE";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "DISEÑO SIMPLE 1";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "DISEÑO SIMPLE 2";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFCCOL.getText()) > 2){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFMONT.getText()) > 2){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO ESPECIAL
+            if(jCBOXDVC.getSelectedIndex() == 1 && Integer.parseInt(jTXTFESPE.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO ESPECIAL";
+                dato[1]= "-";
+                dato[2]= jTXTFESPE.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = 'DISEÑO EXTRA'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO EXTRA
+            if(jCBOXDVPC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO EXTRA";
+                dato[1]= "-";
+                dato[2]= jTXTFEXTR.getText();
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - DISEÑO COMPLEJO
+                    OVCPC = "DISEÑO COMPLEJO";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 1
+                            OVCPC = "DISEÑO COMPLEJO 1";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 3
+                                OVCPC = "DISEÑO COMPLEJO 3";
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 4
+                            OVCPC = "DISEÑO COMPLEJO 4";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 2
+                                OVCPC = "DISEÑO COMPLEJO 2";
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            /*DISEÑO COMPLEJO (NO SE UTILIZA)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO COMPLEJO";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 30000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+            
+            String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }*/
+            
+            //CAMBIO DE TINTA
+            if(Integer.parseInt(jTXTFCCOL.getText()) > 0 && jCBOXFTCA.getSelectedIndex() > 0 || Integer.parseInt(jTXTFCCOL.getText()) > 1 ){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIOS DE TINTA";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCCOL.getText())-1+jCBOXFTCA.getSelectedIndex();
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - CAMBIO TINTA
+                    OVCPC = "CAMBIO TINTA";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 2
+                            OVCPC = "CAMBIO TINTA 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - CAMBIO TINTA 5
+                                OVCPC = "CAMBIO TINTA 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 1
+                            OVCPC = "CAMBIO TINTA 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - CAMBIO TINTA 3
+                                OVCPC = "CAMBIO TINTA 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - CAMBIO TINTA 4
+                                    OVCPC = "CAMBIO TINTA 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(jCBOXFLLE.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(jCBOXCTIN.getSelectedIndex() == 0){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //POSTURAS
+            if(Integer.parseInt(jTXTFIOTI.getText()) > 0 && Integer.parseInt(jTXTFCPCTP.getText()) >0){
+                Object dato[] = new Object[5];
+                dato[0]= "POSTURAS";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText())+jCBOXFTCA.getSelectedIndex()+(Integer.parseInt(jTXTFCPCTP.getText())-(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())));
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - POSTURAS
+                    OVCPC = "POSTURAS";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 2
+                            OVCPC = "POSTURAS 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - POSTURAS 5
+                                OVCPC = "POSTURAS 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 1
+                            OVCPC = "POSTURAS 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - POSTURAS 3
+                                OVCPC = "POSTURAS 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - POSTURAS 4
+                                    OVCPC = "POSTURAS 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) > 4){
+                                dato[3]= rs.getInt(6);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DOCUMENTOS SII.
+            if(jCBOXFTCA.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFMONT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DOCUMENTOS SII.";
+                dato[1]= Math.round((Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText()))/Integer.parseInt(jTXTFMONT.getText()));
+                dato[2]= ((Double.parseDouble(dato[1].toString())*jCBOXFTCA.getSelectedIndex())/1000) * 10 / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DOCTOS SII'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DENSITOMETRIA
+            if(jCBOXCUAT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DENSITOMETRIA";
+                dato[1]= "-";
+                if(jCBOXCUAT.getSelectedIndex() == 1){
+                    dato[2]=4;
+                }else{
+                    dato[2]=0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DENSITOMETRIA'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION MONOCOLOR
+            if(jCBOXPO1C.getSelectedIndex() == 1 && Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFIOTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION MONOCOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO1C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.3) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "IMPRESION MONOCOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "IMPRESION MONOCOLOR 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "IMPRESION MONOCOLOR 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION BICOLOR
+            if(jCBOXPO2C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION BICOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO2C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.5) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION BICOLOR
+                    OVCPC = "IMPRESION BICOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 5 SM
+                                OVCPC = "IMPRESION BICOLOR 5";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 2 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 2";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 6 SM
+                                OVCPC = "IMPRESION BICOLOR 6";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 1 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 1";
+                            }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION 4 COLORES
+            if(jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION 4 COLORES";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO4C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= (Double.parseDouble(dato[1].toString())+(0.2*Double.parseDouble(dato[1].toString())))/1000 * 10 / 10;
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION 4 COLORES
+                    OVCPC = "IMPRESION 4 COLORES";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1% - IMPRESION 4 COLORES 2
+                        OVCPC = "IMPRESION 4 COLORES 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            //2% - IMPRESION 4 COLORES 1
+                            OVCPC = "IMPRESION 4 COLORES 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION DIGITAR A TODO COLOR
+            if(jCBOXIDTC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A TODO COLOR";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='IMPRESION DIGITAL COLOR'");
+                    if(jCBOXUCTC.getSelectedIndex() == 0){
+                        while (rs.next()){
+                            dato[3]= rs.getInt(14);
+                        }
+                    }else{
+                        while (rs.next()){
+                            if(Integer.parseInt(dato[2].toString()) <= 200){
+                                dato[3]= rs.getInt(4);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 500){
+                                    dato[3]= rs.getInt(6);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 800){
+                                        dato[3]= rs.getInt(8);
+                                    }else{
+                                        if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                            dato[3]= rs.getInt(10);
+                                        }else{
+                                            dato[3]= rs.getInt(12);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION DIGITAR A UN COLOR (RISSO)
+            if(jCBOXIDUC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A UN COLOR (RISSO)";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DIGITAL IMPRESION DIGITAL A UN COLOR'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 200){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) <= 500){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 800){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //RECARGO IMPRESION OFFSET
+            if(jCBOXPO1C.getSelectedIndex() == 1 || jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION OFFSET";
+                dato[1]= "-";
+                dato[2]= valrecimp;
+                if(jCBOXTIMP.getSelectedIndex() == 7){
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }else{
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TIPOGRAFIA
+            if(Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000) * 10) / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TIPOGRAFIA'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 7000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //RECARGO IMPRESION TIPOGRAFICA
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= valrectip;
+                dato[3]= jCBOXTCMT.getSelectedIndex()*0.5;
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            /*TIPOGRAFIA FUELLE (NO ESTA SIENDO UTILIZADO)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA FUELLE";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+            
+            String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }*/
+            
+            //ENCUADERNACION
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENCUADERNACION";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - ENCUADERNACION
+                    OVCPC = "ENCUADERNACION";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //1% - PO2C o PO4C - ENCUADERNACION 4
+                            OVCPC = "ENCUADERNACION 4";
+                        }else{
+                            //1% - ENCUADERNACION 2
+                            OVCPC = "ENCUADERNACION 2";
+                        }
+                        
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //2% - PO2C o PO4C - ENCUADERNACION 5
+                            OVCPC = "ENCUADERNACION 5";
+                        }else{
+                            //2% - ENCUADERNACION 1
+                            OVCPC = "ENCUADERNACION 1";
+                        }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                            dato[3]= rs.getDouble(6);
+                        }else{
+                            dato[3]= rs.getDouble(8);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(TIMP == 0 || TIMP == 1 || TIMP == 9 || TIMP == 10){
+                    BLOCKTALON = 1;
+                }else{
+                    BLOCKTALON = 0;
+                }
+                if(TAIM < 7){
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*1.5*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }else{
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //BARNIZ, TINTA INDELEBLE
+            if(jCBOXBOFF.getSelectedIndex() == 1 || jCBOXTIND.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "BARNIZ, TINTA INDELEBLE";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    if(jCBOXBOFF.getSelectedIndex() == 1){
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000) * 2;
+                    }else{
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000);
+                    }
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='BARNIZ, TINTA INDELEBLE'");
+                    while (rs.next()){
+                        if(jCBOXTIND.getSelectedIndex() > 0){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CORTE Y REFILADOS (FALTA)
+            if(jCBOXCSN.getSelectedIndex() == 1){
+                int X4 = 0, X6 = 0;
+                Object dato[] = new Object[5];
+                dato[0]= "CORTE Y REFILADOS";
+                dato[1]= "-";
+                dato[2]= cantlp;
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CORTE Y REFILADO'");
+                    while (rs.next()){
+                        X4 = rs.getInt(4);
+                        X6 = rs.getInt(6);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(Integer.parseInt(dato[2].toString()) <= X4){
+                    dato[3]=3.5;
+                }else{
+                    if(Integer.parseInt(dato[2].toString()) <= X6){
+                        dato[3]=3;
+                    }else{
+                        dato[3]=2.5;
+                    }
+                }
+                valcorte = (int) Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                if(valcorte < 1000){
+                    dato[4] = 2500;
+                }else{
+                    dato[4] = valcorte;
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //MUESTRA COLOR CALIBRADA
+            if(Integer.parseInt(jTXTFCMCC.getText()) > 0 ){
+                Object dato[] = new Object[5];
+                dato[0]= "MUESTRA COLOR CALIBRADA";
+                dato[1]= "-";
+                dato[2]= jTXTFCMCC.getText();
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='MUESTRA COLOR CALIBRADA'");
+                    while (rs.next()){
+                        if(jCBOXCUAT.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(jCBOXCUAT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCMCC.getText()) < 2){
+                    dato[4]=3000;
+                }else{
+                    dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CONFECCION FUELLE
+            if(jCBOXTIMP.getSelectedIndex() == 3 && Integer.parseInt(jTXTFCANT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "CONFECCION FUELLE";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCANT.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CONFECCION FUELLE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION ARCHIVO CLIENTE
+            if(jCBOXCAOA.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION ARCHIVO CLIENTE";
+                dato[1]= "-";
+                dato[2]= jCBOXCAOA.getSelectedIndex();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION ARCHIVO CLIENTE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION SOBRES Y ADHESIVOS
+            if(jCBOXTIMP.getSelectedIndex() == 7){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION SOBRES Y ADHESIVOS";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFCANT.getText()) >= 500){
+                    dato[2]= jTXTFCANT.getText();
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION SOBRES Y ADHESIVOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getDouble(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //ENTREGA CON RADIO TAXI
+            if(jCBOXENRT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFOCAN.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENTREGA CON RADIO TAXI";
+                dato[1]= "-";
+                dato[2]= jCBOXENRT.getSelectedIndex()*Integer.parseInt(jTXTFOCAN.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='ENTREGA RADIO TAXI'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)
+            if(jCBOXTCMT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)";
+                dato[1]= "-";
+                dato[2]= jCBOXTCMT.getSelectedIndex();
+                
+                if(jCBOXEUSA.getSelectedIndex() == 0){
+                    //CONFECCION TROQUEL / CUÑO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO";
+                }else{
+                    //CONFECCION TROQUEL / CUÑO 4 USADO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO 4";
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION Y/O EMPAQUE
+            if(jCBOXASN.getSelectedIndex() == 0){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION Y/O EMPAQUE";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())/Integer.parseInt(jTXTFMONT.getText()));
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISIONES Y/O EMPAQUE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CAJA T/PRESENTACION
+            if(jCBOXCAPR.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAJA T/PRESENTACION";
+                dato[1]= "-";
+                dato[2]= jTXTFCCDT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CAJAS T/PRESENTACION'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TACOS
+            if(jCBOXTIMP.getSelectedIndex() == 8){
+                Object dato[] = new Object[5];
+                dato[0]= "TACOS";
+                dato[1]= "-";
+                dato[2]= jTXTFCANT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TACOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //MATRIZ DE IMPRESION (AQUI)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "MATRIZ DE IMPRESION";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //ARTES
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "ARTES";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CAMBIO CILINDROS
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIO CILINDROS";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION TIPOGRAFICA
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            jLABVVU.setText(String.valueOf(valpuc));
+                        
+            jLABVCAN.setText(jTXTFCANT.getText());
+            jLABVNDJ.setText(jTXTFNJUE.getText());
+            jLABVCDE.setText(jTXTFNEJE.getText());
+        
+    }//GEN-LAST:event_jBGUINActionPerformed
+
+    private void jCBOXDVCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXDVCActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXDVC.getSelectedIndex()== 1){
+            jTXTFESPE.setVisible(true);
+        }else{
+            jTXTFESPE.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXDVCActionPerformed
+
+    private void jCBOXDVPCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXDVPCActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXDVPC.getSelectedIndex()== 1){
+            jTXTFEXTR.setVisible(true);
+        }else{
+            jTXTFEXTR.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXDVPCActionPerformed
+
+    private void jCBOXDPOCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXDPOCActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXDPOC.getSelectedIndex()== 1){
+            jTXTFCOMP.setVisible(true);
+        }else{
+            jTXTFCOMP.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXDPOCActionPerformed
+
+    private void jCBOXCUATActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXCUATActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXCUAT.getSelectedIndex()== 1){
+            jTXTFCCOL.setText("4");
+            jCBOXCTIN.setSelectedIndex(1);
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXPO4C.setSelectedIndex(1);
+        }else{
+            jTXTFCCOL.setText("0");
+        }
+    }//GEN-LAST:event_jCBOXCUATActionPerformed
+
+    private void jCBOXPO2CActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXPO2CActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXPO2C.getSelectedIndex()== 1){
+            jCBOXGTSM.setVisible(true);
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO4C.setSelectedIndex(0);
+            jCBOXIDTC.setSelectedIndex(0);
+            jCBOXIDUC.setSelectedIndex(0);
+        }else{
+            jCBOXGTSM.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXPO2CActionPerformed
+
+    private void jCBOXPO4CActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXPO4CActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXPO4C.getSelectedIndex()== 1){
+            jCBOXPMSM.setVisible(true);
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXIDTC.setSelectedIndex(0);
+            jCBOXIDUC.setSelectedIndex(0);
+        }else{
+            jCBOXPMSM.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXPO4CActionPerformed
+
+    private void jCBOXIDTCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXIDTCActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXIDTC.getSelectedIndex()== 1){
+            jCBOXUCTC.setVisible(true);
+            jTXTFCPCTP.setText("0");
+            jTXTFCPCTP.setEnabled(false);
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXPO4C.setSelectedIndex(0);
+            jCBOXIDUC.setSelectedIndex(0);
+        }else{
+            jCBOXUCTC.setVisible(false);
+            if(jCBOXIDUC.getSelectedIndex()== 0){
+                jTXTFCPCTP.setText("0");
+                jTXTFCPCTP.setEnabled(true);
+            }
+        }
+    }//GEN-LAST:event_jCBOXIDTCActionPerformed
+
+    private void jCBOXTCMTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXTCMTActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXTCMT.getSelectedIndex()== 1){
+            jLABEUSA.setVisible(true);
+            jCBOXEUSA.setVisible(true);
+        }else{
+            jLABEUSA.setVisible(false);
+            jCBOXEUSA.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXTCMTActionPerformed
+
+    private void jCBOXBOFFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXBOFFActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXBOFF.getSelectedIndex()== 1){
+            jLABTRAM.setVisible(true);
+            jCBOXTRAM.setVisible(true);
+        }else{
+            jLABTRAM.setVisible(false);
+            jCBOXTRAM.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXBOFFActionPerformed
+
+    private void jTXTFTAIMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFTAIMActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTXTFTAIMActionPerformed
+
+    private void jTXTFCANTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFCANTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTXTFCANTActionPerformed
+
+    private void jTXTFTAIMKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFTAIMKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFTAIM.getText().length()>=3)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFTAIMKeyTyped
+
+    private void jTXTFTAIMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFTAIMKeyPressed
+        // TODO add your handling code here:
+        
+        DefaultListModel DLM = new DefaultListModel();
+        
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            //if(!jTXTFTAIM.equals("")){
+                TAIM = Integer.parseInt(jTXTFTAIM.getText());
+                ConexDB = new ConexionDB();
+                Statement st =ConexDB.ConectarBD();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT ini_tamano, ter_tamano, condicion FROM OT_EQUIVALENCIA WHERE tamano ='"+TAIM+"' GROUP BY ini_tamano, ter_tamano, condicion");
+                /*int encontrado = rs.getRow();
+                if (rs.last()){
+                        System.out.println("2");
+                    }else{
+                    System.out.println("4");
+                    jTXTFTAIM.setText("");
+                    JOptionPane.showMessageDialog(null, "Ha Ingresado un Tamaño incorrecto o no registrado","TAMAÑO INCORRECTO",JOptionPane.INFORMATION_MESSAGE);
+                }*/
+                    while (rs.next()){
+                        TINI = rs.getString("ini_tamano");
+                        TFIN = rs.getString("ter_tamano");
+                        TCON = rs.getString("condicion");
+                        DLM.addElement(TINI+" X "+TFIN+" "+TCON);
+                        jLISTEQUI.setModel(DLM);
+                        jLISTEQUI.grabFocus();
+                        jLISTEQUI.setSelectedIndex(0);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            //}
+        } //jTXTFMTAMX.grabFocus();
+    }//GEN-LAST:event_jTXTFTAIMKeyPressed
+
+    private void jLISTEQUIValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jLISTEQUIValueChanged
+        // TODO add your handling code here:
+        //if(){
+
+        POSXF = Float.parseFloat(jTXTFMTAMX.getText());
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            jCBOXMDP.removeAllItems();
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM OT_EQUIVALENCIA, OT_TAMANO_PLIEGO WHERE tamano = '"+TAIM+"' AND ini_tamano = '"+POSXF+"' AND OT_EQUIVALENCIA.id_pliego = OT_TAMANO_PLIEGO.id_pliego");
+                  while (rs.next()){
+                    MDP = rs.getString("pliego");
+                    jCBOXMDP.addItem(MDP);
+                }  
+                
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            //}
+    }//GEN-LAST:event_jLISTEQUIValueChanged
+
+    private void jCBOXMDPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXMDPActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        jLABSAVA.setText("0");
+        jLABSOVA.setText("0");
+        NDP = String.valueOf(jCBOXMDP.getSelectedItem());
+                    if (NDP.equals("77 x 110")){
+                        IDP = 1;
+                    }
+                    if (NDP.equals("66 x 88")){
+                        IDP = 2;
+                    }
+                    if (NDP.equals("50 x 70")){
+                        IDP = 3;
+                    }
+                    if (NDP.equals("70 x 100")){
+                        IDP = 4;
+                    }
+                    if (NDP.equals("58 x 89")){
+                        IDP = 5;
+                    }
+                    if (NDP.equals("62 x 92")){
+                        IDP = 6;
+                    }
+                    if (NDP.equals("80 X 110")){
+                        IDP = 7;
+                    }
+                    if (NDP.equals("66 x 101")){
+                        IDP = 8;
+                    }
+                    if (NDP.equals("60 x 90")){
+                        IDP = 9;
+                    }
+                    if (NDP == null){
+                        IDP = 0;
+                    }
+        PASADA = Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText());
+        PASADA_PAGINABLE = PASADA;
+        PASADA_TIPOGRAFIA = Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText());
+        
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM OT_EQUIVALENCIA, OT_TAMANO_PLIEGO WHERE tamano = '"+TAIM+"' AND ini_tamano = '"+POSXF+"' AND OT_EQUIVALENCIA.id_pliego = OT_TAMANO_PLIEGO.id_pliego AND OT_TAMANO_PLIEGO.pliego = '"+NDP+"'");
+            while (rs.next()){
+                SAVA = rs.getString("salen");
+                jLABSAVA.setText(SAVA);
+            }
+        }catch(SQLException | HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }
+        
+        CANT = Integer.parseInt(jTXTFCANT.getText());
+        NJUE = Integer.parseInt(jTXTFNJUE.getText());
+        NEJE = Integer.parseInt(jTXTFNEJE.getText());
+        MONT = Integer.parseInt(jTXTFMONT.getText());
+        
+        TIMP = jCBOXTIMP.getSelectedIndex();
+        
+        if(jCBOXPO4C.getSelectedIndex() == 1){
+            if(PASADA >= 4){
+                PASADA = 5;
+            }else{
+                PASADA = PASADA + 2;
+            }
+        }
+        
+        if(PASADA_TIPOGRAFIA >=5){
+            PASADA_TIPOGRAFIA = 5;
+        }
+        
+        switch(PASADA_TIPOGRAFIA){
+            case 0: {
+                SADICIONAL = 0;
+                break;
+            }
+            case 1: {
+                SADICIONAL = 20;
+                break;
+            }
+            case 2: {
+                SADICIONAL = 40;
+                break;
+            }
+            case 3: {
+                SADICIONAL = 60;
+                break;
+            }
+            case 4: {
+                SADICIONAL = 80;
+                break;
+            }
+            case 5: {
+                SADICIONAL = 100;
+                break;
+            }
+        }
+        
+        if(TIMP == 0 || TIMP == 1 || TIMP == 3 || TIMP == 5 || TIMP == 6 || TIMP == 7 || TIMP == 8 || TIMP == 9 || TIMP == 10 || TIMP == 11 || TIMP == 12){
+            
+        
+        if (CANT > 0 && NJUE > 0 && MONT > 0){
+            cantsobra = (((( CANT * NJUE ) * NEJE ) * PASADA)/ MONT );
+            try{
+                /*
+                System.out.println(PASADA);
+                System.out.println(PASADA_TIPOGRAFIA);
+                System.out.println(cantsobra);
+                System.out.println(SADICIONAL);
+                System.out.println(T_TRABAJO);
+                System.out.println(T_SOBRANTE);
+                */
+                ResultSet rs = st.executeQuery("SELECT * FROM OT_SOBRANTES WHERE desde <= '"+cantsobra+"' AND hasta >= '"+cantsobra+"' AND pasada = '"+PASADA+"' AND tipo_trabajo ='"+T_TRABAJO+"' AND tipo_sobrante = '"+T_SOBRANTE+"'");
+                while (rs.next()){
+                    SOVA = rs.getString("cantidad");
+                    //System.out.println(SOVA);
+                    SOVAi = Integer.parseInt(SOVA) + SADICIONAL;
+                    SOVA = String.valueOf(SOVAi);
+                    jLABSOVA.setText(SOVA);
+                    if(Integer.parseInt(jLABSOVA.getText()) > 0){
+                            jTXTFSOVA.setText(SOVA);
+                    }
+                }
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }try{
+                ResultSet rs = st.executeQuery("SELECT * FROM OT_SOBRANTES WHERE desde <= '"+cantsobra+"' AND hasta >= '"+cantsobra+"' AND pasada = '"+PASADA+"' AND tipo_trabajo ='1' AND tipo_sobrante = '"+T_SOBRANTE+"'");
+                while (rs.next()){
+                    STVA = rs.getString("cantidad");
+                    STVAi = Integer.parseInt(STVA) + SADICIONAL;
+                    STVA = String.valueOf(STVAi);
+                    jLABSTVA.setText(STVA);
+                    if(Integer.parseInt(jLABSTVA.getText()) > 0){
+                            jTXTFSTVA.setText(STVA);
+                    }
+                }
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        }
+        }if(TIMP == 4){
+            jLABSOVA.setText("4");
+            jTXTFSOVA.setText("4");
+            jLABSTVA.setText("2");
+            jTXTFSTVA.setText("2");
+        }if(TIMP == 2){
+            if (CANT > 0 && NJUE > 0 && MONT > 0){
+            
+                BOFF = jCBOXBOFF.getSelectedIndex();
+                TIND = jCBOXTIND.getSelectedIndex();
+                PO1C = jCBOXPO1C.getSelectedIndex();
+                PO2C = jCBOXPO2C.getSelectedIndex();
+                PO4C = jCBOXPO4C.getSelectedIndex();
+                CUAT = jCBOXCUAT.getSelectedIndex();
+                CCOL = Integer.parseInt(jTXTFCCOL.getText());
+                
+                if(CUAT == 1 && PO2C == 1){
+                    DESCCOLOR = "Cuatricomias en Bicolores";
+                }
+                if(CUAT == 1 && PO4C == 1){
+                    DESCCOLOR = "Cuatricomias en PM 4 Colores";
+                }
+                if((CCOL == 2 || CCOL == 3) && PO4C == 1){
+                    DESCCOLOR = "2 y 3 Color";
+                }
+                if(CCOL == 1 && PO1C == 1){
+                    DESCCOLOR = "1 Color";
+                }
+                EXTRA1 = BOFF + TIND;
+                EXTRA2 = Integer.parseInt(jTXTFCPCTP.getText());
+                CALC1 = (( CANT * NJUE ) * NEJE );
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM OT_SOBRANTES_PAGINABLES WHERE descripcion = '"+DESCCOLOR+"' AND tipo_trabajo = '0'");
+                    while (rs.next()){
+                        SOBR = rs.getString("sobrantes");
+                        PORC = rs.getString("porcentaje");
+                        if(PO1C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO1C);
+                            EXTRAMONO = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) + ( EXTRAMONO * (Double.parseDouble(PORC) / 100) );
+                        }if(PO2C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO2C);
+                            EXTRABI = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) +( EXTRABI * (Double.parseDouble(PORC) / 100) );
+                        }if(PO4C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO4C);
+                            EXTRACUAT = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) +( EXTRACUAT * (Double.parseDouble(PORC) / 100) );
+                        }
+                        SOVA = String.valueOf(Math.round(CALC2));
+                        jLABSOVA.setText(String.valueOf(SOVA));
+                        if(Double.parseDouble(jLABSOVA.getText()) > 0){
+                            jTXTFSOVA.setText(String.valueOf(SOVA));
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM OT_SOBRANTES_PAGINABLES WHERE descripcion = '"+DESCCOLOR+"' AND tipo_trabajo = '1'");
+                    while (rs.next()){
+                        SOBR = rs.getString("sobrantes");
+                        PORC = rs.getString("porcentaje");
+                        if(PO1C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO1C);
+                            EXTRAMONO = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) +( EXTRAMONO * (Double.parseDouble(PORC) / 100) );
+                        }if(PO2C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO2C);
+                            EXTRABI = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) +( EXTRABI * (Double.parseDouble(PORC) / 100) );
+                        }if(PO4C == 1){
+                            TOTAL1 = (((CALC1 * (PASADA_PAGINABLE+EXTRA1))/MONT)*PO4C);
+                            EXTRACUAT = TOTAL1;
+                            CALC2 = ( Integer.parseInt(SOBR)* EXTRA2 ) +( EXTRACUAT * (Double.parseDouble(PORC) / 100) );
+                        }
+                        STVA = String.valueOf(Math.round(CALC2));
+                        jLABSTVA.setText(STVA);
+                        if(Double.parseDouble(jLABSTVA.getText()) > 0){
+                            jTXTFSTVA.setText(STVA);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_jCBOXMDPActionPerformed
+
+    private void jCBOXMDPMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCBOXMDPMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCBOXMDPMouseClicked
+
+    private void jLISTEQUIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLISTEQUIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jLISTEQUI.getListSelectionListeners();
+            POSXY = jLISTEQUI.getSelectedValue().toString();
+            if(POSXY != null && POSXY.length() > Truncate){
+                POSZ1 = POSXY.substring(2,3);
+                POSZ2 = POSXY.substring(9,10);
+                POSZ3 = POSXY.substring(7,8);
+                POSZ4 = POSXY.substring(1,2);
+                if(POSZ1.equals(".")){
+                    if(POSZ2.equals(".")){
+                        POSX = POSXY.substring(0, 4);
+                        POSY = POSXY.substring(7, 11);
+                        COND = POSXY.substring(12);
+                    }else{
+                        POSX = POSXY.substring(0, 4);
+                        POSY = POSXY.substring(7, 9);
+                        COND = POSXY.substring(10);
+                    }
+                }else{
+                    if(POSZ3.equals(".")){
+                        POSX = POSXY.substring(0, 2);
+                        POSY = POSXY.substring(5, 9);
+                        COND = POSXY.substring(10);
+                    }else{
+                        if(POSZ4.equals(".")){
+                            POSX = POSXY.substring(0, 4);
+                            POSY = POSXY.substring(7, 9);
+                            COND = POSXY.substring(10);
+                        }else{
+                            POSX = POSXY.substring(0, 2);
+                            POSY = POSXY.substring(5, 7);
+                            COND = POSXY.substring(8);
+                        }
+                    }
+                    
+                }
+                /*
+                POSX = POSXY.substring(0, Truncate);
+                POSY = POSXY.substring(7, 11);
+                COND = POSXY.substring(12);
+                */
+            }
+            jTXTFMTAMX.setText(POSX);
+            jTXTFMTAMY.setText(POSY);
+
+            POSXF = Float.parseFloat(jTXTFMTAMX.getText());
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            jCBOXMDP.removeAllItems();
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM OT_EQUIVALENCIA, OT_TAMANO_PLIEGO WHERE tamano = '"+TAIM+"' AND ini_tamano = '"+POSXF+"' AND OT_EQUIVALENCIA.id_pliego = OT_TAMANO_PLIEGO.id_pliego AND condicion = '"+COND+"'");
+                  while (rs.next()){
+                    ID_PLIEGO = rs.getString(5);
+                    MDP = rs.getString("pliego");
+                    jCBOXMDP.addItem(MDP);
+                }  
+                
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            
+            jTXTFMTAMX.grabFocus();
+        }
+    }//GEN-LAST:event_jLISTEQUIKeyPressed
+
+    private void jTXTFMTAMXKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMTAMXKeyTyped
+        // TODO add your handling code here:
+        toUpperCase = jTXTFMTAMX.getText().toUpperCase();
+        jTXTFMTAMX.setText(toUpperCase);
+        
+        if (jTXTFMTAMX.getText().length()>=4){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTXTFMTAMXKeyTyped
+
+    private void jTXTFMTAMYKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMTAMYKeyTyped
+        // TODO add your handling code here:
+        toUpperCase = jTXTFMTAMY.getText().toUpperCase();
+        jTXTFMTAMY.setText(toUpperCase);
+        
+        if (jTXTFMTAMY.getText().length()>=4){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTXTFMTAMYKeyTyped
+
+    private void jLISTEQUIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jLISTEQUIFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLISTEQUIFocusGained
+
+    private void jTXTFMONTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMONTKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFTAIM.grabFocus();
+    }//GEN-LAST:event_jTXTFMONTKeyPressed
+
+    private void jTXTFMONTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMONTKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+    }//GEN-LAST:event_jTXTFMONTKeyTyped
+
+    private void jTXTFMTAMXKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMTAMXKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFMTAMY.grabFocus();
+    }//GEN-LAST:event_jTXTFMTAMXKeyPressed
+
+    private void jTXTFMTAMYKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMTAMYKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXMDP.grabFocus();
+    }//GEN-LAST:event_jTXTFMTAMYKeyPressed
+
+    private void jBLIPIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBLIPIActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jBLIPIActionPerformed
+
+    private void jCBOXTIMPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXTIMPActionPerformed
+        // TODO add your handling code here:
+        TIMP = jCBOXTIMP.getSelectedIndex();
+            jCBOXCDS.setEnabled(true); // 1
+            jTXTFSIMP.setEnabled(true); // 1.1
+            jCBOXDVC.setEnabled(true); // 2
+            jTXTFESPE.setEnabled(true); // 2.2
+            jCBOXDVPC.setEnabled(true); // 3
+            jTXTFEXTR.setEnabled(true); // 3.3
+            jCBOXDPOC.setEnabled(true); // 4
+            jTXTFCOMP.setEnabled(true); // 4.4
+            jCBOXCAUA.setEnabled(true); // 5
+            jCBOXCAOA.setEnabled(true); // 6
+            jTXTFCMCC.setEnabled(true); // 7
+            jCBOXCUAT.setEnabled(true); // 8
+            jTXTFCCOL.setEnabled(true); // 9
+            jCBOXCTIN.setEnabled(true); // 10
+            jCBOXPO1C.setEnabled(true); // 11
+            jCBOXPO2C.setEnabled(true); // 12
+            jCBOXGTSM.setEnabled(true); // 12.12
+            jCBOXPO4C.setEnabled(true); // 13
+            jCBOXPMSM.setEnabled(true); // 13.13
+            jCBOXIDTC.setEnabled(true); // 14
+            jCBOXUCTC.setEnabled(true); // 14.14
+            jCBOXIDUC.setEnabled(true); // 15
+            jTXTFIOTI.setEnabled(true); // 16
+            jTXTFIORE.setEnabled(true); // 17
+            jTXTFITTI.setEnabled(true); // 18
+            jTXTFITRE.setEnabled(true); // 19
+            jCBOXPMOL.setEnabled(true); // 20
+            jCBOXTCMT.setEnabled(true); // 21
+            jCBOXEUSA.setEnabled(true); // 21.21
+            jCBOXTBCP.setEnabled(true); // 22
+            jCBOXFTCA.setEnabled(true); // 23
+            jCBOXFLLE.setEnabled(true); // 24
+            jCBOXBOFF.setEnabled(true); // 25
+            jCBOXTRAM.setEnabled(true); // 25.25
+            jCBOXTIND.setEnabled(true); // 26
+            jTXTFCPCTP.setEnabled(true); // 27
+            jCBOXPARC.setEnabled(true); // 28
+            jCBOXCAPP.setEnabled(true); // 29
+            
+            jCBOXCDS.setSelectedIndex(1); // 1
+            jCBOXCAUA.setSelectedIndex(1); // 5
+            jCBOXPO1C.setSelectedIndex(1); // 11
+            jCBOXPMOL.setSelectedIndex(1); // 20
+            
+        if(TIMP == 0 || TIMP == 1 || TIMP == 3 || TIMP == 6 || TIMP == 8 || TIMP == 9 || TIMP == 10 || TIMP == 11 || TIMP == 12){
+            T_TRABAJO = 0;
+            T_SOBRANTE = 0;
+            jLABTSVA.setText("NORMAL");
+
+            if(TIMP == 0 || TIMP == 9){
+                jCBOXDPOC.setSelectedIndex(0);
+                jCBOXDPOC.setEnabled(false); // 4
+                jTXTFCOMP.setText("0");
+                jCBOXPMOL.setSelectedIndex(0);
+                jCBOXPMOL.setEnabled(false); // 20
+            }if(TIMP == 1 || TIMP == 10){
+                jCBOXDPOC.setEnabled(false); // 4
+            }if(TIMP == 3 || TIMP == 6 || TIMP == 8 || TIMP == 12){
+                jCBOXPMOL.setSelectedIndex(0);
+                jCBOXPMOL.setEnabled(false); // 20
+                jCBOXFTCA.setSelectedIndex(0);
+                jCBOXFTCA.setEnabled(false); // 23
+            }if(TIMP == 11){
+                jCBOXDPOC.setSelectedIndex(0);
+                jCBOXDPOC.setEnabled(false); // 4
+                jCBOXPMOL.setSelectedIndex(0);
+                jCBOXPMOL.setEnabled(false); // 20
+                jCBOXFTCA.setSelectedIndex(0);
+                jCBOXFTCA.setEnabled(false); // 23
+            }
+        }if(TIMP == 2){
+            //T_TRABAJO = x;
+            //T_SOBRANTE = x;
+            jLABTSVA.setText("PAGINABLE - CALENDARIO");
+        }if(TIMP == 4){
+            //T_TRABAJO = x;
+            //T_SOBRANTE = x;
+            jCBOXCDS.setSelectedIndex(0);
+            jCBOXCDS.setEnabled(false); // 1
+            jTXTFSIMP.setText("0");
+            jTXTFSIMP.setEnabled(false); // 1.1
+            jCBOXDVC.setSelectedIndex(0);
+            jCBOXDVC.setEnabled(false); // 2
+            jTXTFESPE.setText("0");
+            jTXTFESPE.setEnabled(false); // 2.2
+            jCBOXDVPC.setSelectedIndex(0);
+            jCBOXDVPC.setEnabled(false); // 3
+            jTXTFEXTR.setText("0");
+            jTXTFEXTR.setEnabled(false); // 3.3
+            jCBOXDPOC.setSelectedIndex(0);
+            jCBOXDPOC.setEnabled(false); // 4
+            jTXTFCOMP.setText("0");
+            jTXTFCOMP.setEnabled(false); // 4.4
+            jCBOXCAUA.setSelectedIndex(0);
+            jCBOXCAUA.setEnabled(false); // 5
+            jCBOXCAOA.setSelectedIndex(0);
+            jCBOXCAOA.setEnabled(false); // 6
+            jTXTFCMCC.setText("0");
+            jTXTFCMCC.setEnabled(false); // 7
+            jCBOXCUAT.setSelectedIndex(0);
+            jCBOXCUAT.setEnabled(false); // 8
+            jTXTFCCOL.setText("0");
+            jTXTFCCOL.setEnabled(false); // 9
+            jCBOXCTIN.setSelectedIndex(0);
+            jCBOXCTIN.setEnabled(false); // 10
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO1C.setEnabled(false); // 11
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXPO2C.setEnabled(false); // 12
+            jCBOXGTSM.setSelectedIndex(0);
+            jCBOXGTSM.setEnabled(false); // 12.12
+            jCBOXPO4C.setSelectedIndex(0);
+            jCBOXPO4C.setEnabled(false); // 13
+            jCBOXPMSM.setSelectedIndex(0);
+            jCBOXPMSM.setEnabled(false); // 13.13
+            jCBOXIDTC.setSelectedIndex(0);
+            jCBOXIDTC.setEnabled(false); // 14
+            jCBOXUCTC.setSelectedIndex(0);
+            jCBOXUCTC.setEnabled(false); // 14.14
+            jCBOXIDUC.setSelectedIndex(0);
+            jCBOXIDUC.setEnabled(false); // 15
+            jTXTFIOTI.setText("0");
+            jTXTFIOTI.setEnabled(false); // 16
+            jTXTFIORE.setText("0");
+            jTXTFIORE.setEnabled(false); // 17
+            jTXTFITTI.setText("0");
+            jTXTFITTI.setEnabled(false); // 18
+            jTXTFITRE.setText("0");
+            jTXTFITRE.setEnabled(false); // 19
+            jCBOXPMOL.setSelectedIndex(0);
+            jCBOXPMOL.setEnabled(false); // 20
+            jCBOXTCMT.setSelectedIndex(0);
+            jCBOXTCMT.setEnabled(false); // 21
+            jCBOXEUSA.setSelectedIndex(0);
+            jCBOXEUSA.setEnabled(false); // 21.21
+            jCBOXTBCP.setSelectedIndex(0);
+            jCBOXTBCP.setEnabled(false); // 22
+            jCBOXFTCA.setSelectedIndex(0);
+            jCBOXFTCA.setEnabled(false); // 23
+            jCBOXFLLE.setSelectedIndex(0);
+            jCBOXFLLE.setEnabled(false); // 24
+            jCBOXBOFF.setSelectedIndex(0);
+            jCBOXBOFF.setEnabled(false); // 25
+            jCBOXTRAM.setSelectedIndex(0);
+            jCBOXTRAM.setEnabled(false); // 25.25
+            jCBOXTIND.setSelectedIndex(0);
+            jCBOXTIND.setEnabled(false); // 26
+            jTXTFCPCTP.setText("0");
+            jTXTFCPCTP.setEnabled(false); // 27
+            jCBOXPARC.setSelectedIndex(0);
+            jCBOXPARC.setEnabled(false); // 28
+            jCBOXCAPP.setSelectedIndex(0);
+            jCBOXCAPP.setEnabled(false); // 29
+            
+            jLABTSVA.setText("ESPECIAL");
+        }if(TIMP == 5 || TIMP == 7){
+            T_TRABAJO = 0;
+            T_SOBRANTE = 1;
+            jLABTSVA.setText("SOBRES");
+            jCBOXPMOL.setSelectedIndex(0);
+            jCBOXPMOL.setEnabled(false); // 20
+            jCBOXFTCA.setSelectedIndex(0);
+            jCBOXFTCA.setEnabled(false); // 23
+        }
+        TXTTIMP = jCBOXTIMP.getSelectedItem().toString();
+        jLABVTDI.setText(TXTTIMP);
+    }//GEN-LAST:event_jCBOXTIMPActionPerformed
+
+    private void jLABSOVAKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLABSOVAKeyTyped
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jLABSOVAKeyTyped
+
+    private void jLABSOVAInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jLABSOVAInputMethodTextChanged
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jLABSOVAInputMethodTextChanged
+
+    private void jBAPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBAPActionPerformed
+        // TODO add your handling code here:
+        jDIAAPAP.setVisible(true);
+        DefaultListModel DLM = new DefaultListModel();
+        ConexDB = new ConexionDB();
+        Statement st = ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM FAMILIA ORDER BY(descripcion)");
+            while (rs.next()){
+                    FAMI = rs.getString("descripcion");
+                    DLM.addElement(FAMI);
+                    jLISTFAMI.setModel(DLM);
+                    //jLISTFAMI.grabFocus();
+                    jTXTFICDI.grabFocus();
+                    jLISTFAMI.setSelectedIndex(0);
+                }  
+
+        }catch(SQLException | HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }
+    }//GEN-LAST:event_jBAPActionPerformed
+
+    private void jLISTFAMIValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_jLISTFAMIValueChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLISTFAMIValueChanged
+
+    private void jLISTFAMIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jLISTFAMIFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLISTFAMIFocusGained
+
+    private void jLISTFAMIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jLISTFAMIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            PosRow = -1;
+            jLISTFAMI.getListSelectionListeners();
+            SFAM = jLISTFAMI.getSelectedValue().toString();
+            DefaultTableModel DTM;
+            DTM =  (DefaultTableModel) jTABSUFA.getModel();
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            DTM.setRowCount(0);
+            
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM FAMILIA WHERE descripcion ='"+SFAM+"'");
+                while (rs.next()){
+                    CFAM = rs.getInt("codigo");
+                }
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM articulo WHERE familia_codigo ='"+CFAM+"'");
+                while (rs.next()){
+                    Object dato[] = new Object[5];
+                    for (int i=0 ; i< 5 ; i++){
+                        dato[0]=rs.getString(1);
+                        dato[1]=rs.getString(2);
+                        dato[2]=rs.getString(7);
+                        dato[3]=rs.getString(6);
+                        dato[4]=rs.getString(12);
+                    }
+                    DTM.addRow(dato);
+                    PosRow = PosRow + 1;
+                }
+                
+                jTABSUFA.setModel(DTM);
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            jTABSUFA.grabFocus();
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE){
+            jDIAAPAP.dispose();
+            jCBOXCSN.grabFocus();
+        }
+    }//GEN-LAST:event_jLISTFAMIKeyPressed
+
+    private void jTXTFICDIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFICDIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            String ICDI = jTXTFICDI.getText();
+            if( !ICDI.equals("")){
+                CPRO = Integer.parseInt(jTXTFICDI.getText());
+            }
+            DefaultTableModel DTM;
+            DTM =  (DefaultTableModel) jTABSUFA.getModel();
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            DTM.setRowCount(0);
+            
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM articulo WHERE codigo ='"+CPRO+"'");
+                while (rs.next()){
+                    Object dato[] = new Object[5];
+                    for (int i=0 ; i< 5 ; i++){
+                        dato[0]=rs.getString(1);
+                        dato[1]=rs.getString(2);
+                        dato[2]=rs.getString(7);
+                        dato[3]=rs.getString(6);
+                        dato[4]=rs.getString(12);
+                    }
+                    DTM.addRow(dato);
+                    
+                }
+                jTABSUFA.setModel(DTM);
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            jTABSUFA.grabFocus();
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE){
+            jDIAAPAP.dispose();
+            jCBOXCSN.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFICDIKeyPressed
+
+    private void jTABSUFAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTABSUFAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            
+            
+            int Z = Integer.parseInt(jTXTFNEJE.getText());
+            jLABCEPJV.setText(String.valueOf(Z));
+            ContAgre = ContAgre + 1;
+            jLABHAGRV.setText(String.valueOf(ContAgre));
+            jDIASTOC.setVisible(true);
+            
+            PAP = Math.round(((CANT*NJUE)/(MONT*TAIM))+(Integer.parseInt(jLABSOVA.getText())/TAIM)+0.49);
+            if(ART<PAP){
+                int PAPi = (int)PAP;
+                jTXTFICAN.setText(String.valueOf(PAPi));
+            }else{
+                jTXTFICAN.setText(String.valueOf(0));
+            }
+            
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE){
+            jDIAAPAP.dispose();
+            jCBOXCSN.grabFocus();
+        }
+    }//GEN-LAST:event_jTABSUFAKeyPressed
+
+    private void jDIASTOCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jDIASTOCKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDIASTOCKeyPressed
+
+    private void jTXTFICANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFICANKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+
+            if(jTABSUFA.getSelectedRow() > 0){
+                selectedRow = jTABSUFA.getSelectedRow() - 1 ;
+            }else{
+                if(PosRow == -1)
+                    PosRow = 0;
+                selectedRow = jTABSUFA.getSelectedRow() + PosRow ;
+            }
+                        
+            try{
+                int Limpiador = ContAgre;
+                DefaultTableModel DTM_MONT;
+                DTM_MONT =  (DefaultTableModel) jTABMONT.getModel();
+                count = DTM_MONT.getRowCount();
+                if(Limpiador == 1){
+                    DTM_MONT.setRowCount(0);
+                }
+                Object dato[] = new Object[5];
+                dato[0]= jTABSUFA.getModel().getValueAt(selectedRow, 0);
+                codlp = dato[0].toString();
+                dato[1]= jTABSUFA.getModel().getValueAt(selectedRow, 1).toString();
+                nomlp = dato[1].toString();
+                dato[2]= jTABSUFA.getModel().getValueAt(selectedRow, 4);
+                System.out.println(dato[2]);
+                vallp = Double.parseDouble(dato[2].toString());
+                dato[3]= Integer.parseInt(jTXTFICAN.getText());
+                if(Integer.parseInt(dato[3].toString()) != 0 && Integer.parseInt(dato[3].toString()) == PAP){
+                    ART = Integer.parseInt(dato[3].toString());
+                }
+                cantlp = Integer.parseInt(dato[3].toString());
+                dato[4]=(String) jTXTFICAN.getText();
+                if(Integer.parseInt(jTXTFICAN.getText()) == PAP){
+                    DTM_MONT.addRow(dato);
+                    jTABMONT.setModel(DTM_MONT);
+                }
+                
+
+            }catch(HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+
+            jDIASTOC.dispose();
+            jTXTFICAN.setText("0");
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE){
+            jDIASTOC.dispose();
+            jTXTFICAN.setText("0");
+        }
+    }//GEN-LAST:event_jTXTFICANKeyPressed
+
+    private void jBBUCLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBBUCLActionPerformed
+        // TODO add your handling code here:
+        //BCLI = jTXTFBCLI.getText();
+        jDIABCLI.setVisible(true);
+        jTXTFBCLI.grabFocus();
+        /*DefaultListModel DLM = new DefaultListModel();
+        ConexDB = new ConexionDB();
+        Statement st = ConexDB.ConectarBD();
+
+        try{
+            ResultSet rs = st.executeQuery("SELECT * FROM TCLIENTE WHERE cliente ='"+BCLI+"'");
+            while (rs.next()){
+                    FAMI = rs.getString("familia");
+                    DLM.addElement(FAMI);
+                    jLISTFAMI.setModel(DLM);
+                    jLISTFAMI.grabFocus();
+                    jLISTFAMI.setSelectedIndex(0);
+                }  
+
+        }catch(SQLException | HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }*/
+        
+    }//GEN-LAST:event_jBBUCLActionPerformed
+
+    private void jTXTFBCLIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFBCLIKeyPressed
+        // TODO add your handling code here:
+
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            BCLI = jTXTFBCLI.getText();
+            DefaultTableModel DTMBCLI;
+            DTMBCLI =  (DefaultTableModel) jTABBCLI.getModel();
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            DTMBCLI.setRowCount(0);
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM TCLIENTE WHERE cliente LIKE '%"+BCLI+"%'");
+                while (rs.next()){
+                    Object datoBCLI[] = new Object[2];
+                    for (int i=0 ; i< 2 ; i++){
+                        datoBCLI[0]=rs.getString(1);
+                        datoBCLI[1]=rs.getString(2);
+                    }
+                    DTMBCLI.addRow(datoBCLI);
+                }
+                jTABBCLI.setModel(DTMBCLI);
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        }else jTXTFBCLI.grabFocus();
+    }//GEN-LAST:event_jTXTFBCLIKeyPressed
+
+    private void jBBCLIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBBCLIActionPerformed
+        // TODO add your handling code here:
+            BCLI = jTXTFBCLI.getText();
+            DefaultTableModel DTMBCLI;
+            DTMBCLI =  (DefaultTableModel) jTABBCLI.getModel();
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            DTMBCLI.setRowCount(0);
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM TCLIENTE WHERE cliente LIKE '%"+BCLI+"%'");
+                while (rs.next()){
+                    Object datoBCLI[] = new Object[2];
+                    for (int i=0 ; i< 2 ; i++){
+                        datoBCLI[0]=rs.getString(1);
+                        datoBCLI[1]=rs.getString(2);
+                    }
+                    DTMBCLI.addRow(datoBCLI);
+                }
+                jTABBCLI.setModel(DTMBCLI);
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+    }//GEN-LAST:event_jBBCLIActionPerformed
+
+    private void jTABBCLIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTABBCLIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            RCLI = String.valueOf(jTABBCLI.getValueAt(jTABBCLI.getSelectedRow(), 0));
+            jTXTFRCLI.setText(RCLI);
+            NCLI = String.valueOf(jTABBCLI.getValueAt(jTABBCLI.getSelectedRow(), 1));
+            jTXTFNCLI.setText(NCLI);
+            jTXTFNIMP.grabFocus();
+            jDIABCLI.setVisible(false);
+        
+            //Limpiamos la Busqueda Antigua
+            jTXTFBCLI.setText("");
+            DefaultTableModel DTMBCLI;
+            DTMBCLI =  (DefaultTableModel) jTABBCLI.getModel();
+            DTMBCLI.setRowCount(0);
+        }
+        if(evt.getKeyCode() == KeyEvent.VK_ESCAPE){
+            jTXTFRCLI.grabFocus();
+            jDIABCLI.setVisible(false);
+            jTXTFBCLI.setText("");
+            DefaultTableModel DTMBCLI;
+            DTMBCLI =  (DefaultTableModel) jTABBCLI.getModel();
+            DTMBCLI.setRowCount(0);
+        }
+        
+    }//GEN-LAST:event_jTABBCLIKeyPressed
+
+    private void jBCEBUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCEBUActionPerformed
+        // TODO add your handling code here:
+        jDIABCLI.setVisible(false);
+        
+        jTXTFBCLI.setText("");
+        DefaultTableModel DTMBCLI;
+        DTMBCLI =  (DefaultTableModel) jTABBCLI.getModel();
+        DTMBCLI.setRowCount(0);
+    }//GEN-LAST:event_jBCEBUActionPerformed
+
+    private void jCBOXTERMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXTERMActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXTERM.getSelectedIndex() == 1){
+            jDIATERM.setVisible(true);
+            jCBOXPOLIM.setSelectedIndex(1);
+        }else{
+            jCBOXSBUV.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXTERMActionPerformed
+
+    private void jBTCLRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBTCLRActionPerformed
+        // TODO add your handling code here:
+        jCBOXTERM.setSelectedIndex(0);
+        jCBOXSBUV.grabFocus();
+        jDIATERM.dispose();
+    }//GEN-LAST:event_jBTCLRActionPerformed
+
+    private void jCBOXPOLIMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXPOLIMActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXPOLIM.getSelectedIndex()== 1){
+            jLABVTLB.setText(jLABT150.getText());
+            jCBOXPOLIE.setSelectedIndex(0);
+        }else{
+            jCBOXPOLIE.setSelectedIndex(1);
+        }
+        
+        /////////////////////////////////////////////
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jCBOXPOLIMActionPerformed
+
+    private void jCBOXPOLIEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXPOLIEActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXPOLIE.getSelectedIndex()== 1){
+            jLABVTLB.setText(jLABT300.getText());
+            jCBOXPOLIM.setSelectedIndex(0);
+        }else{
+            jCBOXPOLIM.setSelectedIndex(1);
+        }
+        
+        ////////////////////////////////////////////
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jCBOXPOLIEActionPerformed
+
+    private void jTXTFCAIMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFCAIMActionPerformed
+        // TODO add your handling code here:
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jTXTFCAIMActionPerformed
+
+    private void jTXTFTMONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFTMONActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jTXTFTMONActionPerformed
+
+    private void jTXTFLATIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFLATIActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jTXTFLATIActionPerformed
+
+    private void jTXTFLAREActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFLAREActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jTXTFLAREActionPerformed
+
+    private void jTXTFLLTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFLLTTActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jTXTFLLTTActionPerformed
+
+    private void jCBOXFLETActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXFLETActionPerformed
+        // TODO add your handling code here:
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        try{
+            ResultSet rs = st.executeQuery("SELECT x1,x2,x3,x4 FROM OT_VALORES_COTIZADOR_TERMOLAMINADO WHERE descripcion = 'VALOR TERMOLAMINADO'");
+            while (rs.next()){
+                x1 = rs.getString("x1");
+                x2 = rs.getString("x2");
+                x3 = rs.getString("x3");
+                x4 = rs.getString("x4");
+                }
+            x1 = x1.substring(0,2);
+            x2 = x2.substring(0,2);
+            x3 = x3.substring(0,2);
+            x4 = x4.substring(0,2);
+            
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        
+        if(Integer.parseInt(jTXTFCAIM.getText())>0 && Integer.parseInt(jTXTFTMON.getText())>0 &&
+                Integer.parseInt(jTXTFLATI.getText())>0 && Integer.parseInt(jTXTFLARE.getText())>0 &&
+                Integer.parseInt(jTXTFLLTT.getText())>0){
+
+            //CANTIDAD A LAMINAR
+        
+            int CAIM = Integer.parseInt(jTXTFCAIM.getText());
+            int TMON = Integer.parseInt(jTXTFTMON.getText());
+            double VCAL;
+            int VCALi;
+            VCAL = ((CAIM/0.85)/TMON);
+            VCAL = Math.round(VCAL);
+            VCALi = (int)VCAL;
+            jLABVCAL.setText(String.valueOf(VCALi));
+        
+            //LAMINA BRILLANTE
+            
+            double LLTT = Integer.parseInt(jTXTFLLTT.getText());
+            int LATI = Integer.parseInt(jTXTFLATI.getText());
+            int LARE = Integer.parseInt(jTXTFLARE.getText());
+            double CTLB;
+            int CTLBi;
+            LLTT = LLTT/100;
+            CTLB = (LLTT)*(LATI+LARE)*(VCALi);
+            CTLB = Math.round(CTLB);
+            CTLBi = (int)CTLB;
+            jLABCTLB.setText(String.valueOf(CTLBi));
+            int VTLB = Integer.parseInt(jLABVTLB.getText());
+            int TTLB;
+            TTLB = CTLBi*VTLB;
+            //TTLB = Math.round(TTLB);
+            jLABTTLB.setText(String.valueOf(TTLB));
+        
+            //TERMOLAMINADO (M.O)
+            
+            int CTMO;
+            int TTMO;
+        
+            if(jCBOXPOLIM.getSelectedIndex()==1){
+                CTMO = (VCALi * (LATI+LARE));
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }else{
+                CTMO = VCALi;
+                //CTMO = Math.round(CTMO);
+                jLABCTMO.setText(String.valueOf(CTMO));
+            }
+            if(VCALi > 0 && VCALi <= 100){
+                VTMO = Integer.parseInt(x1);
+            }
+            if(VCALi > 100 && VCALi <= 500){
+                VTMO = Integer.parseInt(x2);
+            }
+            if(VCALi > 500 && VCALi <= 800){
+                VTMO = Integer.parseInt(x3);
+            }
+            if(VCALi > 800){
+                VTMO = Integer.parseInt(x4);
+            }
+            jLABVTMO.setText(String.valueOf(VTMO));
+            TTMO = CTMO * VTMO;
+            //TTMO = Math.round(TTMO);
+            jLABTTMO.setText(String.valueOf(TTMO));
+            
+            //CORTE Y REFILADO
+            
+            jLABCTCR.setText(jTXTFCAIM.getText());
+            int CTCR = Integer.parseInt(jLABCTCR.getText());
+            double VTCR = Double.parseDouble(jLABVTCR.getText());
+            double TTCR;
+            int TTCRi;
+            TTCR = CTCR*VTCR;
+            TTCR = Math.round(TTCR);
+            TTCRi = (int)TTCR;
+            jLABTTCR.setText(String.valueOf(TTCRi));
+
+            //SUB-TOTAL 1
+            
+            int TTS1;
+            TTS1 = TTLB + TTMO + TTCRi;
+            jLABTTS1.setText(String.valueOf(TTS1));
+        
+            //FACTURACION & COBRANZA
+            
+            double TTFC;
+            TTFC = TTS1*0.01+500;
+            int TTFCi = (int)TTFC;
+            jLABTTFC.setText(String.valueOf(TTFCi));
+            
+            //MERMAS E INCOBRABILIDAD
+            
+            double VTMI = Integer.parseInt(jLABVTMI.getText());
+            VTMI = VTMI/100;
+            double TTMI;
+            int TTMIi;
+            TTMI = TTS1*VTMI;
+            TTMI = Math.round(TTMI);
+            TTMIi = (int)TTMI;
+            jLABTTMI.setText(String.valueOf(TTMIi));
+            
+            //COSTOS FIJOS E INDIRECTOS
+            
+            double VTCF = Integer.parseInt(jLABVTCF.getText());
+            VTCF = VTCF/100;
+            double TTCF;
+            int TTCFi;
+            TTCF = TTS1*VTCF;
+            TTCF = Math.round(TTCF);
+            TTCFi =  (int)TTCF;
+            jLABTTCF.setText(String.valueOf(TTCFi));
+            
+            //SUB-TOTAL 2
+            
+            int TTRE = Integer.parseInt(jLABTTRE.getText());
+            int TTS2;
+            TTS2 = TTRE+TTFCi+TTMIi+TTCFi+TTS1;
+            jLABTTS2.setText(String.valueOf(TTS2));
+            
+            //COMISIONES POR VENTAS
+            
+            double VTCV = Integer.parseInt(jLABVTCV.getText());
+            VTCV = (100-VTCV)/100;
+            double TTCV;
+            int TTCVi;
+            TTCV = (TTS2 / VTCV)-TTS2;
+            TTCV = Math.round(TTCV);
+            TTCVi = (int)TTCV;
+            jLABTTCV.setText(String.valueOf(TTCVi));
+            
+            //SUB-TOTAL 3
+            
+            int TTS3;
+            TTS3 = TTS2+TTCVi;
+            jLABTTS3.setText(String.valueOf(TTS3));
+            
+            //PRECIO TOTAL CLIENTE
+            
+            double TTUB = Integer.parseInt(jLABTTUB.getText());
+            TTUB = 1-(TTUB/100);
+            double TTPT;
+            int TTPTi;
+            TTPT = (TTS3/TTUB);
+            TTPT = Math.round(TTPT);
+            TTPTi = (int)TTPT;
+            jLABTTPT.setText(String.valueOf(TTPTi));
+            
+            //PRECIO UNITARIO CLIENTE
+            
+            double TTPU;
+            int TTPUi;
+            if(jCBOXFLET.getSelectedIndex() == 1){
+                TTPU = (TTPT/0.9)/CAIM;
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }else{
+                TTPU = (TTPT/CAIM);
+                TTPU = Math.round(TTPU);
+                TTPUi = (int)TTPU;
+                jLABTTPU.setText(String.valueOf(TTPUi));
+            }
+            
+            
+        }
+    }//GEN-LAST:event_jCBOXFLETActionPerformed
+
+    private void jTXTFCAIMKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCAIMKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFCAIM.getText().length()>=8)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFCAIMKeyTyped
+
+    private void jTXTFTMONKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFTMONKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFTMON.getText().length()>=8)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFTMONKeyTyped
+
+    private void jTXTFLATIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFLATIKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFLATI.getText().length()>=8)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFLATIKeyTyped
+
+    private void jTXTFLAREKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFLAREKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFLARE.getText().length()>=8)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFLAREKeyTyped
+
+    private void jTXTFLLTTKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFLLTTKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFLLTT.getText().length()>=8)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFLLTTKeyTyped
+
+    private void jCBOXCPXTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXCPXTActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXCPXT.getSelectedIndex() == 1){
+            jDIACPXT.setVisible(true);
+            //jCBOXPOLIM.setSelectedIndex(1);
+        }else{
+            jCBOXCPML.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCPXTActionPerformed
+
+    private void jTXTFCANTFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCANTFocusGained
+        // TODO add your handling code here:
+        jTXTFCANT.selectAll();
+    }//GEN-LAST:event_jTXTFCANTFocusGained
+
+    private void jTXTFRCLIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFRCLIFocusGained
+        // TODO add your handling code here:
+        jTXTFRCLI.selectAll();
+    }//GEN-LAST:event_jTXTFRCLIFocusGained
+
+    private void jTXTFCMODFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCMODFocusGained
+        // TODO add your handling code here:
+        jTXTFCMOD.selectAll();
+    }//GEN-LAST:event_jTXTFCMODFocusGained
+
+    private void jTXTFNJUEFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFNJUEFocusGained
+        // TODO add your handling code here:
+        jTXTFNJUE.selectAll();
+    }//GEN-LAST:event_jTXTFNJUEFocusGained
+
+    private void jTXTFNEJEFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFNEJEFocusGained
+        // TODO add your handling code here:
+        jTXTFNEJE.selectAll();
+    }//GEN-LAST:event_jTXTFNEJEFocusGained
+
+    private void jTXTFNCLIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFNCLIFocusGained
+        // TODO add your handling code here:
+        jTXTFNCLI.selectAll();
+    }//GEN-LAST:event_jTXTFNCLIFocusGained
+
+    private void jTXTFNIMPFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFNIMPFocusGained
+        // TODO add your handling code here:
+        jTXTFNIMP.selectAll();
+    }//GEN-LAST:event_jTXTFNIMPFocusGained
+
+    private void jTXTFCMCCFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCMCCFocusGained
+        // TODO add your handling code here:
+        jTXTFCMCC.selectAll();
+    }//GEN-LAST:event_jTXTFCMCCFocusGained
+
+    private void jTXTFCCOLFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCCOLFocusGained
+        // TODO add your handling code here:
+        jTXTFCCOL.selectAll();
+    }//GEN-LAST:event_jTXTFCCOLFocusGained
+
+    private void jTXTFSIMPFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFSIMPFocusGained
+        // TODO add your handling code here:
+        jTXTFSIMP.selectAll();
+    }//GEN-LAST:event_jTXTFSIMPFocusGained
+
+    private void jTXTFESPEFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFESPEFocusGained
+        // TODO add your handling code here:
+        jTXTFESPE.selectAll();
+    }//GEN-LAST:event_jTXTFESPEFocusGained
+
+    private void jTXTFEXTRFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFEXTRFocusGained
+        // TODO add your handling code here:
+        jTXTFEXTR.selectAll();
+    }//GEN-LAST:event_jTXTFEXTRFocusGained
+
+    private void jTXTFCOMPFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCOMPFocusGained
+        // TODO add your handling code here:
+        jTXTFCOMP.selectAll();
+    }//GEN-LAST:event_jTXTFCOMPFocusGained
+
+    private void jTXTFIOTIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFIOTIFocusGained
+        // TODO add your handling code here:
+        jTXTFIOTI.selectAll();
+    }//GEN-LAST:event_jTXTFIOTIFocusGained
+
+    private void jTXTFIOREFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFIOREFocusGained
+        // TODO add your handling code here:
+        jTXTFIORE.selectAll();
+    }//GEN-LAST:event_jTXTFIOREFocusGained
+
+    private void jTXTFITTIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFITTIFocusGained
+        // TODO add your handling code here:
+        jTXTFITTI.selectAll();
+    }//GEN-LAST:event_jTXTFITTIFocusGained
+
+    private void jTXTFITREFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFITREFocusGained
+        // TODO add your handling code here:
+        jTXTFITRE.selectAll();
+    }//GEN-LAST:event_jTXTFITREFocusGained
+
+    private void jTXTFCPCTPFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCPCTPFocusGained
+        // TODO add your handling code here:
+        jTXTFCPCTP.selectAll();
+    }//GEN-LAST:event_jTXTFCPCTPFocusGained
+
+    private void jTXTFMONTFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFMONTFocusGained
+        // TODO add your handling code here:
+        jTXTFMONT.selectAll();
+    }//GEN-LAST:event_jTXTFMONTFocusGained
+
+    private void jTXTFTAIMFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFTAIMFocusGained
+        // TODO add your handling code here:
+        jTXTFTAIM.selectAll();
+    }//GEN-LAST:event_jTXTFTAIMFocusGained
+
+    private void jTXTFMTAMXFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFMTAMXFocusGained
+        // TODO add your handling code here:
+        jTXTFMTAMX.selectAll();
+    }//GEN-LAST:event_jTXTFMTAMXFocusGained
+
+    private void jTXTFMTAMYFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFMTAMYFocusGained
+        // TODO add your handling code here:
+        jTXTFMTAMY.selectAll();
+    }//GEN-LAST:event_jTXTFMTAMYFocusGained
+
+    private void jTXTFSOVAFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFSOVAFocusGained
+        // TODO add your handling code here:
+        jTXTFSOVA.selectAll();
+    }//GEN-LAST:event_jTXTFSOVAFocusGained
+
+    private void jTXTFSTVAFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFSTVAFocusGained
+        // TODO add your handling code here:
+        jTXTFSTVA.selectAll();
+    }//GEN-LAST:event_jTXTFSTVAFocusGained
+
+    private void jTXTFNFXFFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFNFXFFocusGained
+        // TODO add your handling code here:
+        jTXTFNFXF.selectAll();
+    }//GEN-LAST:event_jTXTFNFXFFocusGained
+
+    private void jTXTFMPENFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFMPENFocusGained
+        // TODO add your handling code here:
+        jTXTFMPEN.selectAll();
+    }//GEN-LAST:event_jTXTFMPENFocusGained
+
+    private void jTXTFCCDTFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFCCDTFocusGained
+        // TODO add your handling code here:
+        jTXTFCCDT.selectAll();
+    }//GEN-LAST:event_jTXTFCCDTFocusGained
+
+    private void jTXTFEXARFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFEXARFocusGained
+        // TODO add your handling code here:
+        jTXTFEXAR.selectAll();
+    }//GEN-LAST:event_jTXTFEXARFocusGained
+
+    private void jTXTFOCANFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFOCANFocusGained
+        // TODO add your handling code here:
+        jTXTFOCAN.selectAll();
+    }//GEN-LAST:event_jTXTFOCANFocusGained
+
+    private void jTXTFNFXFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFNFXFActionPerformed
+        // TODO add your handling code here:
+        int AOVA;
+        int NFXF = Integer.parseInt(jTXTFNFXF.getText());
+        int XD;
+        int XM;
+        int XCONST = 10;
+        AOVA = MONT * NFXF ;
+        jLABFAOVA.setText(String.valueOf(AOVA));
+        XD = AOVA/XCONST;
+        XM = AOVA%XCONST;
+        if(XM>0){
+            XD = XD+1;
+            jTXTFMPEN.setText(String.valueOf(XD));
+        }else{
+            jTXTFMPEN.setText(String.valueOf(XD));
+        }
+    }//GEN-LAST:event_jTXTFNFXFActionPerformed
+
+    private void jBCALCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCALCActionPerformed
+        // TODO add your handling code here:
+        // AL HACER CLICK SOBRE EL BOTON SE RELLANARA LA TABLA.
+        
+                
+        DefaultTableModel DTM_TAB1;
+        DTM_TAB1 =  (DefaultTableModel) jTable1.getModel();
+        DTM_TAB1.setRowCount(0);
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        //xD
+        try{
+            if(jCBOXTDPA.getSelectedIndex() == 1){
+               //VACIO
+                if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                    Object dato[] = new Object[5];
+                    dato[0]= codlp+" "+nomlp;
+                    dato[1]= "";
+                    dato[2]= cantlp;
+                    dato[3]= vallp;
+                    dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                    valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                } 
+            }
+            
+            //VACIO
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= "";
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //POLIMERO, MOLDE
+            if(jCBOXPMOL.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "POLIMERO, MOLDE";
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+dato[0]+"'");
+                    while (rs.next()){
+                        OVCP = rs.getInt("x1");
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[1]= "-";
+                dato[2]= 1;
+                dato[3]= OVCP;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //FOTOMECANICA CON CTP
+            if(Integer.parseInt(jTXTFCPCTP.getText()) > 0 && Integer.parseInt(jTXTFTAIM.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "FOTOMECANICA CON CTP";
+                dato[1]= "-";
+                if(jCBOXIDTC.getSelectedIndex() == 1){
+                    dato[2]= 0;
+                }else{
+                    dato[2]= jTXTFCPCTP.getText();
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "FOTOMECANICA CON CTP";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 2
+                            OVCPC = "FOTOMECANICA CON CTP 2";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 3
+                                    OVCPC = "FOTOMECANICA CON CTP 3";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 7
+                                    OVCPC = "FOTOMECANICA CON CTP 7";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 5
+                                    OVCPC = "FOTOMECANICA CON CTP 5";
+                                }
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 1
+                            OVCPC = "FOTOMECANICA CON CTP 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 8
+                                    OVCPC = "FOTOMECANICA CON CTP 8";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 6
+                                    OVCPC = "FOTOMECANICA CON CTP 6";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 4
+                                    OVCPC = "FOTOMECANICA CON CTP 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = '"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFTAIM.getText()) < 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(jTXTFTAIM.getText()) < 8){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(jTXTFCPCTP.getText()) <= 2){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //DISEÑO SIMPLE
+            if(jCBOXCDS.getSelectedIndex() == 1 && Integer.parseInt(jTXTFSIMP.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO SIMPLE";
+                dato[1]= "-";
+                if(jCBOXCAUA.getSelectedIndex() == 1){
+                    dato[2]= Double.parseDouble(jTXTFSIMP.getText())+0.5;
+                }else{
+                    dato[2]= Integer.parseInt(jTXTFSIMP.getText());
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "DISEÑO SIMPLE";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "DISEÑO SIMPLE 1";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "DISEÑO SIMPLE 2";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFCCOL.getText()) > 2){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFMONT.getText()) > 2){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //DISEÑO ESPECIAL
+            if(jCBOXDVC.getSelectedIndex() == 1 && Integer.parseInt(jTXTFESPE.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO ESPECIAL";
+                dato[1]= "-";
+                dato[2]= jTXTFESPE.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = 'DISEÑO EXTRA'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //DISEÑO EXTRA
+            if(jCBOXDVPC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO EXTRA";
+                dato[1]= "-";
+                dato[2]= jTXTFEXTR.getText();
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - DISEÑO COMPLEJO
+                    OVCPC = "DISEÑO COMPLEJO";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 1
+                            OVCPC = "DISEÑO COMPLEJO 1";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 3
+                                OVCPC = "DISEÑO COMPLEJO 3";
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 4
+                            OVCPC = "DISEÑO COMPLEJO 4";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 2
+                                OVCPC = "DISEÑO COMPLEJO 2";
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            /*DISEÑO COMPLEJO (NO SE UTILIZA)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO COMPLEJO";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 30000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }*/
+            //CAMBIO DE TINTA
+            if(Integer.parseInt(jTXTFCCOL.getText()) > 0 && jCBOXFTCA.getSelectedIndex() > 0 || Integer.parseInt(jTXTFCCOL.getText()) > 1 ){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIOS DE TINTA";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCCOL.getText())-1+jCBOXFTCA.getSelectedIndex();
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - CAMBIO TINTA
+                    OVCPC = "CAMBIO TINTA";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 2
+                            OVCPC = "CAMBIO TINTA 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - CAMBIO TINTA 5
+                                OVCPC = "CAMBIO TINTA 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 1
+                            OVCPC = "CAMBIO TINTA 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - CAMBIO TINTA 3
+                                OVCPC = "CAMBIO TINTA 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - CAMBIO TINTA 4
+                                    OVCPC = "CAMBIO TINTA 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(jCBOXFLLE.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(jCBOXCTIN.getSelectedIndex() == 0){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //POSTURAS
+            if(Integer.parseInt(jTXTFIOTI.getText()) > 0 && Integer.parseInt(jTXTFCPCTP.getText()) >0){
+                Object dato[] = new Object[5];
+                dato[0]= "POSTURAS";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText())+jCBOXFTCA.getSelectedIndex()+(Integer.parseInt(jTXTFCPCTP.getText())-(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())));
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - POSTURAS
+                    OVCPC = "POSTURAS";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 2
+                            OVCPC = "POSTURAS 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - POSTURAS 5
+                                OVCPC = "POSTURAS 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 1
+                            OVCPC = "POSTURAS 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - POSTURAS 3
+                                OVCPC = "POSTURAS 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - POSTURAS 4
+                                    OVCPC = "POSTURAS 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) > 4){
+                                dato[3]= rs.getInt(6);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //DOCUMENTOS SII.
+            if(jCBOXFTCA.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFMONT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DOCUMENTOS SII.";
+                dato[1]= Math.round((Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText()))/Integer.parseInt(jTXTFMONT.getText()));
+                dato[2]= ((Double.parseDouble(dato[1].toString())*jCBOXFTCA.getSelectedIndex())/1000) * 10 / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DOCTOS SII'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //DENSITOMETRIA
+            if(jCBOXCUAT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DENSITOMETRIA";
+                dato[1]= "-";
+                if(jCBOXCUAT.getSelectedIndex() == 1){
+                    dato[2]=4;
+                }else{
+                    dato[2]=0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DENSITOMETRIA'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION MONOCOLOR
+            if(jCBOXPO1C.getSelectedIndex() == 1 && Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFIOTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION MONOCOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO1C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.3) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "IMPRESION MONOCOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "IMPRESION MONOCOLOR 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "IMPRESION MONOCOLOR 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valrecimp = Integer.parseInt(dato[4].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION BICOLOR
+            if(jCBOXPO2C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION BICOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO2C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.5) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION BICOLOR
+                    OVCPC = "IMPRESION BICOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 5 SM
+                                OVCPC = "IMPRESION BICOLOR 5";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 2 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 2";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 6 SM
+                                OVCPC = "IMPRESION BICOLOR 6";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 1 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 1";
+                            }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valrecimp = Integer.parseInt(dato[4].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION 4 COLORES
+            if(jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION 4 COLORES";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO4C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= (Double.parseDouble(dato[1].toString())+(0.2*Double.parseDouble(dato[1].toString())))/1000 * 10 / 10;
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION 4 COLORES
+                    OVCPC = "IMPRESION 4 COLORES";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1% - IMPRESION 4 COLORES 2
+                        OVCPC = "IMPRESION 4 COLORES 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            //2% - IMPRESION 4 COLORES 1
+                            OVCPC = "IMPRESION 4 COLORES 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valrecimp = Integer.parseInt(dato[4].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION DIGITAR A TODO COLOR
+            if(jCBOXIDTC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A TODO COLOR";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='IMPRESION DIGITAL COLOR'");
+                    if(jCBOXUCTC.getSelectedIndex() == 0){
+                        while (rs.next()){
+                            dato[3]= rs.getInt(14);
+                        }
+                    }else{
+                        while (rs.next()){
+                            if(Integer.parseInt(dato[2].toString()) <= 200){
+                                dato[3]= rs.getInt(4);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 500){
+                                    dato[3]= rs.getInt(6);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 800){
+                                        dato[3]= rs.getInt(8);
+                                    }else{
+                                        if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                            dato[3]= rs.getInt(10);
+                                        }else{
+                                            dato[3]= rs.getInt(12);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION DIGITAR A UN COLOR (RISSO)
+            if(jCBOXIDUC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A UN COLOR (RISSO)";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DIGITAL IMPRESION DIGITAL A UN COLOR'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 200){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) <= 500){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 800){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //RECARGO IMPRESION OFFSET
+            if(jCBOXPO1C.getSelectedIndex() == 1 || jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION OFFSET";
+                dato[1]= "-";
+                dato[2]= valrecimp;
+                if(jCBOXTIMP.getSelectedIndex() == 7){
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }else{
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+                
+            }
+            //TIPOGRAFIA
+            if(Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000) * 10) / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TIPOGRAFIA'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 7000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valrectip = Integer.parseInt(dato[4].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //RECARGO IMPRESION TIPOGRAFICA
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= valrectip;
+                dato[3]= jCBOXTCMT.getSelectedIndex()*0.5;
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            /*TIPOGRAFIA FUELLE (NO ESTA SIENDO UTILIZADO)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA FUELLE";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }*/
+            //ENCUADERNACION
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENCUADERNACION";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - ENCUADERNACION
+                    OVCPC = "ENCUADERNACION";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //1% - PO2C o PO4C - ENCUADERNACION 4
+                            OVCPC = "ENCUADERNACION 4";
+                        }else{
+                            //1% - ENCUADERNACION 2
+                            OVCPC = "ENCUADERNACION 2";
+                        }
+                        
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //2% - PO2C o PO4C - ENCUADERNACION 5
+                            OVCPC = "ENCUADERNACION 5";
+                        }else{
+                            //2% - ENCUADERNACION 1
+                            OVCPC = "ENCUADERNACION 1";
+                        }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                            dato[3]= rs.getDouble(6);
+                        }else{
+                            dato[3]= rs.getDouble(8);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(TIMP == 0 || TIMP == 1 || TIMP == 9 || TIMP == 10){
+                    BLOCKTALON = 1;
+                }else{
+                    BLOCKTALON = 0;
+                }
+                if(TAIM < 7){
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*1.5*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }else{
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //BARNIZ, TINTA INDELEBLE
+            if(jCBOXBOFF.getSelectedIndex() == 1 || jCBOXTIND.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "BARNIZ, TINTA INDELEBLE";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    if(jCBOXBOFF.getSelectedIndex() == 1){
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000) * 2;
+                    }else{
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000);
+                    }
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='BARNIZ, TINTA INDELEBLE'");
+                    while (rs.next()){
+                        if(jCBOXTIND.getSelectedIndex() > 0){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //CORTE Y REFILADOS (FALTA)
+            if(jCBOXCSN.getSelectedIndex() == 1){
+                int X4 = 0, X6 = 0;
+                Object dato[] = new Object[5];
+                dato[0]= "CORTE Y REFILADOS";
+                dato[1]= "-";
+                dato[2]= cantlp;
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CORTE Y REFILADO'");
+                    while (rs.next()){
+                        X4 = rs.getInt(4);
+                        X6 = rs.getInt(6);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(Integer.parseInt(dato[2].toString()) <= X4){
+                    dato[3]=3.5;
+                }else{
+                    if(Integer.parseInt(dato[2].toString()) <= X6){
+                        dato[3]=3;
+                    }else{
+                        dato[3]=2.5;
+                    }
+                }
+                valcorte = (int) Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                if(valcorte < 1000){
+                    dato[4] = 2500;
+                }else{
+                    dato[4] = valcorte;
+                }
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //MUESTRA COLOR CALIBRADA
+            if(Integer.parseInt(jTXTFCMCC.getText()) > 0 ){
+                Object dato[] = new Object[5];
+                dato[0]= "MUESTRA COLOR CALIBRADA";
+                dato[1]= "-";
+                dato[2]= jTXTFCMCC.getText();
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='MUESTRA COLOR CALIBRADA'");
+                    while (rs.next()){
+                        if(jCBOXCUAT.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(jCBOXCUAT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCMCC.getText()) < 2){
+                    dato[4]=3000;
+                }else{
+                    dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                }
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //CONFECCION FUELLE
+            if(jCBOXTIMP.getSelectedIndex() == 3 && Integer.parseInt(jTXTFCANT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "CONFECCION FUELLE";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCANT.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CONFECCION FUELLE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //REVISION ARCHIVO CLIENTE
+            if(jCBOXCAOA.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION ARCHIVO CLIENTE";
+                dato[1]= "-";
+                dato[2]= jCBOXCAOA.getSelectedIndex();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION ARCHIVO CLIENTE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //REVISION SOBRES Y ADHESIVOS
+            if(jCBOXTIMP.getSelectedIndex() == 7){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION SOBRES Y ADHESIVOS";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFCANT.getText()) >= 500){
+                    dato[2]= jTXTFCANT.getText();
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION SOBRES Y ADHESIVOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getDouble(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Double.parseDouble(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //ENTREGA CON RADIO TAXI
+            if(jCBOXENRT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFOCAN.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENTREGA CON RADIO TAXI";
+                dato[1]= "-";
+                dato[2]= jCBOXENRT.getSelectedIndex()*Integer.parseInt(jTXTFOCAN.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='ENTREGA RADIO TAXI'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)
+            if(jCBOXTCMT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)";
+                dato[1]= "-";
+                dato[2]= jCBOXTCMT.getSelectedIndex();
+                
+                if(jCBOXEUSA.getSelectedIndex() == 0){
+                    //CONFECCION TROQUEL / CUÑO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO";
+                }else{
+                    //CONFECCION TROQUEL / CUÑO 4 USADO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO 4";
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //REVISION Y/O EMPAQUE
+            if(jCBOXASN.getSelectedIndex() == 0){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION Y/O EMPAQUE";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())/Integer.parseInt(jTXTFMONT.getText()));
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISIONES Y/O EMPAQUE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Integer.parseInt(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //CAJA T/PRESENTACION
+            if(jCBOXCAPR.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAJA T/PRESENTACION";
+                dato[1]= "-";
+                dato[2]= jTXTFCCDT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CAJAS T/PRESENTACION'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Integer.parseInt(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //TACOS
+            if(jCBOXTIMP.getSelectedIndex() == 8){
+                Object dato[] = new Object[5];
+                dato[0]= "TACOS";
+                dato[1]= "-";
+                dato[2]= jTXTFCANT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TACOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                if(Integer.parseInt(dato[3].toString()) != 0.0 && Integer.parseInt(dato[2].toString()) != 0 ){
+                    DTM_TAB1.addRow(dato);
+                    jTable1.setModel(DTM_TAB1);
+                }
+            }
+            //MATRIZ DE IMPRESION (AQUI)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "MATRIZ DE IMPRESION";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //ARTES
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "ARTES";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //CAMBIO CILINDROS
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIO CILINDROS";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //IMPRESION TIPOGRAFICA
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                valst1 = valst1 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //VACIO
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= "";
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //SUB-TOTAL 1
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "SUB-TOTAL 1";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= valst1;
+                valst2 = valst2 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //RETIRO Y ENTREGA LOCAL
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "RETIRO Y ENTREGA LOCAL";
+                dato[1]= "";
+                dato[2]= Math.round(Integer.parseInt(jTXTFICAN.getText())*0.1);
+                dato[3]= "";
+                dato[4]= 1500;
+                valst2 = valst2 + Integer.parseInt(dato[4].toString());
+                CANT_REEN = Integer.parseInt(dato[2].toString());
+                TOTAL_REEN = Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //FACTURACION Y COBRANZA
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "FACTURACION Y COBRANZA";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= Math.round((valst1*0.02)+1500);
+                valst2 = valst2 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //MERMAS E INCOBRABILIDAD
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "MERMAS E INCOBRABILIDAD";
+                dato[1]= "";
+                dato[2]= 4;
+                dato[3]= "";
+                dato[4]= Math.round((valst1*(Double.parseDouble(dato[2].toString())/100)));
+                valst2 = valst2 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //COSTOS FIJOS INDIRECTOS
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "COSTOS FIJOS INDIRECTOS";
+                dato[1]= "";
+                dato[2]= 25; // MODIFICAR
+                dato[3]= "";
+                dato[4]= Math.round((valst1*(Double.parseDouble(dato[2].toString())/100)));
+                CANT_COST_INDI = Integer.parseInt(dato[2].toString());
+                TOTAL_COST_INDI = Integer.parseInt(dato[4].toString());
+                valst2 = valst2 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //SUB-TOTAL 2
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "SUB-TOTAL 2";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= valst2;
+                valst3 = valst3 + Integer.parseInt(dato[4].toString());
+                SUB_TOTAL2 = Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //COMISIONES POR VENTAS
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "COMISIONES POR VENTAS";
+                dato[1]= "";
+                dato[2]= 17; //MODIFICAR 
+                dato[3]= "";
+                dato[4]= Math.round((valst2/((100-Double.parseDouble(dato[2].toString()))/100)-valst2));
+                CANT_COMI_VENT = Integer.parseInt(dato[2].toString());
+                valst3 = valst3 + Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //SUB-TOTAL 3
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "SUB-TOTAL 3";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= valst3;
+                valptc = Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //UTILIDAD BRUTA
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "UTILIDAD BRUTA";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                if(jCBOXIDTC.getSelectedIndex() == 1){
+                    dato[4]= 15;
+                }else{
+                    if(jCBOXCUAT.getSelectedIndex() == 1){
+                        dato[4]= 20;
+                    }else{
+                        if(Integer.parseInt(jTXTFITTI.getText()) >= 1){
+                            dato[4]= 15;
+                        }else{
+                            dato[4]= 10;
+                        }
+                    }
+                }
+                
+                valub = Integer.parseInt(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //PRECIO TOTAL CLIENTE
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "PRECIO TOTAL CLIENTE";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                dato[4]= Math.round(valptc/(1-(valub/100)));
+                valpuc = Integer.parseInt(dato[4].toString());
+                PRECIO_TOTAL = Integer.parseInt(dato[4].toString());
+                jLABVVT.setText(String.valueOf(dato[4]));
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            //PRECIO UNITARIO CLIENTE
+            if(Integer.parseInt(jTXTFCANT.getText())> 0){
+                Object dato[] = new Object[5];
+                dato[0]= "PRECIO UNITARIO CLIENTE";
+                dato[1]= "";
+                dato[2]= "";
+                dato[3]= "";
+                valpuc = valpuc/CANT;
+                valpuc = Math.round(valpuc*100);
+                valpuc = valpuc/100;
+                dato[4]= valpuc;
+                 
+                //dato[4]= valpuc;
+                PRECIO_UNIT = Double.parseDouble(dato[4].toString());
+                DTM_TAB1.addRow(dato);
+                jTable1.setModel(DTM_TAB1);
+            }
+            
+            jLABVVU.setText(String.valueOf(valpuc));
+                        
+            jLABVCAN.setText(jTXTFCANT.getText());
+            jLABVNDJ.setText(jTXTFNJUE.getText());
+            jLABVCDE.setText(jTXTFNEJE.getText());
+            
+            valst1 = 0;
+            valst2 = 0;
+            valst3 = 0;
+            
+        }catch(HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }
+                
+        /*
+        try{
+                int Limpiador = ContAgre;
+                DefaultTableModel DTM_MONT;
+                DTM_MONT =  (DefaultTableModel) jTABMONT.getModel();
+                count = DTM_MONT.getRowCount();
+                if(Limpiador == 1){
+                    DTM_MONT.setRowCount(0);
+                }
+                
+                Object dato[] = new Object[5];
+                dato[0]= jTABSUFA.getModel().getValueAt(selectedRow, 0);
+                dato[1]= jTABSUFA.getModel().getValueAt(selectedRow, 1).toString();
+                dato[2]= jTABSUFA.getModel().getValueAt(selectedRow, 4);
+                dato[3]= Integer.parseInt(jTXTFICAN.getText());
+                dato[4]=(String) jTXTFICAN.getText();
+                DTM_MONT.addRow(dato);
+                jTABMONT.setModel(DTM_MONT);
+
+            }catch(HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }*/
+    }//GEN-LAST:event_jBCALCActionPerformed
+
+    private void jTABMONTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTABMONTMouseClicked
+        // TODO add your handling code here:
+        DefaultTableModel DTM_MONT;
+        DTM_MONT =  (DefaultTableModel) jTABMONT.getModel();
+        //if(jTABMONT.getSelectedRow() > 0)
+        if(jTABMONT.getSelectedRowCount() >= 0){
+            if(evt.getClickCount() == 2){
+            int row = jTABMONT.getSelectedRow();
+            DTM_MONT.removeRow(row);
+            
+            //JTable jTable = (JTable) evt.getSource();
+            }
+        }
+        
+    }//GEN-LAST:event_jTABMONTMouseClicked
+
+    private void jLISTFAMIMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLISTFAMIMouseClicked
+        // TODO add your handling code here:
+        if(evt.getClickCount() == 2){
+            PosRow = -1;
+            jLISTFAMI.getListSelectionListeners();
+            SFAM = jLISTFAMI.getSelectedValue().toString();
+            DefaultTableModel DTM;
+            DTM =  (DefaultTableModel) jTABSUFA.getModel();
+            ConexDB = new ConexionDB();
+            Statement st =ConexDB.ConectarBD();
+            DTM.setRowCount(0);
+            
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM FAMILIA WHERE descripcion ='"+SFAM+"'");
+                while (rs.next()){
+                    CFAM = rs.getInt("codigo");
+                }
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM articulo WHERE familia_codigo ='"+CFAM+"'");
+                while (rs.next()){
+                    Object dato[] = new Object[5];
+                    for (int i=0 ; i< 5 ; i++){
+                        dato[0]=rs.getString(1);
+                        dato[1]=rs.getString(2);
+                        dato[2]=rs.getString(7);
+                        dato[3]=rs.getString(6);
+                        dato[4]=rs.getString(12);
+                    }
+                    DTM.addRow(dato);
+                    PosRow = PosRow + 1;
+                }
+                
+                jTABSUFA.setModel(DTM);
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        }
+    }//GEN-LAST:event_jLISTFAMIMouseClicked
+
+    private void jTABSUFAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTABSUFAMouseClicked
+        // TODO add your handling code here:
+        if(evt.getClickCount() == 2){
+            ContAgre = ContAgre + 1;
+            int Z = Integer.parseInt(jTXTFNEJE.getText());
+            jLABCEPJV.setText(String.valueOf(Z));
+            jLABHAGRV.setText(String.valueOf(ContAgre));
+            jDIASTOC.setVisible(true);
+        }
+    }//GEN-LAST:event_jTABSUFAMouseClicked
+
+    private void jTXTFICDIFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFICDIFocusGained
+        // TODO add your handling code here:
+        jTXTFICDI.selectAll();
+    }//GEN-LAST:event_jTXTFICDIFocusGained
+
+    private void jTXTFICANFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTXTFICANFocusGained
+        // TODO add your handling code here:
+        jTXTFICAN.selectAll();
+    }//GEN-LAST:event_jTXTFICANFocusGained
+
+    private void jTXTFSIMPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFSIMPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXDVC.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFSIMPKeyPressed
+
+    private void jTXTFESPEKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFESPEKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXDVPC.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFESPEKeyPressed
+
+    private void jTXTFEXTRKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFEXTRKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXDPOC.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFEXTRKeyPressed
+
+    private void jTXTFCOMPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCOMPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCAUA.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFCOMPKeyPressed
+
+    private void jCBOXGTSMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXGTSMKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXPO4C.grabFocus();
+    }//GEN-LAST:event_jCBOXGTSMKeyPressed
+
+    private void jCBOXPMSMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXPMSMKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXIDTC.grabFocus();
+    }//GEN-LAST:event_jCBOXPMSMKeyPressed
+
+    private void jCBOXUCTCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXUCTCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXIDUC.grabFocus();
+    }//GEN-LAST:event_jCBOXUCTCKeyPressed
+
+    private void jCBOXEUSAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXEUSAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXTBCP.grabFocus();
+    }//GEN-LAST:event_jCBOXEUSAKeyPressed
+
+    private void jCBOXTRAMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTRAMKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXTIND.grabFocus();
+    }//GEN-LAST:event_jCBOXTRAMKeyPressed
+
+    private void jCBOXMDPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXMDPKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFSOVA.grabFocus();
+    }//GEN-LAST:event_jCBOXMDPKeyPressed
+
+    private void jTXTFSOVAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFSOVAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jTXTFSTVA.grabFocus();
+    }//GEN-LAST:event_jTXTFSOVAKeyPressed
+
+    private void jTXTFSTVAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFSTVAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jCBOXTDPA.grabFocus();
+    }//GEN-LAST:event_jTXTFSTVAKeyPressed
+
+    private void jCBOXTDPAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXTDPAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXTDPA.getSelectedIndex() == 1){
+                jDIAAPAP.setVisible(true);
+                DefaultListModel DLM = new DefaultListModel();
+                ConexDB = new ConexionDB();
+                Statement st = ConexDB.ConectarBD();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM FAMILIA ORDER BY(descripcion)");
+                    while (rs.next()){
+                        FAMI = rs.getString("descripcion");
+                        DLM.addElement(FAMI);
+                        jLISTFAMI.setModel(DLM);
+                        jLISTFAMI.grabFocus();
+                        jLISTFAMI.setSelectedIndex(0);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }else{
+                if(TIMP == 0 || TIMP == 1 || TIMP == 9 || TIMP == 10){
+                    //DefaultListModel DLM = new DefaultListModel();
+                    int SOVAi = Integer.parseInt(SOVA);
+                    double CBCANT = (CANT*NJUE)/(MONT*TAIM)+(SOVAi/TAIM)+0.49;
+                    Math.round(CBCANT);
+                    int CBCANTi = (int)CBCANT;
+                    int CFCANTi = CBCANTi;
+                    DefaultTableModel DTM;
+                    DTM =  (DefaultTableModel) jTABMONT.getModel();
+                    ConexDB = new ConexionDB();
+                    Statement st = ConexDB.ConectarBD();
+                    try{
+                        ResultSet rs = st.executeQuery("SELECT * FROM articulo WHERE familia_codigo = 10 AND familia_codigo = 20");
+                        while (rs.next()){
+                            Object dato[] = new Object[5];
+                            for (int i=0 ; i< 5 ; i++){
+                                dato[0]=rs.getString(1);
+                                dato[1]=rs.getString(2);
+                                dato[2]=rs.getString(12);
+                                dato[3]=CBCANTi;
+                                dato[4]=CFCANTi;
+                            }
+                            DTM.addRow(dato);
+                            jTABMONT.setModel(DTM);
+                            
+                        }
+                        //PosRow = PosRow + 1;
+                    }catch(SQLException | HeadlessException ex){
+                        JOptionPane.showMessageDialog(null, ex);
+                    }
+                jCBOXCSN.grabFocus();
+                }
+            }
+        }
+    }//GEN-LAST:event_jCBOXTDPAKeyPressed
+
+    private void jCBOXTDPAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXTDPAActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXTDPA.getSelectedIndex() == 1){
+            jDIAAPAP.setVisible(true);
+            DefaultListModel DLM = new DefaultListModel();
+            ConexDB = new ConexionDB();
+            Statement st = ConexDB.ConectarBD();
+            try{
+                ResultSet rs = st.executeQuery("SELECT * FROM FAMILIA ORDER BY(descripcion)");
+                while (rs.next()){
+                    FAMI = rs.getString("descripcion");
+                    DLM.addElement(FAMI);
+                    jLISTFAMI.setModel(DLM);
+                    jLISTFAMI.grabFocus();
+                    jLISTFAMI.setSelectedIndex(0);
+                }  
+
+            }catch(SQLException | HeadlessException ex){
+                JOptionPane.showMessageDialog(null, ex);
+            }
+        }else{
+            if(jCBOXTDPA.getSelectedIndex() == 0){
+                jDIATAAU.setVisible(true);
+                PosRow = -1;
+                DefaultTableModel DTM;
+                DTM =  (DefaultTableModel) jTable2.getModel();
+                ConexDB = new ConexionDB();
+                Statement st =ConexDB.ConectarBD();
+                DTM.setRowCount(0);
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM OT_AUTOCOPIATIVO WHERE id_pliego ='"+ID_PLIEGO+"'");
+                    while (rs.next()){
+                        Object dato[] = new Object[3];
+                        for (int i=0 ; i< 3 ; i++){
+                            dato[0]=rs.getString(3);
+                            dato[1]=rs.getString(4);
+                            dato[2]=rs.getString(5);
+                        }
+                        DTM.addRow(dato);
+                        PosRow = PosRow + 1;
+                    }
+                    jTable2.setModel(DTM);
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_jCBOXTDPAActionPerformed
+
+    private void jTXTFNFXFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFNFXFKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXASN.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFNFXFKeyPressed
+
+    private void jCBOXASNKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXASNKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFMPEN.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXASNKeyPressed
+
+    private void jTXTFMPENKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFMPENKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCOSN.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFMPENKeyPressed
+
+    private void jCBOXCOSNKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCOSNKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCAPR.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCOSNKeyPressed
+
+    private void jCBOXCAPRKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCAPRKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            if(jCBOXCAPR.getSelectedIndex()==1){
+                jTXTFCCDT.grabFocus();
+            }
+            else{
+                jCBOXOTEN.grabFocus();
+            }
+        }
+    }//GEN-LAST:event_jCBOXCAPRKeyPressed
+
+    private void jTXTFCCDTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFCCDTKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXOTEN.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFCCDTKeyPressed
+
+    private void jCBOXOTENKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXOTENKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXOTVA.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXOTENKeyPressed
+
+    private void jCBOXOTVAKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXOTVAKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCITR.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXOTVAKeyPressed
+
+    private void jCBOXCITRKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCITRKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCABO.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCITRKeyPressed
+
+    private void jCBOXCABOKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCABOKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCRDU.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCABOKeyPressed
+
+    private void jCBOXCRDUKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCRDUKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXCACO.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCRDUKeyPressed
+
+    private void jCBOXCACOKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCACOKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXFSIM.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCACOKeyPressed
+
+    private void jCBOXFSIMKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXFSIMKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTabbedPane1.setSelectedComponent(OtrosDescuentoPapel);
+            jCBOXOTCF.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXFSIMKeyPressed
+
+    private void jCBOXOTCFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXOTCFKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXSECI.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXOTCFKeyPressed
+
+    private void jCBOXSECIKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXSECIKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jCBOXENRT.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXSECIKeyPressed
+
+    private void jCBOXENRTKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXENRTKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFOCAN.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXENRTKeyPressed
+
+    private void jTXTFOCANKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFOCANKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFEXAR.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFOCANKeyPressed
+
+    private void jTXTFEXARKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFEXARKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTabbedPane1.setSelectedComponent(HojaDeCostos);
+            jBCALC.grabFocus();
+        }
+    }//GEN-LAST:event_jTXTFEXARKeyPressed
+
+    private void jBGUINKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jBGUINKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jBGUINKeyPressed
+
+    private void jBCALCKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jBCALCKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jBGUIN.grabFocus();
+        }
+    }//GEN-LAST:event_jBCALCKeyPressed
+
+    private void jDIAAPAPKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jDIAAPAPKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jDIAAPAPKeyPressed
+
+    private void jCBOXCSNKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXCSNKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTabbedPane1.setSelectedComponent(Encuadernacion);
+            jTXTFNFXF.grabFocus();
+        }
+    }//GEN-LAST:event_jCBOXCSNKeyPressed
+
+    private void jCBOXCAPRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXCAPRActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXCAPR.getSelectedIndex()== 1){
+            jLABCCDT.setVisible(true);
+            jTXTFCCDT.setVisible(true);
+        }else{
+            jLABCCDT.setVisible(false);
+            jTXTFCCDT.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXCAPRActionPerformed
+
+    private void jTXTFICDIKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFICDIKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFICDI.getText().length()>=5)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFICDIKeyTyped
+
+    private void jCBOXOTCFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXOTCFActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXOTCF.getSelectedIndex() == 1){
+            jCBOXSECI.setEnabled(true);
+            jLABSECI.setVisible(true);
+            jCBOXSECI.setVisible(true);
+        }else{
+            jCBOXSECI.setEnabled(false);
+            jLABSECI.setVisible(false);
+            jCBOXSECI.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXOTCFActionPerformed
+
+    private void jTabbedPane1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTabbedPane1KeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1KeyPressed
+
+    private void jTabbedPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTabbedPane1MouseClicked
+
+    private void jTXTFSIMPKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTXTFSIMPKeyTyped
+        // TODO add your handling code here:
+        TipoDeTecla = evt.getKeyChar();
+        if(!Character.isDigit(TipoDeTecla))
+            evt.consume();
+        if (jTXTFSIMP.getText().length()>=3)
+            evt.consume();
+    }//GEN-LAST:event_jTXTFSIMPKeyTyped
+
+    private void jCBOXPO1CActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXPO1CActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXPO1C.getSelectedIndex()== 1){
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXPO4C.setSelectedIndex(0);
+            jCBOXIDTC.setSelectedIndex(0);
+            jCBOXIDUC.setSelectedIndex(0);
+        }
+    }//GEN-LAST:event_jCBOXPO1CActionPerformed
+
+    private void jCBOXIDUCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXIDUCActionPerformed
+        // TODO add your handling code here:
+        if (jCBOXIDUC.getSelectedIndex()== 1){
+            jTXTFCPCTP.setText("0");
+            jTXTFCPCTP.setEnabled(false);
+            jCBOXPO1C.setSelectedIndex(0);
+            jCBOXPO2C.setSelectedIndex(0);
+            jCBOXPO4C.setSelectedIndex(0);
+            jCBOXIDTC.setSelectedIndex(0);
+            jDIAIDUC.setVisible(true);
+        }else{
+            if(jCBOXIDTC.getSelectedIndex()== 0){
+                jTXTFCPCTP.setText("0");
+                jTXTFCPCTP.setEnabled(true);
+            }
+        }
+    }//GEN-LAST:event_jCBOXIDUCActionPerformed
+
+    private void jCBOXENRTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXENRTActionPerformed
+        // TODO add your handling code here:
+        if(jCBOXENRT.getSelectedIndex() == 1){
+            jTXTFOCAN.setEnabled(true);
+            jTXTFOCAN.setText("1");
+            jLABOCAN.setVisible(true);
+            jTXTFOCAN.setVisible(true);
+            
+        }else{
+            jTXTFOCAN.setEnabled(false);
+            jTXTFOCAN.setText("0");
+            jLABOCAN.setVisible(false);
+            jTXTFOCAN.setVisible(false);
+        }
+    }//GEN-LAST:event_jCBOXENRTActionPerformed
+
+    private void jTXTFNIMPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFNIMPActionPerformed
+        // TODO add your handling code here:
+        TXTNIMP = jTXTFNIMP.getText();
+        jLABVNDI.setText(TXTNIMP);
+    }//GEN-LAST:event_jTXTFNIMPActionPerformed
+
+    private void jBIMINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBIMINActionPerformed
+        // TODO add your handling code here:
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        
+        JasperReport jr = null;
+        URL in = this.getClass().getResource("/ReportePDF/InformeDeCosto.jasper");
+        
+        //String Reporte = "C:\\Users\\ADMPRO0209\\Documents\\NetBeansProjects\\Cotizador\\src\\ReportePDF\\InformeDeCosto.jasper";
+        //JasperReportsParam.showViewer();
+        
+        try { 
+            //JasperReport Reporte = (JasperReport) JRLoader.loadObject("InformeDeCosto.jasper");
+            jr = (JasperReport) JRLoader.loadObject(in);
+            Map parametro = new HashMap();
+            parametro.put("correlativo",correlativo);
+            System.out.println(correlativo);
+            JasperPrint jp = JasperFillManager.fillReport(jr, parametro, ConexDB.conexion); 
+            JasperViewer jv = new JasperViewer(jp, false); 
+            jv.setVisible(true); 
+            jv.setTitle("Informe de Costo Plano"); 
+        } catch (JRException ex) {
+            Logger.getLogger(Cotizador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jBIMINActionPerformed
+
+    private void jCBOXRECOActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBOXRECOActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCBOXRECOActionPerformed
+
+    private void jCBOXRECOKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jCBOXRECOKeyPressed
+        // TODO add your handling code here:
+        
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            jTXTFCANT.grabFocus();
+        }
+        
+    }//GEN-LAST:event_jCBOXRECOKeyPressed
+
+    private void jBMOINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBMOINActionPerformed
+        // TODO add your handling code here:
+        
+        NIMP = jTXTFNIMP.getText();
+        
+        ConexDB = new ConexionDB();
+        Statement st =ConexDB.ConectarBD();
+        
+            String updateMOD = "";
+        try{
+            updateMOD = "UPDATE thcotizador_plano SET "
+                    + " rut_cliente = '" + RCLI + "', nom_cliente = '" + NCLI + "',"
+                    + " nom_impreso = '" + NIMP + "', cantidad = " + CANT + ","
+                    + " tipo_impresion = '" + jCBOXTIMP.getSelectedItem()+ "',"
+                    + " juegos = " + NJUE + ", ejemplares = " + NEJE + ","
+                    + " offset1 = " + jCBOXPO1C.getSelectedIndex() + ","
+                    + " offset2 = " + jCBOXPO2C.getSelectedIndex() + ","
+                    + " offset4 = " + jCBOXPO4C.getSelectedIndex() + ","
+                    + " imp_digital = " + jCBOXIDTC.getSelectedIndex() + ","
+                    + " tiro = " + IOTI + ", retiro = " + IORE + ","
+                    + " tipotiro = " + ITTI + ", tiporetiro = " + ITRE + ","
+                    + " polimero = " + jCBOXPMOL.getSelectedIndex() + ","
+                    + " troquelado = " + jCBOXTCMT.getSelectedIndex() + ","
+                    + " cuatricomia = " + jCBOXCUAT.getSelectedIndex() + ","
+                    + " cant_colores = " + CCOL + ","
+                    + " color_tinta = '" + jCBOXCTIN.getSelectedItem() + "',"
+                    + " sii = " + jCBOXFTCA.getSelectedIndex() + ","
+                    + " tres_colores = 0 ," // 0 = TRES COLORES (AUN NO EXISTE EN EL SISTEMA ESTE TIPO DE IMPRESIÓN)
+                    + " fondo = " + jCBOXFLLE.getSelectedIndex() + ","
+                    + " barniz = " + jCBOXBOFF.getSelectedIndex() + ","
+                    + " tipo_barniz = '" + jCBOXTRAM.getSelectedItem() + "',"
+                    + " tinta_indeleble = " + jCBOXTIND.getSelectedIndex() + ","
+                    + " montaje = " + MONT + ", tamano = " + TAIM + ","
+                    + " ini_medida = " + jTXTFMTAMX.getText() + ","
+                    + " ter_medida = " + jTXTFMTAMY.getText() + ","
+                    + " id_pliego = " + IDP + ", medida_pliego = '" + NDP + "',"
+                    + " salen = " + jLABSAVA.getText() + ","
+                    + " sobrantes = " +jLABSOVA.getText() + ","
+                    + " sobrantes_modificados = " + jTXTFSOVA.getText() + ","
+                    + " tipo_papel = '" + jCBOXTDPA.getSelectedItem() + "',"
+                    + " corte = " + jCBOXCSN.getSelectedIndex() + ","
+                    + " alzado = " + jCBOXASN.getSelectedIndex() + ","
+                    + " corcheteado = " + jCBOXCOSN.getSelectedIndex() + ","
+                    + " caja_presentacion = " + jCBOXCAPR.getSelectedIndex() + ","
+                    + " cant_caja_presentacion = " + jTXTFCCDT.getText() + ","
+                    + " otros_encuadernacion = " + jCBOXOTEN.getSelectedIndex() + ","
+                    + " otros_valores = " + jCBOXOTVA.getSelectedIndex() + ","
+                    + " diseno_simple = " + jCBOXCDS.getSelectedIndex() + ","
+                    + " diseno_especial = " + jCBOXDVC.getSelectedIndex() + ","
+                    + " diseno_extra = " + jCBOXDVPC.getSelectedIndex() + ","
+                    + " plancha_ctp = " + jTXTFCPCTP.getText() + ","
+                    + " plancha_diamante = 0 ," // 0 (Plancha Diamante ya no existe)
+                    + " aprueba_arte = " + jCBOXCAUA.getSelectedIndex() + ","
+                    + " aporta_arte = " + jCBOXCAOA.getSelectedIndex() + ","
+                    + " muestras_calibradas = " + jTXTFCMCC.getText() + ","
+                    + " flete = " + jCBOXOTCF.getSelectedIndex() + ","
+                    + " urgente = " + jCBOXENRT.getSelectedIndex() + ","
+                    + " usuario = '" + jTXTFUSER.getText() + "',"
+                    + " rut_empresa = '79638870-6'," // RUT_EMPRESA ES FIJO AHORA SOLO CUENTA CON UNA SOLA RAZON SOCIAL (79.638.870-6)
+                    + " subtotal1 = '"  + jLABTTS1.getText() + "',"
+                    + " cant_entrega_local = " + CANT_REEN + ","
+                    + " val_entrega_local = " + TOTAL_REEN + ","
+                    + " val_facturacion = '" + jLABTTFC.getText() + "',"
+                    + " cant_mermas = '" + jLABVTMI.getText() + "',"
+                    + " mermas = '"  + jLABTTMI.getText() + "',"
+                    + " cant_costos_indirecto = '" + CANT_COST_INDI + "',"
+                    + " val_costos_indirecto = '" + TOTAL_COST_INDI + "',"
+                    + " subtotal2 = '"  + SUB_TOTAL2 + "',"
+                    + " cant_comision = '" + CANT_COMI_VENT + "',"
+                    + " val_comision = '" + jLABTTCV.getText() + "',"
+                    + " subtotal3 = '"  + jLABTTS3.getText() + "',"
+                    + " val_utilidadbruta = " + valub + ","
+                    + " val_total = '" + jLABTTPT.getText() + "',"
+                    + " val_unitario = '" + jLABTTPU.getText() + "',"
+                    + " tipo = '" + jCBOXTCOM.getSelectedItem() + "',"
+                    + " sobrantesOT = " + jLABSTVA.getText() + ","
+                    + " sobrantesOT_modificados = " + jTXTFSTVA.getText() + ","
+                    + " tipo_salen = 'NORMAL' ," // NORMAL = TIPO_SALEN (MODIFICAR)
+                    + " plancha_archivo = " + jCBOXPARC.getSelectedIndex() + ","
+                    + " cant_simple = " + jTXTFSIMP.getText() + ","
+                    + " cant_especial = " + jTXTFESPE.getText() + ","
+                    + " cant_extra = " + jTXTFEXTR.getText() + ","
+                    + " cant_taxi = " + jTXTFOCAN.getText() + ","
+                    + " modelos = " + jTXTFCMOD.getText() + ","
+                    + " tipo_sobrante = '" + jLABTSVA.getText() + "',"
+                    + " ciudad_flete = '" + jCBOXSECI.getSelectedItem() + "',"
+                    + " porc_flete = " + jTXTFEXAR.getText() + ","
+                    + " troquelado_usado = " + jCBOXEUSA.getSelectedIndex() + ","
+                    + " reposicion = " + jCBOXRECO.getSelectedIndex() + ","
+                    + " trasferible = " + jCBOXCITR.getSelectedIndex() + ","
+                    + " bobina = " + jCBOXCABO.getSelectedIndex() + ","
+                    + " duplex = " + jCBOXCRDU.getSelectedIndex() + ","
+                    + " cantAlzado = " + jTXTFMPEN.getText() + ","
+                    + " diseno_bonus = " + jCBOXDPOC.getSelectedIndex() + ","
+                    + " cant_bonus = " + jTXTFCOMP.getText()  + "," // COMPLEJO YA NO SE USA
+                    + " folio = " + jTXTFNFXF.getText() + ","
+                    + " id_maquina = 99 ," // ID MAQUINARIA = 99 (AUN NO SE ASIGNA)
+                    + " nom_maquina = 'NOM_MAQUINA'," // NOMBRE_MAQUINA = NOM_MAQUINA (AUN NO SE INGRESA UN NOMBRE POR CADA MAQUINA)
+                    + " cordon = " + jCBOXCACO.getSelectedIndex() + ","
+                    + " descuento = 0 ," // DESCUENTO = 0 (AUN NO SE GENERA UN TIPO DE DESCUENTO)
+                    + " excepcion = 0 ," // EXCEPCION = 0 (AUN NO SE IDENTIFICA)
+                    + " troqueladora = " + jCBOXTBCP.getSelectedIndex() + ","
+                    + " valor_troqueladora = 25000," // 25000 = (VALOR FIJO MIENTRAS SE CORRIJE)
+                    + " fuelle = " + jCBOXFSIM.getSelectedIndex() + ","
+                    + " lista_precio = 0, cod_familia_listaprecio = 0 ,"
+                    + " cod_sub_familia = 0 ," // Lista_Precio, COD_FAMILIA, COD_SUB_FAMILIA = 0 (NO EXISTEN)
+                    + " x_total = " + PRECIO_TOTAL + ","
+                    + " termolaminado = " + jCBOXTERM.getSelectedIndex() + ","
+                    + " serigrafia = 0," // 0 = SERIGRAFIA, AUN NO SE DEFINE
+                    + " barnizuv = " + jCBOXSBUV.getSelectedIndex() + ","
+                    + " correlativo_serigrafia = " + CORRELATIVO_SERIGRAFIA + "," // CORRELATIVO FIJO YA QUE AUN NO SE DEFINE LA SERIGRAFIA (123456)
+                    + " aporta_papel = " + jCBOXCAPP.getSelectedIndex() + ","
+                    + " digital_un_color = " + jCBOXIDUC.getSelectedIndex() + ","
+                    + " formulario = " + jCBOXPANF.getSelectedIndex() + ","
+                    + " digital_tiro = " + jTXTFIMDT.getText() + ","
+                    + " digital_retiro = " + jTXTFIMDR.getText() + ","
+                    + " duplo = " + jTXTFIMDU.getText() + ","
+                    + " digital_tipografica = " + jTXTFIMTI.getText() + ","
+                    + " cant_matrices = " + jTXTFCAMA.getText() + ","
+                    + " artes_paginables = " + jTXTFCAAP.getText() + ","
+                    + " artes_formulario = " + jTXTFAFUO.getText() + ","
+                    + " ploter = " + jCBOXCPXT.getSelectedIndex() + ","
+                    + " ploter_lineal = " + jCBOXCPML.getSelectedIndex() + ","
+                    + " tipoNomDigital = 'X' " // VACIO = TIPO NOMBRE DIGITAL
+                                        
+                    + "WHERE correlativo = '"+correlativo+"' AND rut_empresa = '79638870-6'";
+            
+            int done = st.executeUpdate(updateMOD);
+            
+        }catch(SQLException | HeadlessException ex){
+            JOptionPane.showMessageDialog(null, ex);
+        }
+        
+        //POLIMERO, MOLDE
+            if(jCBOXPMOL.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "POLIMERO, MOLDE";
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+dato[0]+"'");
+                    while (rs.next()){
+                        OVCP = rs.getInt("x1");
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[1]= "-";
+                dato[2]= 1;
+                dato[3]= OVCP;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+        //FOTOMECANICA CON CTP
+            if(Integer.parseInt(jTXTFCPCTP.getText()) > 0 && Integer.parseInt(jTXTFTAIM.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "FOTOMECANICA CON CTP";
+                dato[1]= "-";
+                if(jCBOXIDTC.getSelectedIndex() == 1){
+                    dato[2]= 0;
+                }else{
+                    dato[2]= jTXTFCPCTP.getText();
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "FOTOMECANICA CON CTP";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 2
+                            OVCPC = "FOTOMECANICA CON CTP 2";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 3
+                                    OVCPC = "FOTOMECANICA CON CTP 3";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 7
+                                    OVCPC = "FOTOMECANICA CON CTP 7";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 5
+                                    OVCPC = "FOTOMECANICA CON CTP 5";
+                                }
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - FOTOMECANICA CON CTP 1
+                            OVCPC = "FOTOMECANICA CON CTP 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                if(jCBOXCUAT.getSelectedIndex() == 1){
+                                    //OFFSET 2 C - CUATRICOMIA - FOTOMECANICA CON CTP 8
+                                    OVCPC = "FOTOMECANICA CON CTP 8";
+                                }else{
+                                    //OFFSET 2 C - FOTOMECANICA CON CTP 6
+                                    OVCPC = "FOTOMECANICA CON CTP 6";
+                                }
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - FOTOMECANICA CON CTP 4
+                                    OVCPC = "FOTOMECANICA CON CTP 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = '"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFTAIM.getText()) < 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(jTXTFTAIM.getText()) < 8){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(jTXTFCPCTP.getText()) <= 2){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO SIMPLE
+            if(jCBOXCDS.getSelectedIndex() == 1 && Integer.parseInt(jTXTFSIMP.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO SIMPLE";
+                dato[1]= "-";
+                if(jCBOXCAUA.getSelectedIndex() == 1){
+                    dato[2]= Double.parseDouble(jTXTFSIMP.getText())+0.5;
+                }else{
+                    dato[2]= Integer.parseInt(jTXTFSIMP.getText());
+                }
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "DISEÑO SIMPLE";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "DISEÑO SIMPLE 1";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "DISEÑO SIMPLE 2";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFCCOL.getText()) > 2){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(jTXTFMONT.getText()) > 2){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO ESPECIAL
+            if(jCBOXDVC.getSelectedIndex() == 1 && Integer.parseInt(jTXTFESPE.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO ESPECIAL";
+                dato[1]= "-";
+                dato[2]= jTXTFESPE.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion = 'DISEÑO EXTRA'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DISEÑO EXTRA
+            if(jCBOXDVPC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO EXTRA";
+                dato[1]= "-";
+                dato[2]= jTXTFEXTR.getText();
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - DISEÑO COMPLEJO
+                    OVCPC = "DISEÑO COMPLEJO";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 1
+                            OVCPC = "DISEÑO COMPLEJO 1";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 3
+                                OVCPC = "DISEÑO COMPLEJO 3";
+                            }  
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            //OFFSET 2 C - DISEÑO COMPLEJO 4
+                            OVCPC = "DISEÑO COMPLEJO 4";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - DISEÑO COMPLEJO 2
+                                OVCPC = "DISEÑO COMPLEJO 2";
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            /*DISEÑO COMPLEJO (NO SE UTILIZA)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DISEÑO COMPLEJO";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 30000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+            
+            String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }*/
+            
+            //CAMBIO DE TINTA
+            if(Integer.parseInt(jTXTFCCOL.getText()) > 0 && jCBOXFTCA.getSelectedIndex() > 0 || Integer.parseInt(jTXTFCCOL.getText()) > 1 ){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIOS DE TINTA";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCCOL.getText())-1+jCBOXFTCA.getSelectedIndex();
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - CAMBIO TINTA
+                    OVCPC = "CAMBIO TINTA";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 2
+                            OVCPC = "CAMBIO TINTA 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - CAMBIO TINTA 5
+                                OVCPC = "CAMBIO TINTA 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - CAMBIO TINTA 1
+                            OVCPC = "CAMBIO TINTA 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - CAMBIO TINTA 3
+                                OVCPC = "CAMBIO TINTA 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - CAMBIO TINTA 4
+                                    OVCPC = "CAMBIO TINTA 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(jCBOXFLLE.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(jCBOXCTIN.getSelectedIndex() == 0){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                dato[3]= rs.getInt(8);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //POSTURAS
+            if(Integer.parseInt(jTXTFIOTI.getText()) > 0 && Integer.parseInt(jTXTFCPCTP.getText()) >0){
+                Object dato[] = new Object[5];
+                dato[0]= "POSTURAS";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText())+jCBOXFTCA.getSelectedIndex()+(Integer.parseInt(jTXTFCPCTP.getText())-(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())));
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - POSTURAS
+                    OVCPC = "POSTURAS";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 2
+                            OVCPC = "POSTURAS 2";
+                        }else{
+                            if(jCBOXPO4C.getSelectedIndex() == 1){
+                                //OFFSET 4 C - POSTURAS 5
+                                OVCPC = "POSTURAS 5";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO1C.getSelectedIndex() == 1){
+                            //OFFSET 1 C - POSTURAS 1
+                            OVCPC = "POSTURAS 1";
+                        }else{
+                            if(jCBOXPO2C.getSelectedIndex() == 1){
+                                //OFFSET 2 C - POSTURAS 3
+                                OVCPC = "POSTURAS 3";
+                            }else{
+                                if(jCBOXPO4C.getSelectedIndex() == 1){
+                                    //OFFSET 4 C - POSTURAS 4
+                                    OVCPC = "POSTURAS 4";
+                                }
+                            }  
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 4){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) > 4){
+                                dato[3]= rs.getInt(6);
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DOCUMENTOS SII.
+            if(jCBOXFTCA.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFMONT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "DOCUMENTOS SII.";
+                dato[1]= Math.round((Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText()))/Integer.parseInt(jTXTFMONT.getText()));
+                dato[2]= ((Double.parseDouble(dato[1].toString())*jCBOXFTCA.getSelectedIndex())/1000) * 10 / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DOCTOS SII'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //DENSITOMETRIA
+            if(jCBOXCUAT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "DENSITOMETRIA";
+                dato[1]= "-";
+                if(jCBOXCUAT.getSelectedIndex() == 1){
+                    dato[2]=4;
+                }else{
+                    dato[2]=0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DENSITOMETRIA'");
+                    while (rs.next()){
+                            dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION MONOCOLOR
+            if(jCBOXPO1C.getSelectedIndex() == 1 && Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFIOTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION MONOCOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO1C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.3) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - FOTOMECANICA CON CTP
+                    OVCPC = "IMPRESION MONOCOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        OVCPC = "IMPRESION MONOCOLOR 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            OVCPC = "IMPRESION MONOCOLOR 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION BICOLOR
+            if(jCBOXPO2C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION BICOLOR";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO2C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                if(Integer.parseInt(jTXTFTAIM.getText()) < 5){
+                    dato[2]= (Double.parseDouble(dato[1].toString())/1000*1.5) * 10 / 10;
+                }else{
+                    dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000*2) * 10) / 10;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION BICOLOR
+                    OVCPC = "IMPRESION BICOLOR";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 5 SM
+                                OVCPC = "IMPRESION BICOLOR 5";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 2 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 2";
+                            }
+                        }
+                    }else{
+                        //2%
+                        if(jCBOXPO2C.getSelectedIndex() == 1){
+                            if(jCBOXGTSM.getSelectedIndex() == 1){
+                                //OFFSET 2 C - IMPRESION BICOLOR 6 SM
+                                OVCPC = "IMPRESION BICOLOR 6";
+                            }else{
+                                //OFFSET 2 C - IMPRESION BICOLOR 1 GTO-Z
+                                OVCPC = "IMPRESION BICOLOR 1";
+                            }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION 4 COLORES
+            if(jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION 4 COLORES";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText())+jCBOXBOFF.getSelectedIndex())/Integer.parseInt(jTXTFMONT.getText())*jCBOXPO4C.getSelectedIndex();
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= (Double.parseDouble(dato[1].toString())+(0.2*Double.parseDouble(dato[1].toString())))/1000 * 10 / 10;
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - IMPRESION 4 COLORES
+                    OVCPC = "IMPRESION 4 COLORES";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        //1% - IMPRESION 4 COLORES 2
+                        OVCPC = "IMPRESION 4 COLORES 2";
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            //2% - IMPRESION 4 COLORES 1
+                            OVCPC = "IMPRESION 4 COLORES 1";
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 4000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION DIGITAR A TODO COLOR
+            if(jCBOXIDTC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A TODO COLOR";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='IMPRESION DIGITAL COLOR'");
+                    if(jCBOXUCTC.getSelectedIndex() == 0){
+                        while (rs.next()){
+                            dato[3]= rs.getInt(14);
+                        }
+                    }else{
+                        while (rs.next()){
+                            if(Integer.parseInt(dato[2].toString()) <= 200){
+                                dato[3]= rs.getInt(4);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 500){
+                                    dato[3]= rs.getInt(6);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 800){
+                                        dato[3]= rs.getInt(8);
+                                    }else{
+                                        if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                            dato[3]= rs.getInt(10);
+                                        }else{
+                                            dato[3]= rs.getInt(12);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION DIGITAR A UN COLOR (RISSO)
+            if(jCBOXIDUC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION DIGITAR A UN COLOR (RISSO)";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFIOTI.getText())+Integer.parseInt(jTXTFIORE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='DIGITAL IMPRESION DIGITAL A UN COLOR'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[2].toString()) <= 200){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[2].toString()) <= 500){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[2].toString()) <= 800){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[2].toString()) <= 1000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //RECARGO IMPRESION OFFSET
+            if(jCBOXPO1C.getSelectedIndex() == 1 || jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION OFFSET";
+                dato[1]= "-";
+                dato[2]= valrecimp;
+                if(jCBOXTIMP.getSelectedIndex() == 7){
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.4)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }else{
+                    if(jCBOXCTIN.getSelectedIndex() == 0){
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(1*0.5)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }else{
+                        dato[3]= (jCBOXFLLE.getSelectedIndex()*0.3)+(jCBOXBOFF.getSelectedIndex()*0.6)+(jCBOXTIND.getSelectedIndex()*0.6);
+                    }
+                }
+                dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TIPOGRAFIA
+            if(Integer.parseInt(jTXTFMONT.getText()) > 0 && Integer.parseInt(jTXTFCANT.getText()) > 0 && Integer.parseInt(jTXTFNJUE.getText()) > 0 && Integer.parseInt(jTXTFNEJE.getText()) > 0 && Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[1]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())*(Integer.parseInt(jTXTFITTI.getText())+Integer.parseInt(jTXTFITRE.getText()))/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[1]= 0;
+                }
+                
+                dato[2]= Math.round((Double.parseDouble(dato[1].toString())/1000) * 10) / 10;
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TIPOGRAFIA'");
+                    while (rs.next()){
+                        if(Integer.parseInt(dato[1].toString()) <= 1000){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            if(Integer.parseInt(dato[1].toString()) <= 3000){
+                                dato[3]= rs.getInt(6);
+                            }else{
+                                if(Integer.parseInt(dato[1].toString()) <= 5000){
+                                    dato[3]= rs.getInt(8);
+                                }else{
+                                    if(Integer.parseInt(dato[1].toString()) <= 7000){
+                                        dato[3]= rs.getInt(10);
+                                    }else{
+                                        dato[3]= rs.getInt(12);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //RECARGO IMPRESION TIPOGRAFICA
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "RECARGO IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= valrectip;
+                dato[3]= jCBOXTCMT.getSelectedIndex()*0.5;
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            /*TIPOGRAFIA FUELLE (NO ESTA SIENDO UTILIZADO)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TIPOGRAFIA FUELLE";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+            
+            String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }*/
+            
+            //ENCUADERNACION
+            if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENCUADERNACION";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText());
+                }else{
+                    dato[2]= 0;
+                }
+                
+                if(jCBOXTCOM.getSelectedIndex() == 0){
+                    //NORMAL - ENCUADERNACION
+                    OVCPC = "ENCUADERNACION";
+                }else{
+                    if(jCBOXTCOM.getSelectedIndex() == 1){
+                        if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //1% - PO2C o PO4C - ENCUADERNACION 4
+                            OVCPC = "ENCUADERNACION 4";
+                        }else{
+                            //1% - ENCUADERNACION 2
+                            OVCPC = "ENCUADERNACION 2";
+                        }
+                        
+                    }else{
+                        if(jCBOXTCOM.getSelectedIndex() == 2){
+                            if(jCBOXPO2C.getSelectedIndex() == 1 || jCBOXPO4C.getSelectedIndex() == 1){
+                            //2% - PO2C o PO4C - ENCUADERNACION 5
+                            OVCPC = "ENCUADERNACION 5";
+                        }else{
+                            //2% - ENCUADERNACION 1
+                            OVCPC = "ENCUADERNACION 1";
+                        }
+                        }
+                    }
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        if(Integer.parseInt(jTXTFITTI.getText()) > 0){
+                            dato[3]= rs.getDouble(6);
+                        }else{
+                            dato[3]= rs.getDouble(8);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(TIMP == 0 || TIMP == 1 || TIMP == 9 || TIMP == 10){
+                    BLOCKTALON = 1;
+                }else{
+                    BLOCKTALON = 0;
+                }
+                if(TAIM < 7){
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*1.5*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }else{
+                    dato[4]=Math.round((Double.parseDouble(dato[3].toString())*Integer.parseInt(dato[2].toString())*jCBOXASN.getSelectedIndex())+(15*CANT*jCBOXCOSN.getSelectedIndex())+(CANT*BLOCKTALON*50));
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //BARNIZ, TINTA INDELEBLE
+            if(jCBOXBOFF.getSelectedIndex() == 1 || jCBOXTIND.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "BARNIZ, TINTA INDELEBLE";
+                dato[1]= "-";
+                
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    if(jCBOXBOFF.getSelectedIndex() == 1){
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000) * 2;
+                    }else{
+                        dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())*Integer.parseInt(jTXTFNJUE.getText())*Integer.parseInt(jTXTFNEJE.getText())/Integer.parseInt(jTXTFMONT.getText())/1000);
+                    }
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='BARNIZ, TINTA INDELEBLE'");
+                    while (rs.next()){
+                        if(jCBOXTIND.getSelectedIndex() > 0){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString())) < Integer.parseInt(dato[3].toString())){
+                    dato[4]=dato[3];
+                }else{
+                    dato[4]=Math.round(Double.parseDouble(dato[2].toString())*Integer.parseInt(dato[3].toString()));
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CORTE Y REFILADOS (FALTA)
+            if(jCBOXCSN.getSelectedIndex() == 1){
+                int X4 = 0, X6 = 0;
+                Object dato[] = new Object[5];
+                dato[0]= "CORTE Y REFILADOS";
+                dato[1]= "-";
+                dato[2]= cantlp;
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CORTE Y REFILADO'");
+                    while (rs.next()){
+                        X4 = rs.getInt(4);
+                        X6 = rs.getInt(6);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                if(Integer.parseInt(dato[2].toString()) <= X4){
+                    dato[3]=3.5;
+                }else{
+                    if(Integer.parseInt(dato[2].toString()) <= X6){
+                        dato[3]=3;
+                    }else{
+                        dato[3]=2.5;
+                    }
+                }
+                valcorte = (int) Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                if(valcorte < 1000){
+                    dato[4] = 2500;
+                }else{
+                    dato[4] = valcorte;
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //MUESTRA COLOR CALIBRADA
+            if(Integer.parseInt(jTXTFCMCC.getText()) > 0 ){
+                Object dato[] = new Object[5];
+                dato[0]= "MUESTRA COLOR CALIBRADA";
+                dato[1]= "-";
+                dato[2]= jTXTFCMCC.getText();
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='MUESTRA COLOR CALIBRADA'");
+                    while (rs.next()){
+                        if(jCBOXCUAT.getSelectedIndex() == 1){
+                            dato[3]= rs.getInt(4);
+                        }else{
+                            dato[3]= rs.getInt(6);
+                        }
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                if(jCBOXCUAT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFCMCC.getText()) < 2){
+                    dato[4]=3000;
+                }else{
+                    dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                }
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CONFECCION FUELLE
+            if(jCBOXTIMP.getSelectedIndex() == 3 && Integer.parseInt(jTXTFCANT.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "CONFECCION FUELLE";
+                dato[1]= "-";
+                dato[2]= Integer.parseInt(jTXTFCANT.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CONFECCION FUELLE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION ARCHIVO CLIENTE
+            if(jCBOXCAOA.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION ARCHIVO CLIENTE";
+                dato[1]= "-";
+                dato[2]= jCBOXCAOA.getSelectedIndex();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION ARCHIVO CLIENTE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION SOBRES Y ADHESIVOS
+            if(jCBOXTIMP.getSelectedIndex() == 7){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION SOBRES Y ADHESIVOS";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFCANT.getText()) >= 500){
+                    dato[2]= jTXTFCANT.getText();
+                }else{
+                    dato[2]= 0;
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISION SOBRES Y ADHESIVOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getDouble(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Math.round(Integer.parseInt(dato[2].toString())*Double.parseDouble(dato[3].toString()));
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //ENTREGA CON RADIO TAXI
+            if(jCBOXENRT.getSelectedIndex() == 1 && Integer.parseInt(jTXTFOCAN.getText()) > 0){
+                Object dato[] = new Object[5];
+                dato[0]= "ENTREGA CON RADIO TAXI";
+                dato[1]= "-";
+                dato[2]= jCBOXENRT.getSelectedIndex()*Integer.parseInt(jTXTFOCAN.getText());
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='ENTREGA RADIO TAXI'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)
+            if(jCBOXTCMT.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "TROQUELADO, CUÑO, MOLDE(MAQ. TIPOGRAFICA)";
+                dato[1]= "-";
+                dato[2]= jCBOXTCMT.getSelectedIndex();
+                
+                if(jCBOXEUSA.getSelectedIndex() == 0){
+                    //CONFECCION TROQUEL / CUÑO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO";
+                }else{
+                    //CONFECCION TROQUEL / CUÑO 4 USADO
+                    OVCPC = "CONFECCION TROQUEL / CUÑO 4";
+                }
+                
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='"+OVCPC+"'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //REVISION Y/O EMPAQUE
+            if(jCBOXASN.getSelectedIndex() == 0){
+                Object dato[] = new Object[5];
+                dato[0]= "REVISION Y/O EMPAQUE";
+                dato[1]= "-";
+                if(Integer.parseInt(jTXTFMONT.getText()) > 0){
+                    dato[2]= Math.round(Integer.parseInt(jTXTFCANT.getText())/Integer.parseInt(jTXTFMONT.getText()));
+                }else{
+                    dato[2]= 0;
+                }
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='REVISIONES Y/O EMPAQUE'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CAJA T/PRESENTACION
+            if(jCBOXCAPR.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAJA T/PRESENTACION";
+                dato[1]= "-";
+                dato[2]= jTXTFCCDT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='CAJAS T/PRESENTACION'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //TACOS
+            if(jCBOXTIMP.getSelectedIndex() == 8){
+                Object dato[] = new Object[5];
+                dato[0]= "TACOS";
+                dato[1]= "-";
+                dato[2]= jTXTFCANT.getText();
+                try{
+                    ResultSet rs = st.executeQuery("SELECT * FROM ot_valores_cotizador_plano WHERE descripcion ='TACOS'");
+                    while (rs.next()){
+                        dato[3]= rs.getInt(4);
+                    }
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //MATRIZ DE IMPRESION (AQUI)
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "MATRIZ DE IMPRESION";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //ARTES
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "ARTES";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //CAMBIO CILINDROS
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "CAMBIO CILINDROS";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+            
+            //IMPRESION TIPOGRAFICA
+            if(jCBOXDPOC.getSelectedIndex() == 1){
+                Object dato[] = new Object[5];
+                dato[0]= "IMPRESION TIPOGRAFICA";
+                dato[1]= "-";
+                dato[2]= jTXTFCOMP.getText();
+                dato[3]= 10000;
+                dato[4]=Integer.parseInt(dato[2].toString())*Integer.parseInt(dato[3].toString());
+                
+                String insertIDC = "";
+                try{
+                    insertIDC = "INSERT INTO TINFORME_COSTO_DETALLE_PLANO (correlativo, "
+                            + "nombre, extra, cantidad, valor, total, rut_empresa)"
+                            
+                            + "VALUES ('"+correlativo+"', "
+                            + "'" + dato[0] + "', '" + dato[1] + "', '" + dato[2] + "', "
+                            + "'" + dato[3] + "', '" + dato[4] + "', '79638870-6')";
+                    
+                int done = st.executeUpdate(insertIDC);
+                            
+                            
+                }catch(SQLException | HeadlessException ex){
+                    JOptionPane.showMessageDialog(null, ex);
+                }
+            }
+        
+    }//GEN-LAST:event_jBMOINActionPerformed
+
+    private void jTXTFUSERActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTXTFUSERActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTXTFUSERActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Cotizador.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Cotizador().setVisible(true);
+                
+            }
+        });
+        
+        
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel Antecedentes;
+    private javax.swing.JPanel Encuadernacion;
+    private javax.swing.JPanel HojaDeCostos;
+    private javax.swing.JPanel MontajePapelesCorte;
+    private javax.swing.JPanel OtrosDescuentoPapel;
+    private javax.swing.JPanel PreprensaPrensa;
+    private javax.swing.JButton jBAP;
+    private javax.swing.JButton jBBCLI;
+    private javax.swing.JButton jBBUCL;
+    private javax.swing.JButton jBCACO;
+    private javax.swing.JButton jBCALC;
+    private javax.swing.JButton jBCEBU;
+    private javax.swing.JButton jBCEIC;
+    private javax.swing.JButton jBCLNU;
+    private javax.swing.JButton jBCOST;
+    private javax.swing.JButton jBEPEM;
+    private javax.swing.JButton jBGUIN;
+    private javax.swing.JButton jBIMIN;
+    private javax.swing.JButton jBLIPI;
+    private javax.swing.JButton jBLITA;
+    private javax.swing.JButton jBMOIN;
+    private javax.swing.JButton jBTCLR;
+    private javax.swing.JButton jBTSAV;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JComboBox jCBOXASN;
+    private javax.swing.JComboBox jCBOXBOFF;
+    private javax.swing.JComboBox jCBOXCABO;
+    private javax.swing.JComboBox jCBOXCACO;
+    private javax.swing.JComboBox jCBOXCAOA;
+    private javax.swing.JComboBox jCBOXCAPP;
+    private javax.swing.JComboBox jCBOXCAPR;
+    private javax.swing.JComboBox jCBOXCAUA;
+    private javax.swing.JComboBox jCBOXCDS;
+    private javax.swing.JComboBox jCBOXCITR;
+    private javax.swing.JComboBox jCBOXCOSN;
+    private javax.swing.JComboBox jCBOXCPML;
+    private javax.swing.JComboBox jCBOXCPXT;
+    private javax.swing.JComboBox jCBOXCRDU;
+    private javax.swing.JComboBox jCBOXCSN;
+    private javax.swing.JComboBox jCBOXCTIN;
+    private javax.swing.JComboBox jCBOXCUAT;
+    private javax.swing.JComboBox jCBOXDPOC;
+    private javax.swing.JComboBox jCBOXDVC;
+    private javax.swing.JComboBox jCBOXDVPC;
+    private javax.swing.JComboBox jCBOXENRT;
+    private javax.swing.JComboBox jCBOXEUSA;
+    private javax.swing.JComboBox jCBOXFLET;
+    private javax.swing.JComboBox jCBOXFLLE;
+    private javax.swing.JComboBox jCBOXFSIM;
+    private javax.swing.JComboBox jCBOXFTCA;
+    private javax.swing.JComboBox jCBOXGTSM;
+    private javax.swing.JComboBox jCBOXIDTC;
+    private javax.swing.JComboBox jCBOXIDUC;
+    private javax.swing.JComboBox jCBOXMDP;
+    private javax.swing.JComboBox jCBOXOTCF;
+    private javax.swing.JComboBox jCBOXOTEN;
+    private javax.swing.JComboBox jCBOXOTVA;
+    private javax.swing.JComboBox jCBOXPANF;
+    private javax.swing.JComboBox jCBOXPARC;
+    private javax.swing.JComboBox jCBOXPMOL;
+    private javax.swing.JComboBox jCBOXPMSM;
+    private javax.swing.JComboBox jCBOXPO1C;
+    private javax.swing.JComboBox jCBOXPO2C;
+    private javax.swing.JComboBox jCBOXPO4C;
+    private javax.swing.JComboBox jCBOXPOLIE;
+    private javax.swing.JComboBox jCBOXPOLIM;
+    private javax.swing.JComboBox jCBOXRECO;
+    private javax.swing.JComboBox jCBOXRETE;
+    private javax.swing.JComboBox jCBOXSBUV;
+    private javax.swing.JComboBox jCBOXSECI;
+    private javax.swing.JComboBox jCBOXTBCP;
+    private javax.swing.JComboBox jCBOXTCMT;
+    private javax.swing.JComboBox jCBOXTCOM;
+    private javax.swing.JComboBox jCBOXTDPA;
+    private javax.swing.JComboBox jCBOXTERM;
+    private javax.swing.JComboBox jCBOXTIMP;
+    private javax.swing.JComboBox jCBOXTIND;
+    private javax.swing.JComboBox jCBOXTRAM;
+    private javax.swing.JComboBox jCBOXUCTC;
+    private javax.swing.JDialog jDIAAPAP;
+    private javax.swing.JDialog jDIABCLI;
+    private javax.swing.JDialog jDIACPXT;
+    private javax.swing.JDialog jDIAIDUC;
+    private javax.swing.JDialog jDIASTOC;
+    private javax.swing.JDialog jDIATAAU;
+    private javax.swing.JDialog jDIATERM;
+    private javax.swing.JLabel jLABAFUO;
+    private javax.swing.JLabel jLABANCO;
+    private javax.swing.JLabel jLABANTC;
+    private javax.swing.JLabel jLABASN;
+    private javax.swing.JLabel jLABBOFF;
+    private javax.swing.JLabel jLABCAAP;
+    private javax.swing.JLabel jLABCABO;
+    private javax.swing.JLabel jLABCACO;
+    private javax.swing.JLabel jLABCADE;
+    private javax.swing.JLabel jLABCAIM;
+    private javax.swing.JLabel jLABCALA;
+    private javax.swing.JLabel jLABCAMA;
+    private javax.swing.JLabel jLABCANI;
+    private javax.swing.JLabel jLABCANT;
+    private javax.swing.JLabel jLABCAOA;
+    private javax.swing.JLabel jLABCAPP;
+    private javax.swing.JLabel jLABCAPR;
+    private javax.swing.JLabel jLABCAUA;
+    private javax.swing.JLabel jLABCCDT;
+    private javax.swing.JLabel jLABCCOL;
+    private javax.swing.JLabel jLABCDS;
+    private javax.swing.JLabel jLABCEPJ;
+    private javax.swing.JLabel jLABCEPJV;
+    private javax.swing.JLabel jLABCFIN;
+    private javax.swing.JLabel jLABCITR;
+    private javax.swing.JLabel jLABCMCC;
+    private javax.swing.JLabel jLABCMOD;
+    private javax.swing.JLabel jLABCOMP;
+    private javax.swing.JLabel jLABCORE;
+    private javax.swing.JLabel jLABCOSN;
+    private javax.swing.JLabel jLABCPCTP;
+    private javax.swing.JLabel jLABCPML;
+    private javax.swing.JLabel jLABCPVE;
+    private javax.swing.JLabel jLABCPXT;
+    private javax.swing.JLabel jLABCRDU;
+    private javax.swing.JLabel jLABCSN;
+    private javax.swing.JLabel jLABCTCR;
+    private javax.swing.JLabel jLABCTIN;
+    private javax.swing.JLabel jLABCTLB;
+    private javax.swing.JLabel jLABCTMO;
+    private javax.swing.JLabel jLABCUAT;
+    private javax.swing.JLabel jLABDPOC;
+    private javax.swing.JLabel jLABDVC;
+    private javax.swing.JLabel jLABDVPC;
+    private javax.swing.JLabel jLABEJEM;
+    private javax.swing.JLabel jLABENRT;
+    private javax.swing.JLabel jLABESPC;
+    private javax.swing.JLabel jLABEUSA;
+    private javax.swing.JLabel jLABEXAR;
+    private javax.swing.JLabel jLABEXTR;
+    private javax.swing.JLabel jLABFACO;
+    private javax.swing.JLabel jLABFAMI;
+    private javax.swing.JLabel jLABFAOC;
+    private javax.swing.JLabel jLABFAOVA;
+    private javax.swing.JLabel jLABFLET;
+    private javax.swing.JLabel jLABFLLE;
+    private javax.swing.JLabel jLABFSIM;
+    private javax.swing.JLabel jLABFTCA;
+    private javax.swing.JLabel jLABHAGR;
+    private javax.swing.JLabel jLABHAGRV;
+    private javax.swing.JLabel jLABICAN;
+    private javax.swing.JLabel jLABICDI;
+    private javax.swing.JLabel jLABIDTC;
+    private javax.swing.JLabel jLABIDUC;
+    private javax.swing.JLabel jLABIMDR;
+    private javax.swing.JLabel jLABIMDT;
+    private javax.swing.JLabel jLABIMDU;
+    private javax.swing.JLabel jLABIMTI;
+    private javax.swing.JLabel jLABINFO;
+    private javax.swing.JLabel jLABIORE;
+    private javax.swing.JLabel jLABIOTI;
+    private javax.swing.JLabel jLABITRE;
+    private javax.swing.JLabel jLABITTI;
+    private javax.swing.JLabel jLABLABM;
+    private javax.swing.JLabel jLABLABR;
+    private javax.swing.JLabel jLABLARE;
+    private javax.swing.JLabel jLABLATI;
+    private javax.swing.JLabel jLABLLTT;
+    private javax.swing.JLabel jLABLOGO1;
+    private javax.swing.JLabel jLABMAAC;
+    private javax.swing.JLabel jLABMDPL;
+    private javax.swing.JLabel jLABMDTA;
+    private javax.swing.JLabel jLABMDTX;
+    private javax.swing.JLabel jLABMEIN;
+    private javax.swing.JLabel jLABMONT;
+    private javax.swing.JLabel jLABMPEN;
+    private javax.swing.JLabel jLABNCLI;
+    private javax.swing.JLabel jLABNEJE;
+    private javax.swing.JLabel jLABNFXF;
+    private javax.swing.JLabel jLABNIMP;
+    private javax.swing.JLabel jLABNJUE;
+    private javax.swing.JLabel jLABNOCL;
+    private javax.swing.JLabel jLABNODI;
+    private javax.swing.JLabel jLABNOLA;
+    private javax.swing.JLabel jLABNUDJ;
+    private javax.swing.JLabel jLABOCAN;
+    private javax.swing.JLabel jLABOTCF;
+    private javax.swing.JLabel jLABOTEN;
+    private javax.swing.JLabel jLABOTRO;
+    private javax.swing.JLabel jLABOTVA;
+    private javax.swing.JLabel jLABPANF;
+    private javax.swing.JLabel jLABPARC;
+    private javax.swing.JLabel jLABPMOL;
+    private javax.swing.JLabel jLABPO1C;
+    private javax.swing.JLabel jLABPO2C;
+    private javax.swing.JLabel jLABPO4C;
+    private javax.swing.JLabel jLABPOLIE;
+    private javax.swing.JLabel jLABPOLIM;
+    private javax.swing.JLabel jLABPTCL;
+    private javax.swing.JLabel jLABPUCL;
+    private javax.swing.JLabel jLABRCLI;
+    private javax.swing.JLabel jLABRELO;
+    private javax.swing.JLabel jLABREPO;
+    private javax.swing.JLabel jLABSALE;
+    private javax.swing.JLabel jLABSAVA;
+    private javax.swing.JLabel jLABSBUV;
+    private javax.swing.JLabel jLABSECI;
+    private javax.swing.JLabel jLABSIMP;
+    private javax.swing.JLabel jLABSOBR;
+    private javax.swing.JLabel jLABSOOT;
+    private javax.swing.JLabel jLABSOVA;
+    private javax.swing.JLabel jLABSTVA;
+    private javax.swing.JLabel jLABSUFA;
+    private javax.swing.JLabel jLABT150;
+    private javax.swing.JLabel jLABT300;
+    private javax.swing.JLabel jLABTAIM;
+    private javax.swing.JLabel jLABTBCP;
+    private javax.swing.JLabel jLABTCAN;
+    private javax.swing.JLabel jLABTCMT;
+    private javax.swing.JLabel jLABTCOM;
+    private javax.swing.JLabel jLABTDPA;
+    private javax.swing.JLabel jLABTDUC;
+    private javax.swing.JLabel jLABTEMA;
+    private javax.swing.JLabel jLABTEMA1;
+    private javax.swing.JLabel jLABTEMO;
+    private javax.swing.JLabel jLABTERM;
+    private javax.swing.JLabel jLABTERM2;
+    private javax.swing.JLabel jLABTIDC;
+    private javax.swing.JLabel jLABTIDI;
+    private javax.swing.JLabel jLABTIMP;
+    private javax.swing.JLabel jLABTIND;
+    private javax.swing.JLabel jLABTMON;
+    private javax.swing.JLabel jLABTRAM;
+    private javax.swing.JLabel jLABTSOB;
+    private javax.swing.JLabel jLABTST1;
+    private javax.swing.JLabel jLABTST2;
+    private javax.swing.JLabel jLABTST3;
+    private javax.swing.JLabel jLABTSVA;
+    private javax.swing.JLabel jLABTTCF;
+    private javax.swing.JLabel jLABTTCR;
+    private javax.swing.JLabel jLABTTCV;
+    private javax.swing.JLabel jLABTTFC;
+    private javax.swing.JLabel jLABTTLB;
+    private javax.swing.JLabel jLABTTMI;
+    private javax.swing.JLabel jLABTTMO;
+    private javax.swing.JLabel jLABTTOT;
+    private javax.swing.JLabel jLABTTPT;
+    private javax.swing.JLabel jLABTTPU;
+    private javax.swing.JLabel jLABTTRE;
+    private javax.swing.JLabel jLABTTS1;
+    private javax.swing.JLabel jLABTTS2;
+    private javax.swing.JLabel jLABTTS3;
+    private javax.swing.JLabel jLABTTUB;
+    private javax.swing.JLabel jLABTVAL;
+    private javax.swing.JLabel jLABUTBR;
+    private javax.swing.JLabel jLABVATO;
+    private javax.swing.JLabel jLABVAUN;
+    private javax.swing.JLabel jLABVCAL;
+    private javax.swing.JLabel jLABVCAN;
+    private javax.swing.JLabel jLABVCDE;
+    private javax.swing.JLabel jLABVNDI;
+    private javax.swing.JLabel jLABVNDJ;
+    private javax.swing.JLabel jLABVTCF;
+    private javax.swing.JLabel jLABVTCR;
+    private javax.swing.JLabel jLABVTCV;
+    private javax.swing.JLabel jLABVTDC;
+    private javax.swing.JLabel jLABVTDI;
+    private javax.swing.JLabel jLABVTLB;
+    private javax.swing.JLabel jLABVTMI;
+    private javax.swing.JLabel jLABVTMO;
+    private javax.swing.JLabel jLABVVT;
+    private javax.swing.JLabel jLABVVU;
+    private javax.swing.JList jLISTEQUI;
+    private javax.swing.JList jLISTFAMI;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem11;
+    private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
+    private javax.swing.JMenuItem jMenuItem14;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JSeparator jSeparator10;
+    private javax.swing.JSeparator jSeparator11;
+    private javax.swing.JSeparator jSeparator12;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
+    private javax.swing.JPopupMenu.Separator jSeparator7;
+    private javax.swing.JSeparator jSeparator8;
+    private javax.swing.JSeparator jSeparator9;
+    private javax.swing.JTable jTABBCLI;
+    private javax.swing.JTable jTABENCU;
+    private javax.swing.JTable jTABMONT;
+    private javax.swing.JTable jTABSUFA;
+    private javax.swing.JTextField jTXTFAFUO;
+    private javax.swing.JTextField jTXTFBCLI;
+    private javax.swing.JTextField jTXTFCAAP;
+    private javax.swing.JTextField jTXTFCAIM;
+    private javax.swing.JTextField jTXTFCAMA;
+    private javax.swing.JTextField jTXTFCANT;
+    private javax.swing.JTextField jTXTFCCDT;
+    private javax.swing.JTextField jTXTFCCOL;
+    private javax.swing.JTextField jTXTFCMCC;
+    private javax.swing.JTextField jTXTFCMOD;
+    private javax.swing.JTextField jTXTFCOMP;
+    private javax.swing.JTextField jTXTFCPCTP;
+    private javax.swing.JTextField jTXTFESPE;
+    private javax.swing.JTextField jTXTFEXAR;
+    private javax.swing.JTextField jTXTFEXTR;
+    private javax.swing.JTextField jTXTFFECH;
+    private javax.swing.JTextField jTXTFICAN;
+    private javax.swing.JTextField jTXTFICDI;
+    private javax.swing.JTextField jTXTFIMDR;
+    private javax.swing.JTextField jTXTFIMDT;
+    private javax.swing.JTextField jTXTFIMDU;
+    private javax.swing.JTextField jTXTFIMTI;
+    private javax.swing.JTextField jTXTFIORE;
+    private javax.swing.JTextField jTXTFIOTI;
+    private javax.swing.JTextField jTXTFITRE;
+    private javax.swing.JTextField jTXTFITTI;
+    private javax.swing.JTextField jTXTFLARE;
+    private javax.swing.JTextField jTXTFLATI;
+    private javax.swing.JTextField jTXTFLLTT;
+    private javax.swing.JTextField jTXTFMONT;
+    private javax.swing.JTextField jTXTFMPEN;
+    private javax.swing.JTextField jTXTFMTAMX;
+    private javax.swing.JTextField jTXTFMTAMY;
+    private javax.swing.JTextField jTXTFNCLI;
+    private javax.swing.JTextField jTXTFNEJE;
+    private javax.swing.JTextField jTXTFNFXF;
+    private javax.swing.JTextField jTXTFNIMP;
+    private javax.swing.JTextField jTXTFNJUE;
+    private javax.swing.JTextField jTXTFNOLA;
+    private javax.swing.JTextField jTXTFOCAN;
+    private javax.swing.JTextField jTXTFRCLI;
+    private javax.swing.JTextField jTXTFSIMP;
+    private javax.swing.JTextField jTXTFSOVA;
+    private javax.swing.JTextField jTXTFSTVA;
+    private javax.swing.JTextField jTXTFTAIM;
+    private javax.swing.JTextField jTXTFTMON;
+    private javax.swing.JTextField jTXTFUSER;
+    private javax.swing.JTextField jTXTFUSER1;
+    private javax.swing.JTextField jTXTFVERS;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
+    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    // End of variables declaration//GEN-END:variables
+}

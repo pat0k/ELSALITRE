@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="InformeDeCosto_AntecedentesdeImpresion" language="groovy" pageWidth="555" pageHeight="802" columnWidth="535" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3a84e50a-f36a-496b-8cf1-b9a48f6f7ba2">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT cantidad, juegos, ejemplares, offset1, offset2, offset4, imp_digital, digital_un_color, tiro, retiro, tipotiro, tiporetiro, barniz, aporta_papel
+FROM thcotizador_plano
+WHERE correlativo ='14366']]>
+	</queryString>
+	<field name="cantidad" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="juegos" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="ejemplares" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="offset1" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="offset2" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="offset4" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="imp_digital" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="digital_un_color" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tiro" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="retiro" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tipotiro" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tiporetiro" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="barniz" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="aporta_papel" class="java.lang.Boolean">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band/>
+	</background>
+	<columnHeader>
+		<band height="112">
+			<line>
+				<reportElement x="180" y="0" width="1" height="110" forecolor="#666666" uuid="5732eeb6-ddba-4abc-a3f5-78eab07c0a5c"/>
+			</line>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="0" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="c56e1ded-6558-467a-a8ce-db0d290554c0"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cantidad"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="11" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="81839018-a141-4148-8820-7570a59e2118"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Juegos"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="22" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="b92a75aa-3c7f-4db6-8a2f-fd9eb98dc3c0"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ejemplares Por Juegos"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="33" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="4dcae249-e9de-4489-8358-04242cc2ea7d"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{offset1}.equals( !null )? "Prensa Offset 1 Color" :
+$F{offset2}.equals( !null )? "Prensa Offset 2 Color" :
+$F{offset4}.equals( !null )? "Prensa Offset 4 Color" :
+$F{imp_digital}.equals( !null )? "Impresora Digital a Todo Color" :
+$F{digital_un_color}.equals( !null )? "Impresora Digital a Todo Color" :
+
+""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="44" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="32f457b0-829a-45cd-a885-ca1e2db9c6ee"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impresiones Offset Tiro"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="55" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="f356fc52-6f2e-496c-9e40-23f92b6aedf6"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impresiones Offset Retiro"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="66" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="033d44d1-dd18-48c0-9a2b-af8af974c976"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Prensa Tipografica Tiro"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="77" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="8c6785dc-410a-4afb-acde-834acf36ee3e"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Prensa Tipografica Retiro"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="88" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="aa6150aa-5ed1-4f8d-b7aa-64738d41e32f"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Barniz Offset"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="0" y="99" width="180" height="11" forecolor="#000000" backcolor="#E6E6E6" uuid="5d8c5669-8698-413e-82ea-b5bee3a4d6c6"/>
+				<textElement textAlignment="Left" markup="none">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cliente Aporta Papel o Pre-Impreso"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="0" width="40" height="11" uuid="d9207c30-2681-4a29-a0fa-c616ba344275"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="11" width="40" height="11" uuid="bd1a1507-34df-41dd-81cd-f4c70ac7a5a6"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{juegos}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="22" width="40" height="11" uuid="09f04353-c8e8-4c5f-8021-430a488e226e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ejemplares}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
+				<reportElement x="181" y="33" width="40" height="11" uuid="43a41185-b962-453f-9520-4de05bba6473"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{offset1}.equals( !null )? "✓" :
+$F{offset2}.equals( !null )? "✓" :
+$F{offset4}.equals( !null )? "✓" :
+$F{imp_digital}.equals( !null )? "✓" :
+$F{digital_un_color}.equals( !null )? "✓" :
+
+""]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="44" width="40" height="11" uuid="465bbe2e-1233-4693-9859-dce506a2dafc"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tiro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="55" width="40" height="11" uuid="80843beb-4415-4471-b761-e85861e7ebaf"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{retiro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="66" width="40" height="11" uuid="348567d4-dc73-48aa-84e0-efad293e6a8e"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipotiro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="77" width="40" height="11" uuid="3d68ceeb-29e2-485a-a102-5af836ed6b96"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tiporetiro}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="88" width="40" height="11" uuid="e76a946c-8d8e-41f9-b057-7abe4c7eddb2"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barniz}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="181" y="99" width="40" height="11" uuid="f2d5db3f-541b-4570-956b-893b1f8503c3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aporta_papel}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>
